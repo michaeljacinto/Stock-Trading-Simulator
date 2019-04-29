@@ -9,11 +9,12 @@ var mongoose = require('mongoose');
 var fs = require('fs');
 var session = require('express-session');
 const MongoClient = require('mongodb').MongoClient;
-const check = require('express-validator');
+// const check = require('express-validator');
 var utils = require('./utils');
 var cookieParser = require('cookie-parser');
 var ObjectID = require('mongodb').ObjectID;
 var assert = require('assert');
+const bcrypt = require('bcrypt');
 
 hbs.registerPartials(__dirname + '/views/partials');
 module.exports = app;
@@ -67,7 +68,7 @@ app.use((request, response, next) => {
 	next();
 });
 
-// model used to check with mongoDB
+// account schema used to check with MongoDB
 var account_schema = new mongoose.Schema({
 	username: {
 		type: String,
@@ -85,7 +86,6 @@ var account_schema = new mongoose.Schema({
 
 
 const user_account = mongoose.model("user_accounts", account_schema);
-// var Users = mongoose.model('user_accounts', account_schema);
 
 app.get('/', (request, response) => {
 	request.session.destroy(function(err) {
@@ -103,7 +103,7 @@ app.get('/login', (request, response) => {
 	});
 });
 
-// if login credentials are invalid
+// if login credentials are invalid displays error message
 app.get('/login-fail', (request, response) => {
 	request.session.destroy(function(err) {
 		response.render('login.hbs', {
@@ -119,32 +119,39 @@ app.get('/logout', function (request, response){
   });
 });
 
+// log in, redirects if invalid credentials
 app.post('/', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
     response.redirect('/trading-success');
   });
 
+// log in, redirects if invalid credentials
 app.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
     response.redirect('/trading-success');
   });
 
+// log in, redirects if invalid credentials
 app.post('/login-fail', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
     response.redirect('/trading-success');
   });
 
-// allows for success of logging in
+// allows for success of logging in via correct username and password
 passport.use(new LocalStrategy(
   function(username, password, done) {
     user_account.findOne({ username: username }, function (err, user) {
       if (err) { return done(err); }
       if (!user) { return done(null, false); }
-      if (user.password != password) { return done(null, false); }
-      return done(null, user);
+
+      // comparing hashed password to user password
+      bcrypt.compare(password, user.password, function(err, res) {
+      	if(res) { return done(null, user); }
+      	else { return done(null, false); }
+      })
     });
   }
 ));
@@ -181,11 +188,11 @@ app.post('/register', function(request, response) {
 		message = `Last name must be 3-30 characters long and must only contain letters.`;
 		response.render('registration.hbs', {title: message});
 	}
-	else if (check_uniq(attributes[2]) === false) {
+	else if (check_alphanum(attributes[2]) === false) {
 		message = `Username must have 5-15 characters and may only be alphanumeric.`;
 		response.render('registration.hbs', {title: message});
 	}
-	else if (check_uniq(attributes[3]) === false) {
+	else if (check_alphanum(attributes[3]) === false) {
 		message = `Password must have 5-15 characters and may only be alphanumeric.`;
 		response.render('registration.hbs', {title: message});
 	}
@@ -201,28 +208,33 @@ app.post('/register', function(request, response) {
 		db.collection('user_accounts').findOne({username: username}, function(err, result) {
 
 			if (result === null) {
-				db.collection('user_accounts').insertOne({
-					firstname: firstname,
-					lastname: lastname,
-					username: username,
-					password: password,
-					type: 'standard',
-					cash2: [10000],
-					stocks: []
 
-				}, (err, result) => {
-					if (err) {
-						messsage = `There was an error in creating your account. Please try again.`;
-						response.render('registration.hbs', {title: `There was an error in creating your account. Please try again.`});
-					}
-					message = `You have successfully created an account with the username '${username}' and have been granted $10,000 USD. Head over to the login page.`;
-					response.render('registration.hbs', {title: message});
+				bcrypt.hash(password, 10, function(err, hash) {
+
+					db.collection('user_accounts').insertOne({
+						firstname: firstname,
+						lastname: lastname,
+						username: username,
+						password: hash,
+						type: 'standard',
+						cash: [10000],
+						stocks: []
+
+					}, (err, result) => {
+						if (err) {
+							messsage = `There was an error in creating your account. Please try again.`;
+							response.render('registration.hbs', {title: `There was an error in creating your account. Please try again.`});
+						}
+						message = `You have successfully created an account with the username '${username}' and have been granted $10,000 USD. Head over to the login page.`;
+						response.render('registration.hbs', {title: message});
+					});
 				});
 			}
 			else {
 				message = `The username '${username}' already exists within the system.`;
 				response.render('registration.hbs', {title: `The username '${username}' already exists within the system.`});
 			}
+
 		}
 
 	)};
@@ -242,7 +254,7 @@ function check_str (string_input) {
 	return flag;
 }
 
-function check_uniq (string_input) {
+function check_alphanum (string_input) {
 	// checks if string value is between 5 and 15 characters, uses RegEx to confirm only alphanumerical chars
 	var valid_chars = /^([a-zA-Z0-9_-]){5,15}$/;
 
@@ -270,7 +282,7 @@ app.get('/trading-success', isAuthenticated, (request, response) => {
 app.post('/trading-success-search', isAuthenticated, (request, response) => {
 
 	var stock = request.body.stocksearch;
-	var cash2 = request.session.passport.user.cash2;
+	var cash = request.session.passport.user.cash;
 
 	const get_stock_info = async (stock_ticker) => {
 
@@ -295,7 +307,7 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 
 		response.render('trading-success.hbs', {
 				title: message,
-				head: `Cash balance: $${cash2[0]}`
+				head: `Cash balance: $${cash[0]}`
 				})
 	}
 	get_stock_info(stock);
@@ -304,11 +316,10 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
 	var _id = request.session.passport.user._id;
-	var cash = request.session.passport.user.cash;
 	var qty = request.body.buystockqty;
 	var stock = (request.body.buystockticker).toUpperCase();
 	var stocks = request.session.passport.user.stocks;
-	var cash2 = request.session.passport.user.cash2;
+	var cash = request.session.passport.user.cash;
 
 	const buy_stock = async () => {
 
@@ -319,7 +330,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 			var stock_name = stock_info.data.companyName;
 			var stock_price = stock_info.data.latestPrice;
 			var total_cost = Math.round(stock_price*qty*100)/100;
-			var cash_remaining = Math.round((cash2 - total_cost)*100)/100;
+			var cash_remaining = Math.round((cash - total_cost)*100)/100;
 			var stock_holding = {[stock]:parseInt(qty)};
 
 			if ((cash_remaining >= 0) && (total_cost !== 0) && (qty > 0)) {
@@ -331,10 +342,10 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 					var stock_remaining = parseInt(qty) + parseInt(stock_qty);
 					stock_holding = {[stock]:parseInt(stock_remaining)};
 					stocks[index] = stock_holding;
-					cash2[0] = cash_remaining;
+					cash[0] = cash_remaining;
 				}
 				else {
-					cash2[0] = cash_remaining;
+					cash[0] = cash_remaining;
 					
 					console.log("cash_remaining after else, after cash=cash_remain:"+cash_remaining);
 
@@ -342,16 +353,13 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 					stocks.push(stock_holding);
 				}
 				console.log('cash_remaining before update:'+cash_remaining);
-				console.log('cash added to database' + cash);
 
 				db.collection('user_accounts').updateOne(
 					{ "_id": ObjectID(_id)},
-					{ $set: { "cash2": cash2, "stocks": stocks}}
+					{ $set: { "cash": cash, "stocks": stocks}}
 				);
-				// await req.session.save();
 
 				message = `You successfully purchased ${qty} shares of ${stock_name} (${stock}) at $${stock_price}/share for $${total_cost}.`;
-					// \nRemaining balance: $${cash2[0]}.`;
 
 			}
 			else if (total_cost === 0) {
@@ -361,7 +369,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 				message = `You cannot buy negative shares.`;
 			}
 			else {
-				message = `Sorry you only have $${cash2[0]}. The purchase did not  go through. The total cost was $${total_cost}.`;
+				message = `Sorry you only have $${cash[0]}. The purchase did not  go through. The total cost was $${total_cost}.`;
 			}
 
 		}
@@ -376,7 +384,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
 		response.render('trading-success.hbs', {
 						title: message,
-						head: `Cash balance: $${cash2[0]}`
+						head: `Cash balance: $${cash[0]}`
 					})
 
 		function check_existence(stock) {
@@ -395,11 +403,9 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 });
 
 app.post('/trading-success-sell', isAuthenticated, (request, response) => {
-	// console.log(request.session.passport.user._id);
-	// console.log();
+
 	var _id = request.session.passport.user._id;
 	var cash = request.session.passport.user.cash;
-	var cash2 = request.session.passport.user.cash2;
 	var qty = parseInt(request.body.sellstockqty);
 	var stock = (request.body.sellstockticker).toUpperCase();
 	var stocks = request.session.passport.user.stocks;
@@ -416,7 +422,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 			var stock_name = stock_info.data.companyName;
 			var stock_price = stock_info.data.latestPrice;
 			var total_sale = Math.round(stock_price*qty*100)/100;
-			var remaining_balance = Math.round((cash2[0] + total_sale)*100)/100;
+			var remaining_balance = Math.round((cash[0] + total_sale)*100)/100;
 			var stock_qty = request.session.passport.user.stocks[index][stock];
 			var stock_remaining = stock_qty - qty;
 
@@ -430,20 +436,19 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 				if (stock_remaining > 0) {
 					var stock_holding = {[stock]:parseInt(stock_remaining)};
 					stocks[index] = stock_holding;
-					cash2[0] = remaining_balance;
+					cash[0] = remaining_balance;
 				}
 				else {
 					stocks.splice(index, 1);
-					cash2[0] = remaining_balance;
+					cash[0] = remaining_balance;
 				}
 
 				db.collection('user_accounts').updateOne(
 						{ "_id": ObjectID(_id)},
-						{ $set: { "cash2": cash2, "stocks": stocks}}
+						{ $set: { "cash": cash, "stocks": stocks}}
 					);
 
 				message = `You successfully sold ${qty} shares of ${stock_name} (${stock}) at $${stock_price}/share for $${total_sale}.`
-					// \nNew balance: $${cash2[0]}.`
 			}
 			else {
 				message = `You need to sell atleast 1 share of ${stock}.`;
@@ -461,7 +466,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 		}
 		response.render('trading-success.hbs', {
 			title: message,
-			head: `Cash balance: $${cash2[0]}`
+			head: `Cash balance: $${cash[0]}`
 		})		
 
 		function check_existence(stock) {
@@ -482,9 +487,8 @@ app.post('/trading-success-holdings', isAuthenticated, (request, response) => {
 	var stocks = request.session.passport.user.stocks;
 	var num_stocks = stocks.length;
 	var stock_keys = [];
-	var cash = request.session.passport.user.cash;
 	var message = 'Shares: \n';
-	var cash2 = request.session.passport.user.cash2;
+	var cash = request.session.passport.user.cash;
 
 	if (num_stocks === 0) {
 		message = 'You currently do not have any stocks.';
@@ -501,7 +505,7 @@ app.post('/trading-success-holdings', isAuthenticated, (request, response) => {
 
 	response.render('trading-success.hbs', {
 		title: message,
-		head: `Cash: $${cash2[0]}`
+		head: `Cash: $${cash[0]}`
 	})
 });
 
@@ -569,15 +573,12 @@ app.post('/admin-success-delete-user-success', function(req, res, next) {
 				message: "Cannot be empty"
 			});
 		}else{
-			// try {
-				// console.log(user_id_to_delete);
 				message = '';
 				mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
 					assert.equal(null, err);
 
 					var query = { username: user_name_to_delete }
 
-					//console.log(query)
 					db.collection('user_accounts').find(query).toArray(function(err, result) {
 						if(err) {
 							message = 'Unable to Delete Account';
@@ -587,7 +588,7 @@ app.post('/admin-success-delete-user-success', function(req, res, next) {
 								message: message
 							});
 						};
-						//console.log(result);
+
 						if(result === undefined || result.length == 0) {
 							message = 'No user exists with that username';
 							console.log(message)
@@ -635,7 +636,7 @@ app.post('/admin-success-update-balances', isAdmin, function(req, res, next) {
 
 					db.collection('user_accounts').updateOne(
 						{ "_id": ObjectID(_id)},
-						{ $set: {"cash2": balance_to_list}}
+						{ $set: {"cash": balance_to_list}}
 					);
 
 					message = `ID: ${user_id} cash has been changed to ${new_balance}.`
@@ -687,17 +688,17 @@ app.post('/admin-success-update-balances-success', isAdmin, function(req, res, n
 		mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
 			assert.equal(null, err);
 			var query = { _id: ObjectID(user_id_to_update) }
-			//console.log(query)
+			
 			db.collection('user_accounts').findOne(query).toArray(function(err, result) {
 				if(err) {
 					message = 'Unable to Update Account';
 					console.log(message)
-					// console.log(err);
+				
 					res.render('admin-success-update-balances-success.hbs', {
 						message: message
 					});
 				}
-				//console.log(result);
+
 				if(result === undefined || result.length == 0) {
 					message = 'No user exists with that Id';
 					console.log(message)
@@ -707,7 +708,7 @@ app.post('/admin-success-update-balances-success', isAdmin, function(req, res, n
 				}else {
 					db.collection('user_accounts').updateOne(
 						{ "_id": user_id_to_update},
-						{ $set: { "cash2": balance_to_list }
+						{ $set: { "cash": balance_to_list }
 
 				})
 					res.render('admin-success-update-balances-success.hbs', {
@@ -718,6 +719,7 @@ app.post('/admin-success-update-balances-success', isAdmin, function(req, res, n
 		})
 	}})
 
+// redirects user to error page if no user is logged in and trying to access a different page
 app.get('*', errorPage, (request, response) => {
 	response.render('404.hbs', {
 		title: `Sorry the URL 'localhost:8080${request.url}' does not exist.`
@@ -729,7 +731,6 @@ function errorPage(request, response, next) {
 		console.log(request.session.passport);
 		next();
 	} else {
-		// response.redirect('/login');
 		response.render('404x.hbs', {
 			title: `Sorry the URL 'localhost:8080${request.url}' does not exist.`
 		})
