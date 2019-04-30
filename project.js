@@ -16,6 +16,8 @@ var ObjectID = require('mongodb').ObjectID;
 var assert = require('assert');
 const bcrypt = require('bcrypt');
 
+var port = process.env.PORT || 8080;
+
 
 hbs.registerPartials(__dirname + '/views/partials');
 module.exports = app;
@@ -757,7 +759,7 @@ function isAdmin(request, response, next) {
 }
 
 // listen to port 8080
-app.listen(8080, () => {
-	console.log('Server is up on port 8080');
+app.listen(port, () => {
+	console.log('Server is up on port ' + port);
 	utils.init();
 });
