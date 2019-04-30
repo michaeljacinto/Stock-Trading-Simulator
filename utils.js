@@ -8,7 +8,7 @@ module.exports.getDb = function() {
 
 module.exports.init = function(callback) {
 	// MongoClient.connect('mongodb://localhost:27017/test', function(err, client) {
-	MongoClient.connect('mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/test?retryWrites=true', function (err, client) {
+	MongoClient.connect('mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts', function (err, client) {
 		if (err) {
 			return console.log('Unable to connect to DB');
 		}
