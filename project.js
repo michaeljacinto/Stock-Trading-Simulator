@@ -16,6 +16,7 @@ var ObjectID = require('mongodb').ObjectID;
 var assert = require('assert');
 const bcrypt = require('bcrypt');
 
+
 hbs.registerPartials(__dirname + '/views/partials');
 module.exports = app;
 
