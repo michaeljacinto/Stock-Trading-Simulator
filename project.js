@@ -22,7 +22,7 @@ module.exports = app;
 mongoose.Promise = global.Promise;
 
 // password login
-mongoose.connect("mongodb://localhost:27017/accounts", { useNewUrlParser: true });
+mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/test?retryWrites=true", { useNewUrlParser: true });
 
 var app = express();
 
@@ -36,7 +36,7 @@ app.use(passport.session());
 app.use(cookieParser());
 
 hbs.registerHelper('dbConnection', function(req,res) {
-	var url = "mongodb://localhost:27017/accounts";
+	var url = "mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/test?retryWrites=true";
 	return url;
 })
 
@@ -528,7 +528,7 @@ app.get('/admin-success', isAdmin, (request, response) => {
  });
 
 app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
-	mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
+	mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/test?retryWrites=true", function(err, db) {
 		assert.equal(null, err);
 		db.collection('user_accounts').find().toArray(function(err, result) {
 			if (err) {
@@ -543,7 +543,7 @@ app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
 });
 
 app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
-	mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
+	mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/test?retryWrites=true", function(err, db) {
 		assert.equal(null, err);
 		db.collection('user_accounts').find().toArray(function(err, result) {
 			if(err) {
@@ -574,7 +574,7 @@ app.post('/admin-success-delete-user-success', function(req, res, next) {
 			});
 		}else{
 				message = '';
-				mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
+				mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/test?retryWrites=true", function(err, db) {
 					assert.equal(null, err);
 
 					var query = { username: user_name_to_delete }
@@ -657,7 +657,7 @@ app.post('/admin-success-update-balances', isAdmin, function(req, res, next) {
 })
 
 app.post('/admin-success-update-balances', isAdmin, function(req, res, next) {
-	mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
+	mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/test?retryWrites=true", function(err, db) {
 		assert.equal(null, err);
 		db.collection('user_accounts').find().toArray(function(err, result) {
 			if (err) {
@@ -685,7 +685,7 @@ app.post('/admin-success-update-balances-success', isAdmin, function(req, res, n
 	}else{
 	console.log(user_id_to_update);
 		message = '';
-		mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
+		mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/test?retryWrites=true", function(err, db) {
 			assert.equal(null, err);
 			var query = { _id: ObjectID(user_id_to_update) }
 			

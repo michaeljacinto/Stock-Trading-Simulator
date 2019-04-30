@@ -2,7 +2,7 @@
   "name": "class_9",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "project.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,6 +26,7 @@
     "handlebars": "^4.1.1",
     "hbs": "^4.0.3",
     "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.2.3",
     "mongoose": "^5.4.20",
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
@@ -33,5 +34,8 @@
     "path": "^0.12.7",
     "promised-handlebars": "^2.0.1",
     "q": "^1.5.1"
+  },
+  "engines": {
+    "node": "10.x"
   }
 }
