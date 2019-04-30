@@ -36,8 +36,13 @@
                 <p class="font-italic">Please note all prices are in USD.</p>
                 <p class="font-weight-bold">{{title}}</p>
                 <p class="font-weight-bold">{{head}}</p>
-                    <canvas id="myChart"></canvas>
+                    {{#if check}}
+                    <div style="width: 60%;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+
                     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-trendline@0.0.3/chartjs-plugin-trendline.js"></script>
                     <script>
                         var ctx = document.getElementById('myChart').getContext('2d');
 
@@ -45,7 +50,7 @@
                         var data_price = [{{#each prices}}
                             {{this}},
                         {{/each}}];
-                        console.log(data_price);
+                        // console.log(data_price);
 
 
                         var data_date = [
@@ -53,7 +58,7 @@
                                 '{{this}}',
                             {{/each}}
                         ];
-                        console.log(data_date);
+                        // console.log(data_date);
 
                         var chart = new Chart(ctx, {
                             // The type of chart we want to create
@@ -61,20 +66,55 @@
 
                             // The data for our dataset
                             data: {
-                                labels: [data_date[5], data_date[4], data_date[3], data_date[2], data_date[1],data_date[0]],
+                                labels: [
+                                    data_date[14], data_date[13], data_date[12],
+                                    data_date[11], data_date[10], data_date[9],
+                                    data_date[8], data_date[7], data_date[6],
+                                    data_date[5], data_date[4], data_date[3],
+                                    data_date[2],data_date[1], data_date[0]
+                                ],
                                 datasets: [{
                                     lineTension: 0,
                                     fill: 'start',
                                     label: '{{stock_name}}',
-                                    backgroundColor: 'rgb(221, 236, 255)',
+                                    backgroundColor: 'rgb(221, 236, 255, 0.3)',
                                     borderColor: 'rgb(0, 104, 145)',
-                                    data: [data_price[5], data_price[4], data_price[3], data_price[2],
-                                        data_price[1], data_price[0]]
+                                    data: [
+                                        data_price[14], data_price[13], data_price[12],
+                                        data_price[11], data_price[10], data_price[9],
+                                        data_price[8], data_price[7], data_price[6],
+                                        data_price[5], data_price[4], data_price[3],
+                                        data_price[2], data_price[1], data_price[0]
+                                    ],
+                                    pointRadius: 6,
+                                    hoverRadius: 10,
+                                    hitRadius: 2,
                                 }]
                             },
 
                             // Configuration options go here
                             options: {
+                                trendlineLinear: {
+                                    style: "rgba(255,105,180)",
+                                    lineStyle: "solid",
+                                    width: 2,
+                                },
+                                responsive: true,
+                                animation: {
+                                    duration: 2000,
+                                },
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        fontSize: 12,
+                                        boxWidth: 12,
+                                        usePointStyle: true,
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: '14-week Historic Prices for {{stock_name}}'
+                                },
                                 scales: {
                                     xAxes: [{
                                         ticks: {
@@ -86,13 +126,17 @@
                                         ticks: {
                                             fontSize: 14,
                                             fontColor: 'grey'
+                                        },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: "Price (USD)"
                                         }
                                     }]
                                 }
                             }
                         });
                     </script>
-
+                    {{/if}}
                   <div class="form-group btn-group">
                 <form action="/trading-success-search" method="POST">
                     <label for="stocksearch">Stock Search Price</label>
