@@ -195,8 +195,8 @@ app.post('/register', function(request, response) {
 		message = `Username must have 5-15 characters and may only be alphanumeric.`;
 		response.render('registration.hbs', {title: message});
 	}
-	else if (check_alphanum(attributes[3]) === false) {
-		message = `Password must have 5-15 characters and may only be alphanumeric.`;
+	else if (check_password(attributes[3]) === false) {
+		message = `Password must be atleast 8 characters and 1 letter and 1 number`;
 		response.render('registration.hbs', {title: message});
 	}
 	else if ((attributes[3]) !== attributes[4]) {
@@ -265,6 +265,18 @@ function check_alphanum (string_input) {
 		flag = true;
 	}
 	else {
+		flag = false;
+	}
+	return flag;
+}
+
+function check_password(string_input) {
+	// checks if string value is between 5 and 15 characters, uses RegEx to confirm only alphanumerical chars
+	var valid_chars = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;;
+
+	if (valid_chars.test(string_input)) {
+		flag = true;
+	} else {
 		flag = false;
 	}
 	return flag;
