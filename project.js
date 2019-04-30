@@ -267,6 +267,11 @@ function check_alphanum (string_input) {
 	return flag;
 }
 
+module.exports = {
+	check_str: check_str,
+	check_alphanum: check_alphanum
+}
+
 app.get('/trading', (request, response) => {
 	response.render('trading.hbs', {
 		title: 'You are not logged in. You must be logged in to view this page.'
@@ -283,18 +288,35 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 
 	var stock = request.body.stocksearch;
 	var cash = request.session.passport.user.cash;
-
+	var historical_prices = [];
+	var dates = [];
+	var stock_name;
 	const get_stock_info = async (stock_ticker) => {
 
 		var message;
 
 		try {
 			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock_ticker}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
-			var stock_name = stock_info.data.companyName;
-			var stock_price = stock_info.data.latestPrice;
+			// const stock_historical_info = await axios.get(`https://www.quandl.com/api/v3/datasets/WIKI/${stock_ticker}/data.json?api_key=rshVxygxzFwYapTQCrAy`)
+			const stock_historical_info = await axios.get(`https://api.iextrading.com/1.0/stock/${stock_ticker}/chart/3m`);
 
+			stock_name = stock_info.data.companyName;
+			var stock_price = stock_info.data.latestPrice;
+			var historical_data = stock_historical_info.data;
+
+			for (var num = historical_data.length - 1; num >= 33; num -= 5) {
+				console.log('fa', num);
+				hist_date = historical_data[num].date
+				day = hist_date.slice(6,10)
+				dates.push(day);
+				historical_prices.push(historical_data[num].close);
+			}
+
+			// console.log('Here are the dates:');
+			console.log(dates);
+			console.log(historical_prices);
 			message = `The price of the selected ticker '${stock.toUpperCase()}' which belongs to '${stock_name}' is currently: $${stock_price} USD.`;
-			
+
 		}
 		catch (err) {
 			if (stock === '') {
@@ -307,6 +329,9 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 
 		response.render('trading-success.hbs', {
 				title: message,
+				dates: dates,
+				prices: historical_prices,
+				stock_name: stock_name,
 				head: `Cash balance: $${cash[0]}`
 				})
 	}
