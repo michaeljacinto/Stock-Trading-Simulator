@@ -284,6 +284,12 @@ app.get('/trading-success', isAuthenticated, (request, response) => {
 	})
 });
 
+app.get('/history', isAuthenticated, (request, response) => {
+	response.render('history.hbs', {
+		title: 'Welcome to the Histoy page.'
+	})
+});
+
 app.post('/trading-success-search', isAuthenticated, (request, response) => {
 
 	var stock = request.body.stocksearch;
