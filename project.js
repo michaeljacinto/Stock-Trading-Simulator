@@ -22,7 +22,7 @@ module.exports = app;
 mongoose.Promise = global.Promise;
 
 // password login
-mongoose.connect("mongodb://localhost:27017/accounts", { useNewUrlParser: true });
+mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", { useNewUrlParser: true });
 
 var app = express();
 
@@ -36,7 +36,7 @@ app.use(passport.session());
 app.use(cookieParser());
 
 hbs.registerHelper('dbConnection', function(req,res) {
-	var url = "mongodb://localhost:27017/accounts";
+	var url = "mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts";
 	return url;
 })
 
@@ -107,7 +107,7 @@ app.get('/login', (request, response) => {
 app.get('/login-fail', (request, response) => {
 	request.session.destroy(function(err) {
 		response.render('login.hbs', {
-			title: 'You have entered an invalid username or password. Please try again or create a new account.'
+			title: 'Invalid login credentials. After 3 unsuccessful login attempts your account will be locked. To unlock your account, contact the admin at admin@bcit.ca'
 		})
 	});
 });
@@ -123,6 +123,7 @@ app.get('/logout', function (request, response){
 app.post('/', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
+  	console.log(request.body.username);
     response.redirect('/trading-success');
   });
 
@@ -137,22 +138,76 @@ app.post('/login',
 app.post('/login-fail', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
+  	console.log(request.body.username);
     response.redirect('/trading-success');
   });
+
 
 // allows for success of logging in via correct username and password
 passport.use(new LocalStrategy(
   function(username, password, done) {
     user_account.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
+
+      if (err) { 
+      	return done(err); 
+      }
+
+      if (!user) { 
+      	return done(null, false); 
+      }
 
       // comparing hashed password to user password
-      bcrypt.compare(password, user.password, function(err, res) {
-      	if(res) { return done(null, user); }
-      	else { return done(null, false); }
-      })
+      var db = utils.getDb();
+
+      db.collection('user_accounts').findOne({username: username}, function(err, result) {
+
+      	// checks it account is locked
+      	if (result.account_status !== 'locked') {
+
+	      bcrypt.compare(password, user.password, function(err, res) {
+	      	if(res) { 
+
+	      		db.collection('user_accounts').updateOne(
+					{ "username": username},
+					{ $set: { "attempts": 0}}
+					);
+
+	      		return done(null, user);
+
+	      	}
+	      	else { 
+	      		console.log('err2 ' + username);
+	      		var num_attempts;
+	      		db.collection('user_accounts').findOne({username: username}, function(err, result) {
+
+	      			if (result !== null) {
+
+	      				num_attempts = result.attempts + 1;
+	      				
+	      				db.collection('user_accounts').updateOne(
+						{ "username": username},
+						{ $set: { "attempts": num_attempts}}
+						);
+
+	      				if (num_attempts >= 3) {
+	      					db.collection('user_accounts').updateOne(
+							{ "username": username},
+							{ $set: { "account_status": 'locked'}}
+							);
+	      				}
+	      			}
+
+	      		})
+	      		return done(null, false); 
+	      	}
+
+	      });
+	  	}
+	  	else {
+	  		return done(null, false); 
+	  	}
     });
+  });
   }
 ));
 
@@ -192,8 +247,8 @@ app.post('/register', function(request, response) {
 		message = `Username must have 5-15 characters and may only be alphanumeric.`;
 		response.render('registration.hbs', {title: message});
 	}
-	else if (check_alphanum(attributes[3]) === false) {
-		message = `Password must have 5-15 characters and may only be alphanumeric.`;
+	else if (check_password(attributes[3]) === false) {
+		message = `Password must min 8 characters with atleast 1 letter & 1 number.`;
 		response.render('registration.hbs', {title: message});
 	}
 	else if ((attributes[3]) !== attributes[4]) {
@@ -218,7 +273,10 @@ app.post('/register', function(request, response) {
 						password: hash,
 						type: 'standard',
 						cash: [10000],
-						stocks: []
+						stocks: [],
+						attempts: 0,
+						account_status: 'unlocked'
+
 
 					}, (err, result) => {
 						if (err) {
@@ -267,6 +325,18 @@ function check_alphanum (string_input) {
 	return flag;
 }
 
+function check_password(string_input) {
+	// checks if password is atleast 8 characters long containing 1 letter and 1 number
+	var valid_chars = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;;
+
+	if (valid_chars.test(string_input)) {
+		flag = true;
+	} else {
+		flag = false;
+	}
+	return flag;
+}
+
 module.exports = {
 	check_str: check_str,
 	check_alphanum: check_alphanum
@@ -298,7 +368,6 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 
 		try {
 			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock_ticker}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
-			// const stock_historical_info = await axios.get(`https://www.quandl.com/api/v3/datasets/WIKI/${stock_ticker}/data.json?api_key=rshVxygxzFwYapTQCrAy`)
 			const stock_historical_info = await axios.get(`https://api.iextrading.com/1.0/stock/${stock_ticker}/chart/1y`);
 
 			stock_name = stock_info.data.companyName;
@@ -306,16 +375,12 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 			var historical_data = stock_historical_info.data;
 
 			for (var num = historical_data.length - 1; num >= 33; num -= 5) {
-				// console.log('fa', num);
 				hist_date = historical_data[num].date
 				day = hist_date.slice(6,10)
 				dates.push(day);
 				historical_prices.push(historical_data[num].close);
 			}
 
-			// console.log('Here are the dates:');
-			console.log(dates);
-			console.log(historical_prices);
 			message = `The price of the selected ticker '${stock.toUpperCase()}' which belongs to '${stock_name}' is currently: $${stock_price} USD.`;
 			check = true;
 		}
@@ -337,6 +402,7 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 				check: check
 				})
 	}
+
 	get_stock_info(stock);
 });
 
@@ -555,7 +621,7 @@ app.get('/admin-success', isAdmin, (request, response) => {
  });
 
 app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
-	mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
+	mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function(err, db) {
 		assert.equal(null, err);
 		db.collection('user_accounts').find().toArray(function(err, result) {
 			if (err) {
@@ -570,7 +636,7 @@ app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
 });
 
 app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
-	mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
+	mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function(err, db) {
 		assert.equal(null, err);
 		db.collection('user_accounts').find().toArray(function(err, result) {
 			if(err) {
@@ -601,7 +667,7 @@ app.post('/admin-success-delete-user-success', function(req, res, next) {
 			});
 		}else{
 				message = '';
-				mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
+				mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function(err, db) {
 					assert.equal(null, err);
 
 					var query = { username: user_name_to_delete }
@@ -682,69 +748,6 @@ app.post('/admin-success-update-balances', isAdmin, function(req, res, next) {
 		message: message
 	});
 })
-
-app.post('/admin-success-update-balances', isAdmin, function(req, res, next) {
-	mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
-		assert.equal(null, err);
-		db.collection('user_accounts').find().toArray(function(err, result) {
-			if (err) {
-				res.send('Unable to fetch Accounts');
-			}
-			res.render('admin-success-update-balances.hbs', {
-				result: result
-			});
-		});
-		db.close;
-	});
-});
-
-app.post('/admin-success-update-balances-success', isAdmin, function(req, res, next){
-	var user_id_to_update = req.body.user_id
-	var user_balance = parseInt(req.body.user_balance)
-	console.log(user_balance);
-	var balance_to_list = []
-	balance_to_list[0] = user_balance
-	console.log(balance_to_list[0]);
-	if(user_id_to_update == '') {
-		res.render('admin-success-update-balances-success.hbs', {
-			message: "Cannot be empty"
-		});
-	}else{
-	console.log(user_id_to_update);
-		message = '';
-		mongoose.connect("mongodb://localhost:27017/accounts", function(err, db) {
-			assert.equal(null, err);
-			var query = { _id: ObjectID(user_id_to_update) }
-			
-			db.collection('user_accounts').findOne(query).toArray(function(err, result) {
-				if(err) {
-					message = 'Unable to Update Account';
-					console.log(message)
-				
-					res.render('admin-success-update-balances-success.hbs', {
-						message: message
-					});
-				}
-
-				if(result === undefined || result.length == 0) {
-					message = 'No user exists with that Id';
-					console.log(message)
-					res.render('admin-success-update-balances-success.hbs', {
-						message: message
-					});
-				}else {
-					db.collection('user_accounts').updateOne(
-						{ "_id": user_id_to_update},
-						{ $set: { "cash": balance_to_list }
-
-				})
-					res.render('admin-success-update-balances-success.hbs', {
-						message: 'Update Successfully'
-				});
-				}
-			})
-		})
-	}})
 
 // redirects user to error page if no user is logged in and trying to access a different page
 app.get('*', errorPage, (request, response) => {
