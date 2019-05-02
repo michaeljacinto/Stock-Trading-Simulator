@@ -18,6 +18,7 @@ const bcrypt = require('bcrypt');
 
 hbs.registerPartials(__dirname + '/views/partials');
 module.exports = app;
+var port = process.env.PORT || 8080;
 
 mongoose.Promise = global.Promise;
 
@@ -785,8 +786,8 @@ function isAdmin(request, response, next) {
 	}
 }
 
-// listen to port 8080
-app.listen(8080, () => {
-	console.log('Server is up on port 8080');
+// listen to port 
+app.listen(port, () => {
+	console.log('Server is up on port ' + port);
 	utils.init();
 });
