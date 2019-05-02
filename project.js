@@ -753,7 +753,7 @@ app.post('/admin-success-update-balances', isAdmin, function(req, res, next) {
 // redirects user to error page if no user is logged in and trying to access a different page
 app.get('*', errorPage, (request, response) => {
 	response.render('404.hbs', {
-		title: `Sorry the URL 'localhost:8080${request.url}' does not exist.`
+		title: `Sorry the URL does not exist.`
 	})
 });
 
@@ -763,7 +763,7 @@ function errorPage(request, response, next) {
 		next();
 	} else {
 		response.render('404x.hbs', {
-			title: `Sorry the URL 'localhost:8080${request.url}' does not exist.`
+			title: `Sorry the URL does not exist.`
 		})
 	}
 }
