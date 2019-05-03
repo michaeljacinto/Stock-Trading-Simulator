@@ -205,3 +205,817 @@ Tue Apr 30 2019 13:30:23 GMT-0700 (Pacific Daylight Time): GET /testcss.css
 Tue Apr 30 2019 13:30:28 GMT-0700 (Pacific Daylight Time): POST /login
 Tue Apr 30 2019 13:30:28 GMT-0700 (Pacific Daylight Time): GET /login-fail
 Tue Apr 30 2019 13:30:28 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:01 GMT-0700 (Pacific Daylight Time): GET /
+Thu May 02 2019 14:19:01 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:01 GMT-0700 (Pacific Daylight Time): GET /bundle_1.js
+Thu May 02 2019 14:19:01 GMT-0700 (Pacific Daylight Time): GET /images/icon1.png
+Thu May 02 2019 14:19:03 GMT-0700 (Pacific Daylight Time): GET /fd
+Thu May 02 2019 14:19:03 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:03 GMT-0700 (Pacific Daylight Time): GET /images/icon1.png
+Thu May 02 2019 14:19:06 GMT-0700 (Pacific Daylight Time): GET /login
+Thu May 02 2019 14:19:06 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:06 GMT-0700 (Pacific Daylight Time): GET /bundle_1.js
+Thu May 02 2019 14:19:06 GMT-0700 (Pacific Daylight Time): GET /images/icon1.png
+Thu May 02 2019 14:19:12 GMT-0700 (Pacific Daylight Time): POST /login
+Thu May 02 2019 14:19:12 GMT-0700 (Pacific Daylight Time): GET /login-fail
+Thu May 02 2019 14:19:12 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:12 GMT-0700 (Pacific Daylight Time): GET /bundle_1.js
+Thu May 02 2019 14:19:12 GMT-0700 (Pacific Daylight Time): GET /images/icon1.png
+Thu May 02 2019 14:19:17 GMT-0700 (Pacific Daylight Time): GET /register
+Thu May 02 2019 14:19:17 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:17 GMT-0700 (Pacific Daylight Time): GET /images/icon1.png
+Thu May 02 2019 14:19:17 GMT-0700 (Pacific Daylight Time): GET /trading
+Thu May 02 2019 14:19:17 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:17 GMT-0700 (Pacific Daylight Time): GET /bundle_1.js
+Thu May 02 2019 14:19:17 GMT-0700 (Pacific Daylight Time): GET /images/icon1.png
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /admin
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /bundle_1.js
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /favicon.ico
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /trading
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /bundle_1.js
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /images/icon1.png
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /register
+Thu May 02 2019 14:19:18 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:19 GMT-0700 (Pacific Daylight Time): GET /images/icon1.png
+Thu May 02 2019 14:19:19 GMT-0700 (Pacific Daylight Time): GET /login
+Thu May 02 2019 14:19:19 GMT-0700 (Pacific Daylight Time): GET /testcss.css
+Thu May 02 2019 14:19:19 GMT-0700 (Pacific Daylight Time): GET /bundle_1.js
+Thu May 02 2019 14:19:19 GMT-0700 (Pacific Daylight Time): GET /images/icon1.png
+Thu May 02 2019 14:58:31 GMT-0700 (Pacific Daylight Time): GET /
+Thu May 02 2019 14:58:31 GMT-0700 (Pacific Daylight Time): GET /register
+Thu May 02 2019 14:58:31 GMT-0700 (Pacific Daylight Time): GET /trading
+Thu May 02 2019 14:58:31 GMT-0700 (Pacific Daylight Time): GET /trading-success
+Thu May 02 2019 14:58:31 GMT-0700 (Pacific Daylight Time): GET /admin
+Thu May 02 2019 14:58:31 GMT-0700 (Pacific Daylight Time): GET /admin-restricted
+Thu May 02 2019 14:58:31 GMT-0700 (Pacific Daylight Time): GET /admin-success
+Thu May 02 2019 14:58:32 GMT-0700 (Pacific Daylight Time): POST /
+Thu May 02 2019 14:59:12 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 14:59:12 GMT-0700 (Pacific Daylight Time): 200 - GET /register
+Thu May 02 2019 14:59:12 GMT-0700 (Pacific Daylight Time): 200 - GET /trading
+Thu May 02 2019 14:59:12 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 14:59:12 GMT-0700 (Pacific Daylight Time): 200 - GET /admin
+Thu May 02 2019 14:59:12 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-restricted
+Thu May 02 2019 14:59:12 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-success
+Thu May 02 2019 14:59:13 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 15:29:19 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 15:29:19 GMT-0700 (Pacific Daylight Time): 200 - GET /register
+Thu May 02 2019 15:29:19 GMT-0700 (Pacific Daylight Time): 200 - GET /trading
+Thu May 02 2019 15:29:19 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 15:29:19 GMT-0700 (Pacific Daylight Time): 200 - GET /admin
+Thu May 02 2019 15:29:19 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-restricted
+Thu May 02 2019 15:29:19 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-success
+Thu May 02 2019 15:29:20 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 15:29:20 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 15:29:20 GMT-0700 (Pacific Daylight Time): 200 - POST /login-fail
+Thu May 02 2019 15:29:20 GMT-0700 (Pacific Daylight Time): 200 - POST /register
+Thu May 02 2019 15:29:20 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-buy
+Thu May 02 2019 15:30:20 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 15:30:20 GMT-0700 (Pacific Daylight Time): 200 - GET /register
+Thu May 02 2019 15:30:20 GMT-0700 (Pacific Daylight Time): 200 - GET /trading
+Thu May 02 2019 15:30:20 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 15:30:20 GMT-0700 (Pacific Daylight Time): 200 - GET /admin
+Thu May 02 2019 15:30:20 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-restricted
+Thu May 02 2019 15:30:20 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-success
+Thu May 02 2019 15:30:21 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 15:30:21 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 15:30:21 GMT-0700 (Pacific Daylight Time): 200 - POST /login-fail
+Thu May 02 2019 15:30:21 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-buy
+Thu May 02 2019 15:30:49 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 15:30:49 GMT-0700 (Pacific Daylight Time): 200 - GET /register
+Thu May 02 2019 15:30:49 GMT-0700 (Pacific Daylight Time): 200 - GET /trading
+Thu May 02 2019 15:30:49 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 15:30:49 GMT-0700 (Pacific Daylight Time): 200 - GET /admin
+Thu May 02 2019 15:30:49 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-restricted
+Thu May 02 2019 15:30:49 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-success
+Thu May 02 2019 15:30:50 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 15:30:50 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 15:30:50 GMT-0700 (Pacific Daylight Time): 200 - POST /login-fail
+Thu May 02 2019 15:30:50 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-buy
+Thu May 02 2019 15:36:31 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 15:36:31 GMT-0700 (Pacific Daylight Time): 200 - GET /register
+Thu May 02 2019 15:36:31 GMT-0700 (Pacific Daylight Time): 200 - GET /trading
+Thu May 02 2019 15:36:31 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 15:36:31 GMT-0700 (Pacific Daylight Time): 200 - GET /admin
+Thu May 02 2019 15:36:31 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-restricted
+Thu May 02 2019 15:36:31 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-success
+Thu May 02 2019 15:36:32 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 15:36:32 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 15:36:32 GMT-0700 (Pacific Daylight Time): 200 - POST /login-fail
+Thu May 02 2019 15:36:32 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-buy
+Thu May 02 2019 15:36:32 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-search
+Thu May 02 2019 15:36:32 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-buy
+Thu May 02 2019 15:36:32 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-sell
+Thu May 02 2019 15:36:32 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-holdings
+Thu May 02 2019 15:37:00 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 15:37:00 GMT-0700 (Pacific Daylight Time): 200 - GET /register
+Thu May 02 2019 15:37:00 GMT-0700 (Pacific Daylight Time): 200 - GET /trading
+Thu May 02 2019 15:37:00 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 15:37:00 GMT-0700 (Pacific Daylight Time): 200 - GET /admin
+Thu May 02 2019 15:37:00 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-restricted
+Thu May 02 2019 15:37:00 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-success
+Thu May 02 2019 15:37:01 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 15:37:01 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 15:37:01 GMT-0700 (Pacific Daylight Time): 200 - POST /login-fail
+Thu May 02 2019 15:37:01 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-buy
+Thu May 02 2019 15:37:01 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-search
+Thu May 02 2019 15:37:01 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-buy
+Thu May 02 2019 15:37:01 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-sell
+Thu May 02 2019 15:37:01 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-holdings
+Thu May 02 2019 16:13:37 GMT-0700 (Pacific Daylight Time): 200 - GET /register
+Thu May 02 2019 16:13:37 GMT-0700 (Pacific Daylight Time): 200 - GET /trading
+Thu May 02 2019 16:13:37 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:13:37 GMT-0700 (Pacific Daylight Time): 200 - GET /admin
+Thu May 02 2019 16:13:37 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-restricted
+Thu May 02 2019 16:13:37 GMT-0700 (Pacific Daylight Time): 200 - GET /admin-success
+Thu May 02 2019 16:13:38 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 16:13:38 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:13:38 GMT-0700 (Pacific Daylight Time): 200 - POST /login-fail
+Thu May 02 2019 16:13:38 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-buy
+Thu May 02 2019 16:13:38 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-search
+Thu May 02 2019 16:13:38 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-buy
+Thu May 02 2019 16:13:38 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-sell
+Thu May 02 2019 16:13:38 GMT-0700 (Pacific Daylight Time): 200 - POST /trading-success-holdings
+Thu May 02 2019 16:32:22 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:32:23 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:32:23 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:33:33 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:33:33 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:33:33 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:35:59 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:35:59 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:35:59 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:36:17 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:36:44 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:36:44 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:36:44 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:37:09 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:37:09 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:37:09 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:37:52 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:37:52 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:37:52 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:38:10 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:38:10 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:38:10 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:39:24 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:39:24 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:39:24 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:39:55 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:39:55 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:39:55 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:44:55 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:44:56 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:44:56 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:45:20 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:45:20 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:45:20 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:58:31 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:58:31 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:58:31 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:58:31 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 16:58:31 GMT-0700 (Pacific Daylight Time): 200 - GET /login-fail
+Thu May 02 2019 16:58:31 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:58:31 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 16:58:48 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 16:58:49 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:58:49 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:58:49 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 16:58:49 GMT-0700 (Pacific Daylight Time): 200 - GET /login-fail
+Thu May 02 2019 16:58:49 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 16:58:49 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 17:00:01 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:00:01 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:00:01 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:00:01 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 17:00:01 GMT-0700 (Pacific Daylight Time): 200 - GET /login-fail
+Thu May 02 2019 17:00:01 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:00:01 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 17:00:10 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:00:11 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:00:11 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:00:11 GMT-0700 (Pacific Daylight Time): 200 - POST /
+Thu May 02 2019 17:00:11 GMT-0700 (Pacific Daylight Time): 200 - GET /login-fail
+Thu May 02 2019 17:00:11 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:00:11 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 17:00:35 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:00:35 GMT-0700 (Pacific Daylight Time): 200 - POST /register
+Thu May 02 2019 17:00:35 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:00:35 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 17:02:53 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:02:53 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:02:53 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:02:53 GMT-0700 (Pacific Daylight Time): 200 - POST /register
+Thu May 02 2019 17:03:03 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:03:04 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:03:04 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:03:04 GMT-0700 (Pacific Daylight Time): 200 - POST /register
+Thu May 02 2019 17:03:14 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:03:14 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:03:14 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:03:14 GMT-0700 (Pacific Daylight Time): 200 - POST /register
+Thu May 02 2019 17:04:18 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:04:18 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:04:18 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:04:18 GMT-0700 (Pacific Daylight Time): 200 - POST /register
+Thu May 02 2019 17:05:25 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:05:25 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:05:25 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:05:25 GMT-0700 (Pacific Daylight Time): 200 - POST /register
+Thu May 02 2019 17:09:29 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:09:29 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:09:29 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:09:29 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:09:29 GMT-0700 (Pacific Daylight Time): 200 - GET /login-fail
+Thu May 02 2019 17:09:29 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:09:29 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 17:10:11 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:10:11 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:10:11 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:10:11 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:10:11 GMT-0700 (Pacific Daylight Time): 200 - GET /login-fail
+Thu May 02 2019 17:10:11 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:10:11 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 17:10:57 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:10:57 GMT-0700 (Pacific Daylight Time): 200 - GET /login-fail
+Thu May 02 2019 17:10:57 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:10:57 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 17:11:07 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:11:07 GMT-0700 (Pacific Daylight Time): 200 - GET /login-fail
+Thu May 02 2019 17:11:07 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:11:07 GMT-0700 (Pacific Daylight Time): 200 - GET /
+Thu May 02 2019 17:14:22 GMT-0700 (Pacific Daylight Time): 200 - POST /login
+Thu May 02 2019 17:14:23 GMT-0700 (Pacific Daylight Time): 200 - GET /login-fail
+Thu May 02 2019 17:14:23 GMT-0700 (Pacific Daylight Time): 200 - GET /trading-success
+Thu May 02 2019 17:14:23 GMT-0700 (Pacific Daylight Time): 200 - GET /
+May 02 2019 17:14: 200 - POST /login
+May 02 2019 17:15: 200 - POST /login
+May 02 2019 17:15: 200 - GET /login-fail
+May 02 2019 17:15: 200 - GET /trading-success
+May 02 2019 17:15: 200 - GET /
+May 02 2019 17:15: 200 - POST /login
+May 02 2019 17:15: 200 - GET /login-fail
+May 02 2019 17:15: 200 - GET /trading-success
+May 02 2019 17:15: 200 - GET /
+May 02 2019 17:15: 200 - POST /login
+May 02 2019 17:15: 200 - GET /login-fail
+May 02 2019 17:15: 200 - GET /trading-success
+May 02 2019 17:15: 200 - GET /
+May 02 2019 17:16: 200 - POST /login
+May 02 2019 17:16: 200 - POST /login
+May 02 2019 17:17: 200 - POST /login
+May 02 2019 17:17: 200 - GET /login-fail
+May 02 2019 17:17: 200 - GET /trading-success
+May 02 2019 17:17: 200 - GET /
+May 02 2019 17:19: 200 - POST /login
+May 02 2019 17:19: 200 - GET /login-fail
+May 02 2019 17:19: 200 - GET /trading-success
+May 02 2019 17:19: 200 - GET /
+May 02 2019 17:19: 200 - POST /login
+May 02 2019 17:19: 200 - GET /login-fail
+May 02 2019 17:19: 200 - GET /trading-success
+May 02 2019 17:19: 200 - GET /
+May 02 2019 17:24: 200 - POST /login
+May 02 2019 17:24: 200 - GET /login-fail
+May 02 2019 17:24: 200 - GET /trading-success
+May 02 2019 17:24: 200 - GET /
+May 02 2019 17:24: 200 - POST /login
+May 02 2019 17:24: 200 - GET /login-fail
+May 02 2019 17:24: 200 - GET /trading-success
+May 02 2019 17:24: 200 - GET /
+May 02 2019 17:24: 200 - POST /login
+May 02 2019 17:24: 200 - GET /trading-success
+May 02 2019 17:24: 200 - GET /trading-success
+May 02 2019 17:24: 200 - POST /login
+May 02 2019 17:24: 200 - GET /login-fail
+May 02 2019 17:24: 200 - GET /trading-success
+May 02 2019 17:24: 200 - GET /
+May 02 2019 17:27: 200 - POST /register
+May 02 2019 17:27: 200 - POST /register
+May 02 2019 17:28: 200 - POST /register
+May 02 2019 17:29: 200 - POST /register
+May 02 2019 17:30: 200 - POST /register
+May 02 2019 17:31: 200 - POST /register
+May 02 2019 17:31: 200 - POST /register
+May 02 2019 17:34: 200 - POST /register
+May 02 2019 17:38: 200 - POST /register
+May 02 2019 17:40: 200 - POST /register
+May 02 2019 17:41: 200 - POST /register
+May 02 2019 17:41: 200 - POST /register
+May 02 2019 17:44: 200 - POST /register
+May 02 2019 17:45: 200 - POST /register
+May 02 2019 17:47: 200 - POST /register
+May 02 2019 17:47: 200 - POST /register
+May 02 2019 17:48: 200 - POST /login
+May 02 2019 17:48: 200 - GET /trading-success
+May 02 2019 17:48: 200 - GET /trading-success
+May 02 2019 17:48: 200 - POST /login
+May 02 2019 17:48: 200 - GET /login-fail
+May 02 2019 17:48: 200 - GET /trading-success
+May 02 2019 17:48: 200 - GET /
+May 02 2019 17:55: 200 - POST /login
+May 02 2019 17:55: 200 - GET /trading-success
+May 02 2019 17:55: 200 - GET /trading-success
+May 02 2019 17:55: 200 - POST /login
+May 02 2019 17:55: 200 - GET /trading-success
+May 02 2019 17:55: 200 - GET /trading-success
+May 02 2019 17:55: 200 - POST /login
+May 02 2019 17:55: 200 - GET /login-fail
+May 02 2019 17:55: 200 - GET /trading-success
+May 02 2019 17:55: 200 - GET /
+May 02 2019 18:04: 200 - POST /login
+May 02 2019 18:04: 200 - GET /trading-success
+May 02 2019 18:04: 200 - GET /trading-success
+May 02 2019 18:04: 200 - POST /register
+May 02 2019 18:04: 200 - POST /login
+May 02 2019 18:04: 200 - GET /trading-success
+May 02 2019 18:04: 200 - GET /trading-success
+May 02 2019 18:04: 200 - POST /login
+May 02 2019 18:04: 200 - GET /login-fail
+May 02 2019 18:04: 200 - GET /trading-success
+May 02 2019 18:04: 200 - GET /
+May 02 2019 18:06: 200 - POST /login
+May 02 2019 18:06: 200 - GET /trading-success
+May 02 2019 18:06: 200 - GET /trading-success
+May 02 2019 18:06: 200 - POST /register
+May 02 2019 18:06: 200 - POST /login
+May 02 2019 18:06: 200 - GET /trading-success
+May 02 2019 18:06: 200 - GET /trading-success
+May 02 2019 18:06: 200 - POST /login
+May 02 2019 18:06: 200 - GET /login-fail
+May 02 2019 18:06: 200 - GET /trading-success
+May 02 2019 18:06: 200 - GET /
+May 02 2019 18:07: 200 - POST /login
+May 02 2019 18:07: 200 - GET /trading-success
+May 02 2019 18:07: 200 - GET /trading-success
+May 02 2019 18:07: 200 - POST /register
+May 02 2019 18:07: 200 - POST /login
+May 02 2019 18:07: 200 - GET /trading-success
+May 02 2019 18:07: 200 - GET /trading-success
+May 02 2019 18:07: 200 - POST /login
+May 02 2019 18:07: 200 - GET /login-fail
+May 02 2019 18:07: 200 - GET /trading-success
+May 02 2019 18:07: 200 - GET /
+May 02 2019 18:08: 200 - POST /login
+May 02 2019 18:08: 200 - POST /register
+May 02 2019 18:08: 200 - POST /login
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - POST /login
+May 02 2019 18:08: 200 - GET /login-fail
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - GET /
+May 02 2019 18:08: 200 - POST /register
+May 02 2019 18:08: 200 - POST /login
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - POST /login
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - POST /login
+May 02 2019 18:08: 200 - GET /login-fail
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - GET /
+May 02 2019 18:08: 200 - POST /register
+May 02 2019 18:08: 200 - POST /login
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - POST /login
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - POST /login
+May 02 2019 18:08: 200 - GET /login-fail
+May 02 2019 18:08: 200 - GET /trading-success
+May 02 2019 18:08: 200 - GET /
+May 02 2019 18:09: 200 - POST /login
+May 02 2019 18:09: 200 - GET /trading-success
+May 02 2019 18:09: 200 - GET /trading-success
+May 02 2019 18:09: 200 - POST /register
+May 02 2019 18:09: 200 - POST /login
+May 02 2019 18:09: 200 - GET /trading-success
+May 02 2019 18:09: 200 - GET /trading-success
+May 02 2019 18:09: 200 - POST /login
+May 02 2019 18:09: 200 - GET /login-fail
+May 02 2019 18:09: 200 - GET /trading-success
+May 02 2019 18:09: 200 - GET /
+May 02 2019 18:10: 200 - POST /login
+May 02 2019 18:10: 200 - GET /trading-success
+May 02 2019 18:10: 200 - GET /trading-success
+May 02 2019 18:10: 200 - POST /register
+May 02 2019 18:10: 200 - POST /login
+May 02 2019 18:10: 200 - GET /trading-success
+May 02 2019 18:10: 200 - GET /trading-success
+May 02 2019 18:10: 200 - POST /login
+May 02 2019 18:10: 200 - GET /login-fail
+May 02 2019 18:10: 200 - GET /trading-success
+May 02 2019 18:10: 200 - GET /
+May 02 2019 18:11: 200 - POST /login
+May 02 2019 18:11: 200 - GET /trading-success
+May 02 2019 18:11: 200 - GET /trading-success
+May 02 2019 18:11: 200 - POST /login
+May 02 2019 18:11: 200 - GET /trading-success
+May 02 2019 18:11: 200 - GET /trading-success
+May 02 2019 18:11: 200 - POST /login
+May 02 2019 18:11: 200 - GET /login-fail
+May 02 2019 18:11: 200 - GET /trading-success
+May 02 2019 18:11: 200 - GET /
+May 02 2019 18:12: 200 - POST /login
+May 02 2019 18:12: 200 - GET /trading-success
+May 02 2019 18:12: 200 - GET /trading-success
+May 02 2019 18:12: 200 - POST /register
+May 02 2019 18:12: 200 - POST /login
+May 02 2019 18:12: 200 - GET /trading-success
+May 02 2019 18:12: 200 - GET /trading-success
+May 02 2019 18:12: 200 - POST /login
+May 02 2019 18:12: 200 - GET /login-fail
+May 02 2019 18:12: 200 - GET /trading-success
+May 02 2019 18:12: 200 - GET /
+May 02 2019 18:14: 200 - POST /login
+May 02 2019 18:14: 200 - GET /login-fail
+May 02 2019 18:14: 200 - GET /trading-success
+May 02 2019 18:14: 200 - GET /
+May 02 2019 18:14: 200 - POST /login
+May 02 2019 18:14: 200 - GET /trading-success
+May 02 2019 18:14: 200 - GET /trading-success
+May 02 2019 18:14: 200 - POST /login
+May 02 2019 18:14: 200 - GET /login-fail
+May 02 2019 18:14: 200 - GET /trading-success
+May 02 2019 18:14: 200 - GET /
+May 02 2019 18:14: 200 - POST /login
+May 02 2019 18:14: 200 - GET /login-fail
+May 02 2019 18:14: 200 - GET /trading-success
+May 02 2019 18:14: 200 - GET /
+May 02 2019 18:14: 200 - POST /login
+May 02 2019 18:14: 200 - GET /trading-success
+May 02 2019 18:14: 200 - GET /trading-success
+May 02 2019 18:14: 200 - POST /login
+May 02 2019 18:14: 200 - GET /login-fail
+May 02 2019 18:14: 200 - GET /trading-success
+May 02 2019 18:14: 200 - GET /
+May 02 2019 18:15: 200 - POST /login
+May 02 2019 18:15: 200 - GET /login-fail
+May 02 2019 18:15: 200 - GET /trading-success
+May 02 2019 18:15: 200 - GET /
+May 02 2019 18:15: 200 - POST /login
+May 02 2019 18:15: 200 - GET /trading-success
+May 02 2019 18:15: 200 - GET /trading-success
+May 02 2019 18:15: 200 - POST /login
+May 02 2019 18:15: 200 - GET /login-fail
+May 02 2019 18:15: 200 - GET /trading-success
+May 02 2019 18:15: 200 - GET /
+May 02 2019 18:16: 200 - POST /login
+May 02 2019 18:16: 200 - GET /login-fail
+May 02 2019 18:16: 200 - GET /trading-success
+May 02 2019 18:16: 200 - GET /
+May 02 2019 18:16: 200 - POST /login
+May 02 2019 18:16: 200 - GET /trading-success
+May 02 2019 18:16: 200 - GET /trading-success
+May 02 2019 18:16: 200 - POST /login
+May 02 2019 18:16: 200 - GET /login-fail
+May 02 2019 18:16: 200 - GET /trading-success
+May 02 2019 18:16: 200 - GET /
+May 02 2019 18:33: 200 - POST /login
+May 02 2019 18:33: 200 - GET /login-fail
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - GET /
+May 02 2019 18:33: 200 - POST /login
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - POST /login
+May 02 2019 18:33: 200 - GET /login-fail
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - GET /
+May 02 2019 18:33: 200 - POST /register
+May 02 2019 18:33: 200 - GET /register
+May 02 2019 18:33: 200 - GET /trading
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - GET /admin
+May 02 2019 18:33: 200 - GET /admin-restricted
+May 02 2019 18:33: 200 - GET /admin-success
+May 02 2019 18:33: 200 - POST /
+May 02 2019 18:33: 200 - POST /login
+May 02 2019 18:33: 200 - POST /login-fail
+May 02 2019 18:33: 200 - POST /trading-success-buy
+May 02 2019 18:33: 200 - POST /trading-success-search
+May 02 2019 18:33: 200 - POST /trading-success-buy
+May 02 2019 18:33: 200 - POST /trading-success-sell
+May 02 2019 18:33: 200 - POST /trading-success-holdings
+May 02 2019 18:33: 200 - POST /register
+May 02 2019 18:33: 200 - POST /login
+May 02 2019 18:33: 200 - GET /login-fail
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - GET /
+May 02 2019 18:33: 200 - POST /login
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - POST /login
+May 02 2019 18:33: 200 - GET /login-fail
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - GET /
+May 02 2019 18:33: 200 - GET /register
+May 02 2019 18:33: 200 - GET /trading
+May 02 2019 18:33: 200 - GET /trading-success
+May 02 2019 18:33: 200 - GET /admin
+May 02 2019 18:33: 200 - GET /admin-restricted
+May 02 2019 18:33: 200 - GET /admin-success
+May 02 2019 18:33: 200 - POST /
+May 02 2019 18:33: 200 - POST /login
+May 02 2019 18:33: 200 - POST /login-fail
+May 02 2019 18:33: 200 - POST /trading-success-buy
+May 02 2019 18:33: 200 - POST /trading-success-search
+May 02 2019 18:33: 200 - POST /trading-success-buy
+May 02 2019 18:33: 200 - POST /trading-success-sell
+May 02 2019 18:33: 200 - POST /trading-success-holdings
+May 02 2019 18:33: 200 - POST /register
+May 02 2019 18:34: 200 - POST /login
+May 02 2019 18:34: 200 - GET /login-fail
+May 02 2019 18:34: 200 - GET /trading-success
+May 02 2019 18:34: 200 - GET /
+May 02 2019 18:34: 200 - POST /login
+May 02 2019 18:34: 200 - GET /trading-success
+May 02 2019 18:34: 200 - GET /trading-success
+May 02 2019 18:34: 200 - POST /login
+May 02 2019 18:34: 200 - GET /login-fail
+May 02 2019 18:34: 200 - GET /trading-success
+May 02 2019 18:34: 200 - GET /
+May 02 2019 18:34: 200 - POST /register
+May 02 2019 18:34: 200 - GET /register
+May 02 2019 18:34: 200 - GET /trading
+May 02 2019 18:34: 200 - GET /trading-success
+May 02 2019 18:34: 200 - GET /admin
+May 02 2019 18:34: 200 - GET /admin-restricted
+May 02 2019 18:34: 200 - GET /admin-success
+May 02 2019 18:34: 200 - POST /
+May 02 2019 18:34: 200 - POST /login
+May 02 2019 18:34: 200 - POST /login-fail
+May 02 2019 18:34: 200 - POST /trading-success-buy
+May 02 2019 18:34: 200 - POST /trading-success-search
+May 02 2019 18:34: 200 - POST /trading-success-buy
+May 02 2019 18:34: 200 - POST /trading-success-sell
+May 02 2019 18:34: 200 - POST /trading-success-holdings
+May 02 2019 18:34: 200 - POST /register
+May 02 2019 18:34: 200 - POST /login
+May 02 2019 18:35: 200 - GET /login-fail
+May 02 2019 18:35: 200 - GET /trading-success
+May 02 2019 18:35: 200 - GET /
+May 02 2019 18:35: 200 - POST /login
+May 02 2019 18:35: 200 - GET /trading-success
+May 02 2019 18:35: 200 - GET /trading-success
+May 02 2019 18:35: 200 - POST /login
+May 02 2019 18:35: 200 - GET /login-fail
+May 02 2019 18:35: 200 - GET /trading-success
+May 02 2019 18:35: 200 - GET /
+May 02 2019 18:35: 200 - POST /register
+May 02 2019 18:35: 200 - GET /register
+May 02 2019 18:35: 200 - GET /trading
+May 02 2019 18:35: 200 - GET /trading-success
+May 02 2019 18:35: 200 - GET /admin
+May 02 2019 18:35: 200 - GET /admin-restricted
+May 02 2019 18:35: 200 - GET /admin-success
+May 02 2019 18:35: 200 - POST /
+May 02 2019 18:35: 200 - POST /login
+May 02 2019 18:35: 200 - POST /login-fail
+May 02 2019 18:35: 200 - POST /trading-success-buy
+May 02 2019 18:35: 200 - POST /trading-success-search
+May 02 2019 18:35: 200 - POST /trading-success-buy
+May 02 2019 18:35: 200 - POST /trading-success-sell
+May 02 2019 18:35: 200 - POST /trading-success-holdings
+May 02 2019 18:36: 200 - POST /login
+May 02 2019 18:36: 200 - GET /login-fail
+May 02 2019 18:36: 200 - GET /trading-success
+May 02 2019 18:36: 200 - GET /
+May 02 2019 18:36: 200 - POST /login
+May 02 2019 18:36: 200 - GET /trading-success
+May 02 2019 18:36: 200 - GET /trading-success
+May 02 2019 18:36: 200 - POST /login
+May 02 2019 18:36: 200 - GET /login-fail
+May 02 2019 18:36: 200 - GET /trading-success
+May 02 2019 18:36: 200 - GET /
+May 02 2019 18:36: 200 - GET /register
+May 02 2019 18:36: 200 - POST /register
+May 02 2019 18:36: 200 - GET /register
+May 02 2019 18:36: 200 - GET /trading
+May 02 2019 18:36: 200 - GET /trading-success
+May 02 2019 18:36: 200 - GET /admin
+May 02 2019 18:36: 200 - GET /admin-restricted
+May 02 2019 18:36: 200 - GET /admin-success
+May 02 2019 18:36: 200 - POST /
+May 02 2019 18:36: 200 - POST /login
+May 02 2019 18:36: 200 - POST /login-fail
+May 02 2019 18:36: 200 - POST /trading-success-buy
+May 02 2019 18:36: 200 - POST /trading-success-search
+May 02 2019 18:36: 200 - POST /trading-success-buy
+May 02 2019 18:36: 200 - POST /trading-success-sell
+May 02 2019 18:36: 200 - POST /trading-success-holdings
+May 02 2019 18:37: 200 - POST /login
+May 02 2019 18:37: 200 - GET /login-fail
+May 02 2019 18:37: 200 - GET /trading-success
+May 02 2019 18:37: 200 - GET /
+May 02 2019 18:37: 200 - POST /login
+May 02 2019 18:37: 200 - GET /trading-success
+May 02 2019 18:37: 200 - GET /trading-success
+May 02 2019 18:37: 200 - POST /login
+May 02 2019 18:37: 200 - GET /login-fail
+May 02 2019 18:37: 200 - GET /trading-success
+May 02 2019 18:37: 200 - GET /
+May 02 2019 18:37: 200 - POST /register
+May 02 2019 18:37: 200 - GET /register
+May 02 2019 18:37: 200 - GET /trading
+May 02 2019 18:37: 200 - GET /trading-success
+May 02 2019 18:37: 200 - GET /admin
+May 02 2019 18:37: 200 - GET /admin-restricted
+May 02 2019 18:37: 200 - GET /admin-success
+May 02 2019 18:37: 200 - POST /
+May 02 2019 18:37: 200 - POST /login
+May 02 2019 18:37: 200 - POST /login-fail
+May 02 2019 18:37: 200 - POST /trading-success-buy
+May 02 2019 18:37: 200 - POST /trading-success-search
+May 02 2019 18:37: 200 - POST /trading-success-buy
+May 02 2019 18:37: 200 - POST /trading-success-sell
+May 02 2019 18:37: 200 - POST /trading-success-holdings
+May 02 2019 18:37: 200 - POST /login
+May 02 2019 18:38: 200 - GET /login-fail
+May 02 2019 18:38: 200 - GET /trading-success
+May 02 2019 18:38: 200 - GET /
+May 02 2019 18:38: 200 - POST /login
+May 02 2019 18:38: 200 - GET /trading-success
+May 02 2019 18:38: 200 - GET /trading-success
+May 02 2019 18:38: 200 - POST /login
+May 02 2019 18:38: 200 - GET /login-fail
+May 02 2019 18:38: 200 - GET /trading-success
+May 02 2019 18:38: 200 - GET /
+May 02 2019 18:38: 200 - POST /register
+May 02 2019 18:38: 200 - GET /register
+May 02 2019 18:38: 200 - GET /trading
+May 02 2019 18:38: 200 - GET /trading-success
+May 02 2019 18:38: 200 - GET /admin
+May 02 2019 18:38: 200 - GET /admin-restricted
+May 02 2019 18:38: 200 - GET /admin-success
+May 02 2019 18:39: 200 - POST /login
+May 02 2019 18:39: 200 - POST /login
+May 02 2019 18:39: 200 - GET /trading-success
+May 02 2019 18:39: 200 - GET /trading-success
+May 02 2019 18:39: 200 - POST /login
+May 02 2019 18:39: 200 - GET /login-fail
+May 02 2019 18:39: 200 - GET /trading-success
+May 02 2019 18:39: 200 - GET /
+May 02 2019 18:39: 200 - POST /register
+May 02 2019 18:39: 200 - GET /register
+May 02 2019 18:39: 200 - GET /trading
+May 02 2019 18:39: 200 - GET /trading-success
+May 02 2019 18:39: 200 - GET /admin
+May 02 2019 18:39: 200 - GET /admin-restricted
+May 02 2019 18:39: 200 - GET /admin-success
+May 02 2019 18:40: 200 - POST /login
+May 02 2019 18:40: 200 - GET /login-fail
+May 02 2019 18:40: 200 - GET /trading-success
+May 02 2019 18:40: 200 - GET /
+May 02 2019 18:40: 200 - POST /login
+May 02 2019 18:40: 200 - GET /trading-success
+May 02 2019 18:40: 200 - GET /trading-success
+May 02 2019 18:40: 200 - POST /login
+May 02 2019 18:40: 200 - GET /login-fail
+May 02 2019 18:40: 200 - GET /trading-success
+May 02 2019 18:40: 200 - GET /
+May 02 2019 18:40: 200 - POST /register
+May 02 2019 18:40: 200 - GET /register
+May 02 2019 18:40: 200 - GET /trading
+May 02 2019 18:40: 200 - GET /trading-success
+May 02 2019 18:40: 200 - GET /admin
+May 02 2019 18:40: 200 - GET /admin-restricted
+May 02 2019 18:40: 200 - GET /admin-success
+May 02 2019 19:17: 200 - POST /login
+May 02 2019 19:17: 200 - GET /login-fail
+May 02 2019 19:17: 200 - GET /trading-success
+May 02 2019 19:17: 200 - GET /
+May 02 2019 19:17: 200 - POST /login
+May 02 2019 19:17: 200 - GET /trading-success
+May 02 2019 19:17: 200 - GET /trading-success
+May 02 2019 19:17: 200 - POST /login
+May 02 2019 19:17: 200 - GET /login-fail
+May 02 2019 19:17: 200 - GET /trading-success
+May 02 2019 19:17: 200 - GET /
+May 02 2019 19:17: 200 - POST /register
+May 02 2019 19:17: 200 - POST /register
+May 02 2019 19:17: 200 - GET /register
+May 02 2019 19:17: 200 - GET /trading
+May 02 2019 19:17: 200 - GET /trading-success
+May 02 2019 19:17: 200 - GET /admin
+May 02 2019 19:17: 200 - GET /admin-restricted
+May 02 2019 19:17: 200 - GET /admin-success
+May 02 2019 19:18: 200 - POST /login
+May 02 2019 19:18: 200 - POST /login
+May 02 2019 19:18: 200 - GET /trading-success
+May 02 2019 19:18: 200 - GET /trading-success
+May 02 2019 19:18: 200 - POST /login
+May 02 2019 19:18: 200 - GET /login-fail
+May 02 2019 19:18: 200 - GET /trading-success
+May 02 2019 19:18: 200 - GET /
+May 02 2019 19:18: 200 - POST /register
+May 02 2019 19:18: 200 - POST /register
+May 02 2019 19:18: 200 - GET /register
+May 02 2019 19:18: 200 - GET /trading
+May 02 2019 19:18: 200 - GET /trading-success
+May 02 2019 19:18: 200 - GET /admin
+May 02 2019 19:18: 200 - GET /admin-restricted
+May 02 2019 19:18: 200 - GET /admin-success
+May 02 2019 19:19: 200 - POST /login
+May 02 2019 19:19: 200 - GET /login-fail
+May 02 2019 19:19: 200 - GET /trading-success
+May 02 2019 19:19: 200 - GET /
+May 02 2019 19:19: 200 - POST /login
+May 02 2019 19:19: 200 - GET /trading-success
+May 02 2019 19:19: 200 - GET /trading-success
+May 02 2019 19:19: 200 - POST /login
+May 02 2019 19:19: 200 - GET /login-fail
+May 02 2019 19:19: 200 - GET /trading-success
+May 02 2019 19:19: 200 - GET /
+May 02 2019 19:19: 200 - GET /register
+May 02 2019 19:19: 200 - POST /register
+May 02 2019 19:19: 200 - GET /register
+May 02 2019 19:19: 200 - GET /trading
+May 02 2019 19:19: 200 - GET /trading-success
+May 02 2019 19:19: 200 - GET /admin
+May 02 2019 19:19: 200 - GET /admin-restricted
+May 02 2019 19:19: 200 - GET /admin-success
+May 02 2019 19:20: 200 - POST /login
+May 02 2019 19:20: 200 - GET /login-fail
+May 02 2019 19:20: 200 - GET /trading-success
+May 02 2019 19:20: 200 - GET /
+May 02 2019 19:20: 200 - POST /login
+May 02 2019 19:20: 200 - GET /trading-success
+May 02 2019 19:20: 200 - GET /trading-success
+May 02 2019 19:20: 200 - POST /login
+May 02 2019 19:20: 200 - GET /login-fail
+May 02 2019 19:20: 200 - GET /trading-success
+May 02 2019 19:20: 200 - GET /
+May 02 2019 19:20: 200 - GET /register
+May 02 2019 19:20: 200 - POST /register
+May 02 2019 19:20: 200 - GET /register
+May 02 2019 19:20: 200 - GET /trading
+May 02 2019 19:20: 200 - GET /trading-success
+May 02 2019 19:20: 200 - GET /admin
+May 02 2019 19:20: 200 - GET /admin-restricted
+May 02 2019 19:20: 200 - GET /admin-success
+May 02 2019 21:45: 200 - POST /login
+May 02 2019 21:45: 200 - GET /login-fail
+May 02 2019 21:45: 200 - GET /trading-success
+May 02 2019 21:45: 200 - GET /
+May 02 2019 21:45: 200 - POST /login
+May 02 2019 21:45: 200 - GET /trading-success
+May 02 2019 21:45: 200 - GET /trading-success
+May 02 2019 21:45: 200 - POST /login
+May 02 2019 21:45: 200 - GET /trading-success
+May 02 2019 21:45: 200 - GET /trading-success
+May 02 2019 21:45: 200 - POST /login
+May 02 2019 21:45: 200 - GET /login-fail
+May 02 2019 21:45: 200 - GET /trading-success
+May 02 2019 21:45: 200 - GET /
+May 02 2019 21:45: 200 - GET /register
+May 02 2019 21:49: 200 - POST /login
+May 02 2019 21:49: 200 - GET /login-fail
+May 02 2019 21:49: 200 - GET /trading-success
+May 02 2019 21:49: 200 - GET /
+May 02 2019 21:49: 200 - POST /login
+May 02 2019 21:49: 200 - GET /trading-success
+May 02 2019 21:49: 200 - GET /trading-success
+May 02 2019 21:49: 200 - POST /login
+May 02 2019 21:49: 200 - GET /trading-success
+May 02 2019 21:49: 200 - GET /trading-success
+May 02 2019 21:49: 200 - POST /login
+May 02 2019 21:49: 200 - GET /login-fail
+May 02 2019 21:49: 200 - GET /trading-success
+May 02 2019 21:49: 200 - GET /
+May 02 2019 21:49: 200 - GET /register
+May 02 2019 21:52: 200 - POST /login
+May 02 2019 21:52: 200 - GET /login-fail
+May 02 2019 21:52: 200 - GET /trading-success
+May 02 2019 21:52: 200 - GET /
+May 02 2019 21:52: 200 - POST /login
+May 02 2019 21:52: 200 - GET /trading-success
+May 02 2019 21:52: 200 - GET /trading-success
+May 02 2019 21:52: 200 - POST /login
+May 02 2019 21:52: 200 - GET /login-fail
+May 02 2019 21:52: 200 - GET /trading-success
+May 02 2019 21:52: 200 - GET /
+May 02 2019 21:52: 200 - GET /register
+May 02 2019 21:52: 200 - POST /login
+May 02 2019 21:52: 200 - GET /login-fail
+May 02 2019 21:52: 200 - GET /trading-success
+May 02 2019 21:52: 200 - GET /
+May 02 2019 21:52: 200 - POST /login
+May 02 2019 21:52: 200 - GET /trading-success
+May 02 2019 21:52: 200 - GET /trading-success
+May 02 2019 21:52: 200 - POST /login
+May 02 2019 21:52: 200 - GET /login-fail
+May 02 2019 21:52: 200 - GET /trading-success
+May 02 2019 21:52: 200 - GET /
+May 02 2019 21:52: 200 - GET /register
+May 02 2019 21:52: 200 - POST /register
+May 02 2019 21:52: 200 - GET /register
+May 02 2019 21:52: 200 - GET /trading
+May 02 2019 21:52: 200 - GET /trading-success
+May 02 2019 21:52: 200 - GET /admin
+May 02 2019 21:52: 200 - GET /admin-restricted
+May 02 2019 21:52: 200 - GET /admin-success
