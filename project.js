@@ -17,7 +17,7 @@ var assert = require('assert');
 const bcrypt = require('bcrypt');
 
 hbs.registerPartials(__dirname + '/views/partials');
-module.exports = app;
+
 var port = process.env.PORT || 8080;
 
 mongoose.Promise = global.Promise;
@@ -59,8 +59,8 @@ passport.deserializeUser(function(user, done) {
 
 app.use((request, response, next) => {
 	var time = new Date().toString();
-	var log_entry = `${time}: ${request.method} ${request.url}`;
-	console.log(log_entry);
+	var log_entry = `${time.slice(4, 21)}: ${response.statusCode} - ${request.method} ${request.url}`;
+	// console.log(log_entry);
 	fs.appendFile('server.log', log_entry + '\n', (error) => {
 		if (error) {
 			console.log('Unable to log message');
@@ -124,7 +124,7 @@ app.get('/logout', function (request, response){
 app.post('/', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
-  	console.log(request.body.username);
+  	// console.log(request.body.username);
     response.redirect('/trading-success');
   });
 
@@ -139,7 +139,7 @@ app.post('/login',
 app.post('/login-fail', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
-  	console.log(request.body.username);
+  	// console.log(request.body.username);
     response.redirect('/trading-success');
   });
 
@@ -177,7 +177,6 @@ passport.use(new LocalStrategy(
 
 	      	}
 	      	else { 
-	      		console.log('err2 ' + username);
 	      		var num_attempts;
 	      		db.collection('user_accounts').findOne({username: username}, function(err, result) {
 
@@ -190,7 +189,7 @@ passport.use(new LocalStrategy(
 						{ $set: { "attempts": num_attempts}}
 						);
 
-	      				if (num_attempts >= 3) {
+	      				if (num_attempts >= 5) {
 	      					db.collection('user_accounts').updateOne(
 							{ "username": username},
 							{ $set: { "account_status": 'locked'}}
@@ -226,6 +225,7 @@ app.get('/registration-logged-in', isAuthenticated, (request, response) => {
 
 app.post('/register', function(request, response) {
 
+	response.status(200);
 	var firstname = request.body.firstname;
 	var lastname = request.body.lastname;
 	var username = request.body.username;
@@ -285,6 +285,7 @@ app.post('/register', function(request, response) {
 							response.render('registration.hbs', {title: `There was an error in creating your account. Please try again.`});
 						}
 						message = `You have successfully created an account with the username '${username}' and have been granted $10,000 USD. Head over to the login page.`;
+						// response.status(200);
 						response.render('registration.hbs', {title: message});
 					});
 				});
@@ -759,7 +760,7 @@ app.get('*', errorPage, (request, response) => {
 
 function errorPage(request, response, next) {
 	if (request.session.passport !== undefined) {
-		console.log(request.session.passport);
+		// console.log(request.session.passport);
 		next();
 	} else {
 		response.render('404x.hbs', {
@@ -770,7 +771,7 @@ function errorPage(request, response, next) {
 
 function isAuthenticated(request, response, next) {
 	if (request.session.passport !== undefined) {
-		console.log(request.session.passport);
+		// console.log(request.session.passport);
 		next();
 	} else {
 		response.redirect('/');
@@ -779,7 +780,7 @@ function isAuthenticated(request, response, next) {
 
 function isAdmin(request, response, next) {
 	if ((request.session.passport !== undefined) && (request.session.passport.user.type === 'admin')) {
-		console.log(request.session.passport);
+		// console.log(request.session.passport);
 		next();
 	} else {
 		response.redirect('/admin-restricted');
@@ -788,6 +789,8 @@ function isAdmin(request, response, next) {
 
 // listen to port 
 app.listen(port, () => {
-	console.log('Server is up on port ' + port);
+	// console.log('Server is up on port ' + port);
 	utils.init();
 });
+
+module.exports = app;
