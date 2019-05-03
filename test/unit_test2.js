@@ -76,7 +76,52 @@ describe('POST /login - 200', function () {
     });
 });
 
-describe('GET /register', function () {
+describe('POST /register - 200', function () {
+    it("Should give error that user already exists", function (done) {
+        agent
+        .post('/register')
+        .send({
+            '_method': 'post',
+            'firstname': 'john',
+            'lastname': 'albert',
+            'username': 'jalbert',
+            'password': 'ilovecats5',
+            'confirm_password': 'ilovecats5'
+        })
+        .then((res) => {
+
+          expect(res).to.have.status(200);
+          var $ = cheerio.load(res.text);
+          var title = $('form > p').text();
+          assert.equal(title, "The username 'jalbert' already exists within the system.");
+            done();
+        });
+    });
+});
+
+describe('POST /register - 200', function () {
+    it("Should give message that account was created successfully", function (done) {
+        agent
+        .post('/register')
+        .send({
+            '_method': 'post',
+            'firstname': 'john',
+            'lastname': 'alberts',
+            'username': 'albertsjohn3',
+            'password': 'ilovedogs9',
+            'confirm_password': 'ilovedogs9'
+        })
+        .then((res) => {
+          expect(res).to.have.status(200);
+          var $ = cheerio.load(res.text);
+          var title = $('form > p').text();
+          assert.equal(title, "You have successfully created an account with the username 'albertsjohn3' and have been granted $10,000 USD. Head over to the login page.");
+            done();
+        });
+    });
+});
+
+describe('GET /register - 200', function () {
   it("should return webpage with title of 'Registration Page' ", function (done) {
       request(app)
           .get('/register')
@@ -92,7 +137,7 @@ describe('GET /register', function () {
   });
 });
 
-describe('GET /trading', function () {
+describe('GET /trading - 200', function () {
   it("should return webpage with title of 'Trading' ", function (done) {
       request(app)
           .get('/trading')
@@ -104,61 +149,6 @@ describe('GET /trading', function () {
             var title = $('title').text();
             assert.equal(title, "Trading")
             done()
-          })
-  });
-});
-
-// describe('GET /register', function () {
-//     it("Invalid firstname", function (done) {
-//     request(app)
-//         .post('/register')
-//         .send({
-//           '_method': 'post',
-//           'firstname': '',
-//           'lastname': 'validLastname',
-//           'username': 'validUsername',
-//           'password': 'validPassword',
-//           'confirm_password': 'validPassword'
-//         })
-//         .then((res) => {
-//           // console.log(res.text);
-//           expect(res).to.have.status(200);
-//           var $ = cheerio.load(res.text);
-//           var title = $('form < p1').text();
-//           assert.equal(title, "First name must be 3-30 characters long and must only contain letters.")
-//           done()
-//         })
-//   });
-// });
-
-describe('POST /register', function () {
-    it("Successfully registration", function (done) {
-        agent
-        .post('/register')
-        .send({
-            '_method': 'post',
-            'firstname': 'billy',
-            'lastname': 'bobby',
-            'username': 'testuser',
-            'password': 'bobbob11',
-            'confirm_password': 'bobbob11'
-        })
-        .then(function (res) {
-          expect(res).to.have.status(200);
-          done();
-        });
-    });
-});
-
-describe('GET /register', function () {
-  it("should return the registration page", function (done) {
-      request(app)
-          .get('/register')
-          .set('Accept', 'application/json')
-          .expect('Content-Type', "text/html; charset=utf-8")
-          .expect(200)
-          .end(function(err, res) {
-            done();
           })
   });
 });
@@ -206,19 +196,6 @@ describe('GET /admin-restricted', function () {
   it("should return the restricted administrator page", function (done) {
       request(app)
           .get('/admin-restricted')
-          .set('Accept', 'application/json')
-          .expect('Content-Type', "text/html; charset=utf-8")
-          .expect(200)
-          .end(function(err, res) {
-            done();
-          })
-  });
-});
-
-describe('GET /admin-success', function () {
-  it("should return the admin page", function (done) {
-      request(app)
-          .get('/admin-success')
           .set('Accept', 'application/json')
           .expect('Content-Type', "text/html; charset=utf-8")
           .expect(200)
