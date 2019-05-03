@@ -92,6 +92,22 @@ describe('GET /register', function () {
   });
 });
 
+describe('GET /trading', function () {
+  it("should return webpage with title of 'Trading' ", function (done) {
+      request(app)
+          .get('/trading')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', "text/html; charset=utf-8")
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            var $ = cheerio.load(res.text);
+            var title = $('title').text();
+            assert.equal(title, "Trading")
+            done()
+          })
+  });
+});
+
 // describe('GET /register', function () {
 //     it("Invalid firstname", function (done) {
 //     request(app)
