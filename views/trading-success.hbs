@@ -50,6 +50,13 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
         <div class="defcontent">
             <br>
             <div class='chfont container'>
+                 {{#each news}}
+                <p>{{this}}</p>
+                {{/each}}
+
+                {{#each urls}}
+                <p>{{this}}</p>
+                {{/each}}
                 
                 <p class="font-italic">Please note all prices are in USD.</p>
                 <p class="font-weight-bold">{{title}}</p>
@@ -156,6 +163,8 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                     </script>
                     {{/if}}
                     <br>
+
+               
 
                   <div class="form-group btn-group">
                 <form action="/trading-success-search" method="POST">

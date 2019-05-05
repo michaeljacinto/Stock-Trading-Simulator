@@ -20,6 +20,9 @@ hbs.registerPartials(__dirname + '/views/partials');
 
 var port = process.env.PORT || 8080;
 
+// global variable for login message
+var login_message = '';
+
 mongoose.Promise = global.Promise;
 
 // password login
@@ -89,11 +92,45 @@ var account_schema = new mongoose.Schema({
 const user_account = mongoose.model("user_accounts", account_schema);
 
 app.get('/', (request, response) => {
+
+	// var news_feed = [];
+	// var news_url = [];
+
+	// const get_news = async () => {
+
+	// 	// var num_items = 8;
+
+	// 	try {
+	// 		const news = await axios.get(`https://newsapi.org/v2/everything?domains=cnbc.com&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+	// 		news_items = news.data.articles;
+	// 		var num_items = news_items.length;
+
+	// 		console.log(news_items[0].title);
+	// 		console.log(news_items[0].url);
+
+	// 		for (var i = 0; i <= 5; i++) {
+	// 			news_feed.push(news_items[i].title);
+	// 			news_url.push(news_items[i].url);
+
+	// 		}
+
+	// 		console.log(news_url[4]);
+	// 	}
+	// 	catch(err) {
+	// 		console.log(err);
+	// 	}
+
+	response.render('login.hbs', {
+		title: 'Welcome to the login page.'
+		// news: news_feed,
+		// urls: news_url
+	})
+	// }
+
 	request.session.destroy(function(err) {
-		response.render('login.hbs', {
-			title: 'Welcome to the login page.'
-		})
 	});
+
+	// get_news();
 });
 
 app.get('/login', (request, response) => {
@@ -104,11 +141,81 @@ app.get('/login', (request, response) => {
 	});
 });
 
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    user_account.findOne({ username: username }, function (err, user) {
+
+      if (err) { 
+      	return done(err); 
+      }
+
+      if (!user) { 
+      	login_message = 'Invalid login credentials. After 5 unsuccessful login attempts your account will be locked.';
+      	return done(null, false); 
+      }
+
+      // comparing hashed password to user password
+      var db = utils.getDb();
+
+      db.collection('user_accounts').findOne({username: username}, function(err, result) {
+
+      	// checks it account is locked
+      	if (result.account_status !== 'locked') {
+
+	      bcrypt.compare(password, user.password, function(err, res) {
+	      	if(res) { 
+
+	      		db.collection('user_accounts').updateOne(
+					{ "username": username},
+					{ $set: { "attempts": 0}}
+					);
+
+	      		return done(null, user);
+
+	      	}
+	      	else { 
+
+	      		var num_attempts;
+	      		db.collection('user_accounts').findOne({username: username}, function(err, result) {
+
+      			if (result !== null) {
+
+      				num_attempts = result.attempts + 1;
+      				
+      				db.collection('user_accounts').updateOne(
+					{ "username": username},
+					{ $set: { "attempts": num_attempts}}
+					);
+
+      				if (num_attempts >= 5) {
+      					db.collection('user_accounts').updateOne(
+						{ "username": username},
+						{ $set: { "account_status": 'locked'}}
+						);
+      				}
+      			}
+
+	      		})
+	      		login_message = 'Invalid login credentials. After 5 unsuccessful login attempts your account will be locked.';
+	      		return done(null, false); 
+	      	}
+
+	      });
+	  	}
+
+	  	else {
+	  		login_message = 'Your account is locked. Please contact the admin at admin@bcit.ca';
+	  		return done(null, false); 
+	  	}
+    });
+  });
+  }
+));
 // if login credentials are invalid displays error message
 app.get('/login-fail', (request, response) => {
 	request.session.destroy(function(err) {
 		response.render('login.hbs', {
-			title: 'Invalid login credentials. After 3 unsuccessful login attempts your account will be locked. To unlock your account, contact the admin at admin@bcit.ca'
+			title: login_message
 		})
 	});
 });
@@ -139,77 +246,12 @@ app.post('/login',
 app.post('/login-fail', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
-  	// console.log(request.body.username);
     response.redirect('/trading-success');
   });
 
 
 // allows for success of logging in via correct username and password
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    user_account.findOne({ username: username }, function (err, user) {
 
-      if (err) { 
-      	return done(err); 
-      }
-
-      if (!user) { 
-      	return done(null, false); 
-      }
-
-      // comparing hashed password to user password
-      var db = utils.getDb();
-
-      db.collection('user_accounts').findOne({username: username}, function(err, result) {
-
-      	// checks it account is locked
-      	if (result.account_status !== 'locked') {
-
-	      bcrypt.compare(password, user.password, function(err, res) {
-	      	if(res) { 
-
-	      		db.collection('user_accounts').updateOne(
-					{ "username": username},
-					{ $set: { "attempts": 0}}
-					);
-
-	      		return done(null, user);
-
-	      	}
-	      	else { 
-	      		var num_attempts;
-	      		db.collection('user_accounts').findOne({username: username}, function(err, result) {
-
-	      			if (result !== null) {
-
-	      				num_attempts = result.attempts + 1;
-	      				
-	      				db.collection('user_accounts').updateOne(
-						{ "username": username},
-						{ $set: { "attempts": num_attempts}}
-						);
-
-	      				if (num_attempts >= 5) {
-	      					db.collection('user_accounts').updateOne(
-							{ "username": username},
-							{ $set: { "account_status": 'locked'}}
-							);
-	      				}
-	      			}
-
-	      		})
-	      		return done(null, false); 
-	      	}
-
-	      });
-	  	}
-	  	else {
-	  		return done(null, false); 
-	  	}
-    });
-  });
-  }
-));
 
 app.get('/register', (request, response) => {
 	response.render('registration.hbs', {
@@ -351,9 +393,35 @@ app.get('/trading', (request, response) => {
 });
 
 app.get('/trading-success', isAuthenticated, (request, response) => {
-	response.render('trading-success.hbs', {
-		title: 'Welcome to the trading page.'
-	})
+
+	var news_feed = [];
+	var news_url = [];
+
+	const get_news = async () => {
+
+		try {
+			const news = await axios.get(`https://newsapi.org/v2/everything?domains=cnbc.com&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			news_items = news.data.articles;
+
+			for (var i = 0; i <= 5; i++) {
+				news_feed.push(news_items[i].title);
+				news_url.push(news_items[i].url);
+
+			}
+		}
+		catch(err) {
+			// console.log(err);
+		}
+
+		response.render('trading-success.hbs', {
+			title: 'Welcome to the trading page.',
+			news: news_feed,
+			urls: news_url
+		});
+
+	}
+
+	get_news();
 });
 
 app.post('/trading-success-search', isAuthenticated, (request, response) => {
@@ -760,7 +828,6 @@ app.get('*', errorPage, (request, response) => {
 
 function errorPage(request, response, next) {
 	if (request.session.passport !== undefined) {
-		// console.log(request.session.passport);
 		next();
 	} else {
 		response.render('404x.hbs', {
@@ -771,7 +838,6 @@ function errorPage(request, response, next) {
 
 function isAuthenticated(request, response, next) {
 	if (request.session.passport !== undefined) {
-		// console.log(request.session.passport);
 		next();
 	} else {
 		response.redirect('/');
@@ -780,14 +846,13 @@ function isAuthenticated(request, response, next) {
 
 function isAdmin(request, response, next) {
 	if ((request.session.passport !== undefined) && (request.session.passport.user.type === 'admin')) {
-		// console.log(request.session.passport);
 		next();
 	} else {
 		response.redirect('/admin-restricted');
 	}
 }
 
-// listen to port 
+// listen to a port 
 app.listen(port, () => {
 	// console.log('Server is up on port ' + port);
 	utils.init();
