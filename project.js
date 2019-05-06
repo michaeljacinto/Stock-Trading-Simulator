@@ -93,44 +93,12 @@ const user_account = mongoose.model("user_accounts", account_schema);
 
 app.get('/', (request, response) => {
 
-	// var news_feed = [];
-	// var news_url = [];
-
-	// const get_news = async () => {
-
-	// 	// var num_items = 8;
-
-	// 	try {
-	// 		const news = await axios.get(`https://newsapi.org/v2/everything?domains=cnbc.com&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
-	// 		news_items = news.data.articles;
-	// 		var num_items = news_items.length;
-
-	// 		console.log(news_items[0].title);
-	// 		console.log(news_items[0].url);
-
-	// 		for (var i = 0; i <= 5; i++) {
-	// 			news_feed.push(news_items[i].title);
-	// 			news_url.push(news_items[i].url);
-
-	// 		}
-
-	// 		console.log(news_url[4]);
-	// 	}
-	// 	catch(err) {
-	// 		console.log(err);
-	// 	}
-
 	response.render('login.hbs', {
 		title: 'Welcome to the login page.'
-		// news: news_feed,
-		// urls: news_url
 	})
-	// }
 
 	request.session.destroy(function(err) {
 	});
-
-	// get_news();
 });
 
 app.get('/login', (request, response) => {
@@ -232,26 +200,77 @@ app.post('/',
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
   	// console.log(request.body.username);
-    response.redirect('/trading-success');
+    response.redirect('/home');
   });
 
 // log in, redirects if invalid credentials
 app.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
-    response.redirect('/trading-success');
+    response.redirect('/home');
   });
 
 // log in, redirects if invalid credentials
 app.post('/login-fail', 
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
-    response.redirect('/trading-success');
+    response.redirect('/home');
   });
 
 
 // allows for success of logging in via correct username and password
 
+app.get('/home', isAuthenticated, (request, response) => {
+
+	var news_feed = [];
+	var news_url = [];
+
+	const get_news = async () => {
+
+		try {
+			const news = await axios.get(`https://newsapi.org/v2/everything?domains=cnbc.com&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			news_items = news.data.articles;
+
+			for (var i = 0; i <= 5; i++) {
+				news_feed.push(news_items[i].title);
+				news_url.push(news_items[i].url);
+
+			}
+		}
+		catch(err) {
+			// console.log(err);
+		}
+		mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function (err, db) {
+		assert.equal(null, err);
+		db.collection('user_accounts').find().sort({
+			"cash": -1
+		}).limit(5).toArray(function (err, result) {
+			if (err) {
+				response.send('Unable to fetch Accounts');
+			}
+
+			response.render('home.hbs', {
+				title: 'Welcome to the login page.',
+				result: result,
+				news: news_feed,
+				urls: news_url
+			});
+
+			});
+			db.close;
+		});
+
+		//allows leaderboard to show proper rank numbers
+		hbs.registerHelper('incremented', function (index) {
+			index++;
+			return index;
+		});
+
+	}
+
+	get_news();
+
+});
 
 app.get('/register', (request, response) => {
 	response.render('registration.hbs', {
@@ -393,35 +412,11 @@ app.get('/trading', (request, response) => {
 });
 
 app.get('/trading-success', isAuthenticated, (request, response) => {
-
-	var news_feed = [];
-	var news_url = [];
-
-	const get_news = async () => {
-
-		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?domains=cnbc.com&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
-			news_items = news.data.articles;
-
-			for (var i = 0; i <= 5; i++) {
-				news_feed.push(news_items[i].title);
-				news_url.push(news_items[i].url);
-
-			}
-		}
-		catch(err) {
-			// console.log(err);
-		}
-
-		response.render('trading-success.hbs', {
-			title: 'Welcome to the trading page.',
-			news: news_feed,
-			urls: news_url
-		});
-
-	}
-
-	get_news();
+	response.render('trading-success.hbs', {
+		title: 'Welcome to the trading page.',
+		news: news_feed,
+		urls: news_url
+	});
 });
 
 app.post('/trading-success-search', isAuthenticated, (request, response) => {
