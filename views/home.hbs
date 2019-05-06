@@ -5,38 +5,35 @@
     <title></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    
     <link rel='stylesheet' href='testcss.css'>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/<head>
 bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=PT+Serif|Playfair+Display" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Old+Standard+TT" rel="stylesheet">
-    <link rel="shortcut icon" type="image/x-icon" href="images/icon1.png" /> 
 
 </head>
     
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+     <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand text-dark"><h2>Stock Trading Simulator</h2></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a href="home" class="nav-link text-dark">Home</a>
+             <li class="nav-item">
+                <a href="home" class="nav-link bg-primary text-light">Home</a>
+            </li>
+              <li class="nav-item">
+                <a href="trading-success" class="nav-link text-dark">Trade</a>
             </li>
             <li class="nav-item">
-                <a href="trading" class="nav-link bg-primary text-light">Trade</a>
+                <a href="admin-success" class="nav-link text-dark">Admin</a>
             </li>
-            <li class="nav-item">
-                <a href="admin" class="nav-link text-dark">Admin</a>
-            </li>
-            <li class="nav-item">
-                <a href="login" class="nav-link text-dark">Login</a>
+             <li class="nav-item">
+                <a href="logout" class="nav-link text-dark">Logout</a>
             </li>
         </ul>
     </div>
@@ -54,6 +51,40 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
 
                 <p>{{title}}</p>
 
+                 {{#each news}}
+                <p>{{this}}</p>
+                {{/each}}
+
+                {{#each urls}}
+                <p>{{this}}</p>
+                {{/each}}
+
+                {{!-- Leaderboard --}}
+                <div class="defcontent">
+                <br>
+                <div class='chfont container'>
+        
+                <table name="mytable">
+                    <tr style="background: linear-gradient(to top, white, lightblue); border-padding:20px;">
+                        <th style="padding:20px" name="rank">Rank</th>
+                        <th style="padding:20px" name="username">Username</th>
+                        <th style="padding:20px" name="balance">Balance</th>
+        
+                    </tr>
+        
+                    <p>{{#each result}}
+                        <tr>
+                            <td style="padding:20px">{{incremented @index}}</td>
+                            <td style="padding:20px">{{this.username}}</td>
+                            <td style="padding:20px">${{this.cash}}</td>
+                        </tr>
+                        {{/each}}</p>
+        
+                </table>
+        
+            </div>
+        
+        </div>
                 <div id='submission'></div>
             </div>
 
