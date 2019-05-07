@@ -224,21 +224,23 @@ app.get('/home', isAuthenticated, (request, response) => {
 
 	var news_feed = [];
 	var news_url = [];
+	var news_imgs = [];
 
 	const get_news = async () => {
 
 		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?domains=cnbc.com&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news = await axios.get(`https://newsapi.org/v2/everything?q=stocks&from=2019-04-07&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
 			news_items = news.data.articles;
 
 			for (var i = 0; i <= 5; i++) {
 				news_feed.push(news_items[i].title);
 				news_url.push(news_items[i].url);
+				news_imgs.push(news_items[i].urlToImage);
 
 			}
 		}
 		catch(err) {
-			// console.log(err);
+
 		}
 		mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function (err, db) {
 		assert.equal(null, err);
@@ -253,7 +255,8 @@ app.get('/home', isAuthenticated, (request, response) => {
 				title: 'Welcome to the login page.',
 				result: result,
 				news: news_feed,
-				urls: news_url
+				urls: news_url,
+				imgs: news_imgs
 			});
 
 			});
@@ -413,9 +416,7 @@ app.get('/trading', (request, response) => {
 
 app.get('/trading-success', isAuthenticated, (request, response) => {
 	response.render('trading-success.hbs', {
-		title: 'Welcome to the trading page.',
-		news: news_feed,
-		urls: news_url
+		title: 'Welcome to the trading page.'
 	});
 });
 
