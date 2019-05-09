@@ -1,106 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
-    
+
 <head>
-    <title></title>
+    <title>Home Page</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
     <link rel='stylesheet' href='testcss.css'>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/<head>
 bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=PT+Serif|Playfair+Display" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Old+Standard+TT" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="images/icon1.png" />
 
 </head>
-    
+
 <body>
+<header>
+    <!--NavBar-->
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+        <div class="container">
+            <!--Logo-->
+            <a class="navbar-brand" href="home"><img src="/static/logo.png" alt="logo"></a>
 
-     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand text-dark"><h2>Stock Trading Simulator</h2></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-             <li class="nav-item">
-                <a href="home" class="nav-link bg-primary text-light">Home</a>
-            </li>
-              <li class="nav-item">
-                <a href="trading-success" class="nav-link text-dark">Trade</a>
-            </li>
-            <li class="nav-item">
-                <a href="admin-success" class="nav-link text-dark">Admin</a>
-            </li>
-             <li class="nav-item">
-                <a href="logout" class="nav-link text-dark">Logout</a>
-            </li>
-        </ul>
+            <!--Burger Button-->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+
+            <!--Main Navbar list-->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active"><a class="nav-link hvr-underline-from-center" href="home">HOME<span class="sr-only">(current)</span></a></li>
+                    <li class="nav-item active"><a class="nav-link hvr-underline-from-center" href="trading-success">TRADE</a></li>
+                    <li class="nav-item active"><a class="nav-link hvr-underline-from-center" href="admin">ADMIN</a></li>
+
+                    <div class="mycontent-left" style="border-right: 1px solid #333;"></div>
+                    <!--Logout-->
+                    <a class="navbar-brand logout" style="padding: 2px 0px 0px 10px;" href="login"><img src="/static/logout.png" alt="logout"></a>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- End of Navbar -->
+
+    <!-- Stock Ticker -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" type="text/javascript"></script>
+    <script src="/static/scripts.js" type="text/javascript"></script>
+    <script>
+        var gainTicker = new WBIHorizontalTicker('gainers');
+        gainTicker.start();
+
+    </script>
+</header>
+
+<div class="container" style="background-color: #DDDDDD; height: 80vh; box-shadow: 0 4px 500px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+    <div class="container-fluid" style="padding-top: 50px;">
+        <h3 style="padding-bottom: 5px;">NEWS <span style="font-weight: lighter;" id="date"></span></h3>
+
+        <form action="/home" method="POST" class="form-inline my-2 my-lg-0">
+                    <input type="text" class="form-control mr-sm-2" name='news_search' id="news_search" placeholder="Search news">
+                    <p>&nbsp;</p>
+                    <input type="submit" class="btn btn-primary bg-dark" value="Search">
+        </form>
+
+        <br>
+        <!-- Row 1 -->
+        <div class="row">
+            <!-- Col 1 -->
+            <div class="col-md-6">
+                <div class="row x1 img-outer">
+                    <div class="col-md-12 img-inner">
+                        <a id="nurl1" href="{{urls.[0]}}">
+                            <img src="{{imgs.[0]}}" alt="logout" id="img1" style="width: 550px; height: 375px;" onerror="this.src='/static/placeholder.jpg'"/>
+                        </a>
+                        <h1 class="headline" id="header1">title</h1>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Col 2 -->
+            <div class="col-md-6">
+
+                <!-- Col2 Row1 -->
+                <div class="row x2">
+                    <div class="col-md-6">
+                        <a id="nurl2" href="{{urls.[1]}}">
+                            <img src="{{imgs.[1]}}" alt="logout" id="img2" style="width: 250px; height: 180px;" onerror="this.src='/static/placeholder.jpg'"/>
+                            <h1 class="headline" id="header2">title</h1>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a id="nurl3" href="{{urls.[2]}}">
+                            <img src="{{imgs.[2]}}" alt="logout" id="img3" style="width: 250px; height: 180px;" onerror="this.src='/static/placeholder.jpg'"/>
+                            <h1 class="headline" id="header3">title</h1>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Col2 Row2-->
+                <div class="row x2" style="padding-top: 20px;">
+                    <div class="col-md-6">
+                        <a id="nurl4" href="{{urls.[3]}}">
+                            <img src="{{imgs.[3]}}" alt="logout" id="img4" style="width: 250px; height: 180px;" onerror="this.src='/static/placeholder.jpg'"/>
+                            <h1 class="headline" id="header4">title</h1>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a id="nurl5" href="{{urls.[4]}}">
+                            <img src="{{imgs.[4]}}" alt="logout" id="img5" style="width: 250px; height: 180px;" onerror="this.src='/static/placeholder.jpg'"/>
+                            <h1 class="headline" id="header5">title</h1>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <script>
+                var news = [
+                    {{#each news}}
+                        '{{this}}',
+                    {{/each}}
+                ];
+
+                var images = [
+                    {{#each imgs}}
+                        '{{this}}',
+                    {{/each}}
+                ];
+
+                var nurl = [
+                    {{#each urls}}
+                        '{{this}}',
+                    {{/each}}
+                ];
+
+                document.getElementById("header1").innerHTML=(news[0].slice(0,70))+'..';
+                document.getElementById("header2").innerHTML=(news[1].slice(0,60))+'..';
+                document.getElementById("header3").innerHTML=(news[2].slice(0,60))+'..';
+                document.getElementById("header4").innerHTML=(news[3].slice(0,60))+'..';
+                document.getElementById("header5").innerHTML=(news[4].slice(0,60))+'..';
+
+                document.getElementById("img1").src=images[0];
+                document.getElementById("img2").src=images[1];
+                document.getElementById("img3").src=images[2];
+                document.getElementById("img4").src=images[3];
+                document.getElementById("img5").src=images[4];
+
+                // document.getElementById("nurl1").href = nurl[0];
+                // document.getElementById("nurl2").href = nurl[1];
+                // document.getElementById("nurl3").href = nurl[2];
+                // document.getElementById("nurl4").href = nurl[3];
+                // document.getElementById("nurl5").href = nurl[4];
+
+
+
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+
+                if(dd<10) {
+                    dd = '0'+dd
+                }
+
+                mlist = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+
+                today = mlist[mm-1] + ' ' + dd
+                document.getElementById("date").innerHTML='('+today+')';
+            </script>
+        </div>
     </div>
-</nav>
+    <br>
+    <br>
+    <br>
+    <hr>
+</div>
+<footer class="chfont page-footer font-small blue">
+    <div class="footer-copyright text-center py-3">© 2019 Copyright:
+        <a href="">Stock Trader</a>  All Rights Reserved
 
-    <div class="defcontainer">
-        <div class="defheader">
+</footer>
+</div>
 
-        </div>
-        
-        
-        <div class="defcontent">
-            <br>
-            <div class='chfont container'>
 
-                <p>{{title}}</p>
-
-                 {{#each news}}
-                <p>{{this}}</p>
-                {{/each}}
-
-                {{#each urls}}
-                <p>{{this}}</p>
-                {{/each}}
-
-                {{!-- Leaderboard --}}
-                <div class="defcontent">
-                <br>
-                <div class='chfont container'>
-        
-                <table name="mytable">
-                    <tr style="background: linear-gradient(to top, white, lightblue); border-padding:20px;">
-                        <th style="padding:20px" name="rank">Rank</th>
-                        <th style="padding:20px" name="username">Username</th>
-                        <th style="padding:20px" name="balance">Balance</th>
-        
-                    </tr>
-        
-                    <p>{{#each result}}
-                        <tr>
-                            <td style="padding:20px">{{incremented @index}}</td>
-                            <td style="padding:20px">{{this.username}}</td>
-                            <td style="padding:20px">${{this.cash}}</td>
-                        </tr>
-                        {{/each}}</p>
-        
-                </table>
-        
-            </div>
-        
-        </div>
-                <div id='submission'></div>
-            </div>
-
-        </div>
-
-        <footer class="chfont page-footer font-small blue">
-            <div class="footer-copyright text-center py-3">© 2019 Copyright:
-            <a href="">Stock Trader</a>  All Rights Reserved
-
-        </footer>
-    </div> 
-    
- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <script type='text/javascript' src='bundle_1.js'></script>
 
-    </body>
+</body>
 </html>
