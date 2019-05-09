@@ -38,6 +38,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
+app.use('/static', express.static('static'))
 
 hbs.registerHelper('dbConnection', function(req,res) {
 	var url = "mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts";
@@ -229,7 +230,7 @@ app.get('/home', isAuthenticated, (request, response) => {
 	const get_news = async () => {
 
 		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?q=stocks&from=2019-04-07&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news = await axios.get(`https://newsapi.org/v2/everything?q=stocks&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
 			news_items = news.data.articles;
 
 			for (var i = 0; i <= 5; i++) {
