@@ -24,9 +24,10 @@ var port = process.env.PORT || 8080;
 var login_message = '';
 
 mongoose.Promise = global.Promise;
+var mongoURL = "mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts"
 
 // password login
-mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", { useNewUrlParser: true });
+mongoose.connect(mongoURL, { useNewUrlParser: true });
 
 var app = express();
 
@@ -38,15 +39,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
+app.use('/static', express.static('static'))
 
 hbs.registerHelper('dbConnection', function(req,res) {
-	var url = "mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts";
+	var url = mongoURL;
 	return url;
 })
-
-hbs.registerHelper('getCurrentYear', () => {
-	return new Date().getFullYear();
-});
 
 // session used for tracking logins
 app.use(session({
@@ -57,11 +55,11 @@ app.use(session({
 
 
 passport.serializeUser(function(user, done) {
-        done(null, user); 
+        done(null, user);
     });
 
 passport.deserializeUser(function(user, done) {
-        done(null, user); 
+        done(null, user);
     });
 
 app.use((request, response, next) => {
@@ -108,24 +106,22 @@ app.get('/', (request, response) => {
 app.get('/login', (request, response) => {
 	request.session.destroy(function(err) {
 		response.render('login.hbs', {
-			title: 'Welcome to the login page.',
-				});
-			});
-			 
+			title: 'Welcome to the login page.'
 		})
-
+	});
+});
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
     user_account.findOne({ username: username }, function (err, user) {
 
-      if (err) { 
-      	return done(err); 
+      if (err) {
+      	return done(err);
       }
 
-      if (!user) { 
+      if (!user) {
       	login_message = 'Invalid login credentials. After 5 unsuccessful login attempts your account will be locked.';
-      	return done(null, false); 
+      	return done(null, false);
       }
 
       // comparing hashed password to user password
@@ -137,7 +133,7 @@ passport.use(new LocalStrategy(
       	if (result.account_status !== 'locked') {
 
 	      bcrypt.compare(password, user.password, function(err, res) {
-	      	if(res) { 
+	      	if(res) {
 
 	      		db.collection('user_accounts').updateOne(
 					{ "username": username},
@@ -147,7 +143,7 @@ passport.use(new LocalStrategy(
 	      		return done(null, user);
 
 	      	}
-	      	else { 
+	      	else {
 
 	      		var num_attempts;
 	      		db.collection('user_accounts').findOne({username: username}, function(err, result) {
@@ -155,7 +151,7 @@ passport.use(new LocalStrategy(
       			if (result !== null) {
 
       				num_attempts = result.attempts + 1;
-      				
+
       				db.collection('user_accounts').updateOne(
 					{ "username": username},
 					{ $set: { "attempts": num_attempts}}
@@ -171,7 +167,7 @@ passport.use(new LocalStrategy(
 
 	      		})
 	      		login_message = 'Invalid login credentials. After 5 unsuccessful login attempts your account will be locked.';
-	      		return done(null, false); 
+	      		return done(null, false);
 	      	}
 
 	      });
@@ -179,7 +175,7 @@ passport.use(new LocalStrategy(
 
 	  	else {
 	  		login_message = 'Your account is locked. Please contact the admin at admin@bcit.ca';
-	  		return done(null, false); 
+	  		return done(null, false);
 	  	}
     });
   });
@@ -202,7 +198,7 @@ app.get('/logout', function (request, response){
 });
 
 // log in, redirects if invalid credentials
-app.post('/', 
+app.post('/',
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
   	// console.log(request.body.username);
@@ -210,14 +206,14 @@ app.post('/',
   });
 
 // log in, redirects if invalid credentials
-app.post('/login', 
+app.post('/login',
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
     response.redirect('/home');
   });
 
 // log in, redirects if invalid credentials
-app.post('/login-fail', 
+app.post('/login-fail',
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
     response.redirect('/home');
@@ -231,39 +227,51 @@ app.get('/home', isAuthenticated, (request, response) => {
 	var news_feed = [];
 	var news_url = [];
 	var news_imgs = [];
+	var open_source_imgs = ['https://cdn.pixabay.com/photo/2016/11/23/14/37/blur-1853262_1280.jpg',
+							'https://cdn.pixabay.com/photo/2016/11/27/21/42/stock-1863880_960_720.jpg',
+							'https://cdn.pixabay.com/photo/2016/10/10/22/38/business-1730089_960_720.jpg',
+							'https://cdn.pixabay.com/photo/2017/08/10/01/42/stock-market-2616931_960_720.jpg',
+							'https://cdn.pixabay.com/photo/2015/04/25/05/17/stock-exchange-738671_1280.jpg',
+							'https://cdn.pixabay.com/photo/2015/02/05/08/12/stock-624712_1280.jpg']
 
 	const get_news = async () => {
 
 		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?q=stocks&from=2019-04-07&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,cnbc.com,yahoo.com&q=stocks&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
 			news_items = news.data.articles;
 
 			for (var i = 0; i <= 5; i++) {
 				news_feed.push(news_items[i].title);
 				news_url.push(news_items[i].url);
-				news_imgs.push(news_items[i].urlToImage);
+
+				if (news_items[i].url !== null) {
+					news_imgs.push(news_items[i].urlToImage);
+				}
+				else {
+					news_imgs.push(open_source_imgs[i]);
+				}
 
 			}
 		}
 		catch(err) {
 
 		}
-		mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function (err, db) {
-		assert.equal(null, err);
-		db.collection('user_accounts').find().sort({
-			"cash": -1
-		}).limit(5).toArray(function (err, result) {
-			if (err) {
-				response.send('Unable to fetch Accounts');
-			}
+		mongoose.connect(mongoURL, { useNewUrlParser: true }, function (err, db) {
+			assert.equal(null, err);
+			db.collection('user_accounts').find().sort({
+				"cash": -1
+			}).limit(5).toArray(function (err, result) {
+				if (err) {
+					response.send('Unable to fetch Accounts');
+				}
 
-			response.render('home.hbs', {
-				title: 'Welcome to the login page.',
-				result: result,
-				news: news_feed,
-				urls: news_url,
-				imgs: news_imgs
-			});
+				response.render('home.hbs', {
+					title: 'Welcome to the login page.',
+					result: result,
+					news: news_feed,
+					urls: news_url,
+					imgs: news_imgs
+				});
 
 			});
 			db.close;
@@ -278,6 +286,105 @@ app.get('/home', isAuthenticated, (request, response) => {
 	}
 
 	get_news();
+
+});
+
+
+// Total number of registered users
+
+MongoClient.connect( url = "mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function(err, db) {
+  if (err) throw err;
+  var dbo = db.db("accounts");
+  dbo.collection("user_accounts").find({}).count(function(err, result) {
+    if (err) throw err;
+		users = (`Total number of users in our database is ${result}.`);
+// 	}).catch((error) => {
+//     console.log('Error:', error);
+//     weather = "Error: Cannot find requested country";
+// });
+    db.close();
+  });
+});
+
+
+app.get('/users',(request,response)=> {
+	response.render('users.hbs', {
+		title: 'Users page',
+        users: users
+	});
+});
+ 
+
+app.post('/home', isAuthenticated, (request, response) => {
+
+	var query = request.body.news_search;
+	var news_feed = [];
+	var news_url = [];
+	var news_imgs = [];
+	var open_source_imgs = ['https://cdn.pixabay.com/photo/2016/11/23/14/37/blur-1853262_1280.jpg',
+							'https://cdn.pixabay.com/photo/2016/11/27/21/42/stock-1863880_960_720.jpg',
+							'https://cdn.pixabay.com/photo/2016/10/10/22/38/business-1730089_960_720.jpg',
+							'https://cdn.pixabay.com/photo/2017/08/10/01/42/stock-market-2616931_960_720.jpg',
+							'https://cdn.pixabay.com/photo/2015/04/25/05/17/stock-exchange-738671_1280.jpg',
+							'https://cdn.pixabay.com/photo/2015/02/05/08/12/stock-624712_1280.jpg']
+
+	const get_news = async () => {
+
+		try {
+			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,cnbc.com,yahoo.com&q=${query}&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			news_items = news.data.articles;
+
+			for (var i = 0; i <= 5; i++) {
+				news_feed.push(news_items[i].title);
+				news_url.push(news_items[i].url);
+
+				if (news_items[i].url !== null) {
+					news_imgs.push(news_items[i].urlToImage);
+				}
+				else {
+					news_imgs.push(open_source_imgs[i]);
+				}
+
+			}
+		}
+		catch(err) {
+
+		}
+		mongoose.connect(mongoURL, { useNewUrlParser: true }, function (err, db) {
+			assert.equal(null, err);
+			db.collection('user_accounts').find().sort({
+				"cash": -1
+			}).limit(5).toArray(function (err, result) {
+				if (err) {
+					response.send('Unable to fetch Accounts');
+				}
+
+				response.render('home.hbs', {
+					title: 'Welcome to the login page.',
+					result: result,
+					news: news_feed,
+					urls: news_url,
+					imgs: news_imgs
+				});
+
+			});
+			db.close;
+		});
+
+		//allows leaderboard to show proper rank numbers
+		hbs.registerHelper('incremented', function (index) {
+			index++;
+			return index;
+		});
+
+	}
+
+	if (query !==  '') {
+		get_news();
+	}
+	else {
+		response.redirect('/home');
+	}
 
 });
 
@@ -414,32 +521,6 @@ module.exports = {
 	check_alphanum: check_alphanum
 }
 
-// Total number of registered users
-
-MongoClient.connect( url = "mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function(err, db) {
-  if (err) throw err;
-  var dbo = db.db("accounts");
-  dbo.collection("user_accounts").find({}).count(function(err, result) {
-    if (err) throw err;
-		users = (`Total number of users in our database is ${result}.`);
-// 	}).catch((error) => {
-//     console.log('Error:', error);
-//     weather = "Error: Cannot find requested country";
-// });
-    db.close();
-  });
-});
-
-
-app.get('/users',(request,response)=> {
-	response.render('users.hbs', {
-		title: 'Users page',
-        users: users
-	});
-});
- 
-
-
 app.get('/trading', (request, response) => {
 	response.render('trading.hbs', {
 		title: 'You are not logged in. You must be logged in to view this page.'
@@ -489,7 +570,7 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 			else {
 				message = `Sorry the stock ticker '${stock}' is invalid.`;
 			}
-		}	
+		}
 
 		response.render('trading-success.hbs', {
 				title: message,
@@ -516,7 +597,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
 		var index = check_existence(stock);
 
-		try {		
+		try {
 			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
 			var stock_name = stock_info.data.companyName;
 			var stock_price = stock_info.data.latestPrice;
@@ -537,7 +618,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 				}
 				else {
 					cash[0] = cash_remaining;
-					
+
 					console.log("cash_remaining after else, after cash=cash_remain:"+cash_remaining);
 
 
@@ -602,12 +683,12 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 	var stocks = request.session.passport.user.stocks;
 
 	const sell_stock = async () => {
-		
+
 
 		var index = check_existence(stock);
 		var message;
 
-		try {		
+		try {
 			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
 
 			var stock_name = stock_info.data.companyName;
@@ -658,7 +739,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 		response.render('trading-success.hbs', {
 			title: message,
 			head: `Cash balance: $${cash[0]}`
-		})		
+		})
 
 		function check_existence(stock) {
 			var index = -1;
@@ -719,7 +800,7 @@ app.get('/admin-success', isAdmin, (request, response) => {
  });
 
 app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
-	mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function(err, db) {
+	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
 		assert.equal(null, err);
 		db.collection('user_accounts').find().toArray(function(err, result) {
 			if (err) {
@@ -734,7 +815,7 @@ app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
 });
 
 app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
-	mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function(err, db) {
+	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
 		assert.equal(null, err);
 		db.collection('user_accounts').find().toArray(function(err, result) {
 			if(err) {
@@ -765,7 +846,7 @@ app.post('/admin-success-delete-user-success', function(req, res, next) {
 			});
 		}else{
 				message = '';
-				mongoose.connect("mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function(err, db) {
+				mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
 					assert.equal(null, err);
 
 					var query = { username: user_name_to_delete }
@@ -880,7 +961,7 @@ function isAdmin(request, response, next) {
 	}
 }
 
-// listen to a port 
+// listen to a port
 app.listen(port, () => {
 	// console.log('Server is up on port ' + port);
 	utils.init();
