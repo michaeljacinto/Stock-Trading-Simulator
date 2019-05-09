@@ -44,6 +44,10 @@ hbs.registerHelper('dbConnection', function(req,res) {
 	return url;
 })
 
+hbs.registerHelper('getCurrentYear', () => {
+	return new Date().getFullYear();
+});
+
 // session used for tracking logins
 app.use(session({
 	secret: 'secretcode',
@@ -89,7 +93,6 @@ var account_schema = new mongoose.Schema({
 });
 
 
-
 const user_account = mongoose.model("user_accounts", account_schema);
 
 app.get('/', (request, response) => {
@@ -105,10 +108,12 @@ app.get('/', (request, response) => {
 app.get('/login', (request, response) => {
 	request.session.destroy(function(err) {
 		response.render('login.hbs', {
-			title: 'Welcome to the login page.'
+			title: 'Welcome to the login page.',
+				});
+			});
+			 
 		})
-	});
-});
+
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
@@ -409,15 +414,31 @@ module.exports = {
 	check_alphanum: check_alphanum
 }
 
+// Total number of registered users
+
 MongoClient.connect( url = "mongodb+srv://stockTradingSimulator:BqZpk9VBFkWegFTq@cluster0-ulvwp.mongodb.net/accounts", function(err, db) {
   if (err) throw err;
   var dbo = db.db("accounts");
   dbo.collection("user_accounts").find({}).count(function(err, result) {
     if (err) throw err;
-    console.log(`Total number of users in our databse is '${result}'.`);
+		users = (`Total number of users in our database is ${result}.`);
+// 	}).catch((error) => {
+//     console.log('Error:', error);
+//     weather = "Error: Cannot find requested country";
+// });
     db.close();
   });
 });
+
+
+app.get('/users',(request,response)=> {
+	response.render('users.hbs', {
+		title: 'Users page',
+        users: users
+	});
+});
+ 
+
 
 app.get('/trading', (request, response) => {
 	response.render('trading.hbs', {
