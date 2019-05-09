@@ -15,6 +15,7 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
     <link href="https://fonts.googleapis.com/css?family=PT+Serif|Playfair+Display" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Old+Standard+TT" rel="stylesheet">
     <link rel="shortcut icon" type="image/x-icon" href="images/icon1.png" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 </head>
 
@@ -55,24 +56,56 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
     </script>
 </header>
 
-<div class="container" style="background-color: #DDDDDD; height: 80vh; box-shadow: 0 4px 500px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+<!-- Side navigation -->
+<div class="w3-sidebar w3-bar-block w3-card w3-animate-right" style="display:none;right:0; background-color: lightgrey; box-shadow: 0 4px 500px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);" id="rightMenu">
+    <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large w3-black" style="font-weight: bold;">Exit</button>
+    <div>
+        <p style="padding-top: 5px; font-weight: lighter; font-size: 25px; color: black; text-align: center; font-family: 'Arial';">Leaderboards</p>
+            <table name="Rankings" id="sideTables">
+                <tr>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th>Balance</th>
+                </tr>
+                <p>{{#each result}}
+                    <tr>
+                        <td style="">{{incremented @index}}. </td>
+                        <td style="">{{this.username}}</td>
+                        <td style=""><span style="font-weight: bold;">$</span>{{this.cash}}</td>
+                    </tr>
+                {{/each}}</p>
+            </table>
+    </div>
+    <div class="container" style="min-height: 22px; background-color: black;">
+        <p style="color:white; font-weight: bold;">Total users: {{num_users}}</p>
+    </div>
+</div>
+
+
+
+<!-- Page content -->
+<div class="container main" style="background-color: #DDDDDD; height: 80vh; box-shadow: 0 4px 500px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
     <div class="container-fluid" style="padding-top: 50px;">
         <h3 style="padding-bottom: 5px;">NEWS <span style="font-weight: lighter;" id="date"></span></h3>
-
-        <form action="/home" method="POST" class="form-inline my-2 my-lg-0">
-                    <input type="text" class="form-control mr-sm-2" name='news_search' id="news_search" placeholder="Search news">
-                    <p>&nbsp;</p>
-                    <input type="submit" class="btn btn-primary bg-dark" value="Search">
-        </form>
-
+        <div class="container">
+                <form action="/home" method="POST" class="form-inline my-2 my-lg-0">
+                            <input type="text" class="form-control mr-sm-2" name='news_search' id="news_search" placeholder="Search news">
+                            <p>&nbsp;</p>
+                            <input type="submit" class="btn btn-primary bg-dark" value="Search">
+                    <div style="margin-left: auto;">
+                        <button class="w3-button lb-btn w3-xlarge w3-right" onclick="openRightMenu()" type="button">&#9776;</button>
+                        <h3 class="w3-right" style="font-weight: lighter;">Rankings</h3>
+                </div>
+            </form>
+        </div>
         <br>
         <!-- Row 1 -->
         <div class="row">
             <!-- Col 1 -->
             <div class="col-md-6">
                 <div class="row x1 img-outer">
-                    <div class="col-md-12 img-inner">
-                        <a id="nurl1" href="{{urls.[0]}}">
+                    <div class="col-md-12 img-inner" >
+                        <a id="nurl1" href="{{urls.[0]}}" target="_blank">
                             <img src="{{imgs.[0]}}" alt="logout" id="img1" style="width: 550px; height: 375px;" onerror="this.src='/static/placeholder.jpg'"/>
                         </a>
                         <h1 class="headline" id="header1">title</h1>
@@ -86,13 +119,13 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                 <!-- Col2 Row1 -->
                 <div class="row x2">
                     <div class="col-md-6">
-                        <a id="nurl2" href="{{urls.[1]}}">
+                        <a id="nurl2" href="{{urls.[1]}}" target="_blank">
                             <img src="{{imgs.[1]}}" alt="logout" id="img2" style="width: 250px; height: 180px;" onerror="this.src='/static/placeholder.jpg'"/>
                             <h1 class="headline" id="header2">title</h1>
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a id="nurl3" href="{{urls.[2]}}">
+                        <a id="nurl3" href="{{urls.[2]}}" target="_blank">
                             <img src="{{imgs.[2]}}" alt="logout" id="img3" style="width: 250px; height: 180px;" onerror="this.src='/static/placeholder.jpg'"/>
                             <h1 class="headline" id="header3">title</h1>
                         </a>
@@ -102,13 +135,13 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                 <!-- Col2 Row2-->
                 <div class="row x2" style="padding-top: 20px;">
                     <div class="col-md-6">
-                        <a id="nurl4" href="{{urls.[3]}}">
+                        <a id="nurl4" href="{{urls.[3]}}" target="_blank">
                             <img src="{{imgs.[3]}}" alt="logout" id="img4" style="width: 250px; height: 180px;" onerror="this.src='/static/placeholder.jpg'"/>
                             <h1 class="headline" id="header4">title</h1>
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a id="nurl5" href="{{urls.[4]}}">
+                        <a id="nurl5" href="{{urls.[4]}}" target="_blank">
                             <img src="{{imgs.[4]}}" alt="logout" id="img5" style="width: 250px; height: 180px;" onerror="this.src='/static/placeholder.jpg'"/>
                             <h1 class="headline" id="header5">title</h1>
                         </a>
