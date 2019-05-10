@@ -65,13 +65,13 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                 <tr>
                     <th>Rank</th>
                     <th>Username</th>
-                    <th>Balance</th>
+                    <th>Balance ($) </th>
                 </tr>
                 <p>{{#each result}}
                     <tr>
                         <td style="">{{incremented @index}}. </td>
                         <td style="">{{this.username}}</td>
-                        <td style=""><span style="font-weight: bold;">$</span>{{this.cash}}</td>
+                        <td style=""><span style="font-weight: bold;"></span><div id="user_cash">{{this.cash}} </div></td>
                     </tr>
                 {{/each}}</p>
             </table>
@@ -167,11 +167,17 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                     {{/each}}
                 ];
 
-                document.getElementById("header1").innerHTML=(news[0].slice(0,70))+'..';
-                document.getElementById("header2").innerHTML=(news[1].slice(0,60))+'..';
-                document.getElementById("header3").innerHTML=(news[2].slice(0,60))+'..';
-                document.getElementById("header4").innerHTML=(news[3].slice(0,60))+'..';
-                document.getElementById("header5").innerHTML=(news[4].slice(0,60))+'..';
+                // document.getElementById("header1").innerHTML=(news[0].slice(0,70))+'..';
+                // document.getElementById("header2").innerHTML=(news[1].slice(0,60))+'..';
+                // document.getElementById("header3").innerHTML=(news[2].slice(0,60))+'..';
+                // document.getElementById("header4").innerHTML=(news[3].slice(0,60))+'..';
+                // document.getElementById("header5").innerHTML=(news[4].slice(0,60))+'..';
+
+                document.getElementById("header1").innerHTML=(news[0]);
+                document.getElementById("header2").innerHTML=(news[1]);
+                document.getElementById("header3").innerHTML=(news[2]);
+                document.getElementById("header4").innerHTML=(news[3]);
+                document.getElementById("header5").innerHTML=(news[4]);
 
                 document.getElementById("img1").src=images[0];
                 document.getElementById("img2").src=images[1];
