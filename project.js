@@ -258,23 +258,31 @@ app.get('/home', isAuthenticated, (request, response) => {
 		}
 		mongoose.connect(mongoURL, { useNewUrlParser: true }, function (err, db) {
 			assert.equal(null, err);
-			db.collection('user_accounts').find().sort({
-				"cash": -1
-			}).limit(5).toArray(function (err, result) {
+
+			db.collection('user_accounts').find().toArray(function (err, result_list) {
 				if (err) {
-					response.send('Unable to fetch Accounts');
 				}
 
-				response.render('home.hbs', {
-					title: 'Welcome to the login page.',
-					result: result,
-					news: news_feed,
-					urls: news_url,
-					imgs: news_imgs
-				});
+				var num_users = result_list.length
+				db.collection('user_accounts').find().sort({
+					"cash": -1
+				}).limit(20).toArray(function (err, result) {
+					if (err) {
+						response.send('Unable to fetch Accounts');
+					}
 
-			});
-			db.close;
+					response.render('home.hbs', {
+						title: 'Welcome to the login page.',
+						result: result,
+						news: news_feed,
+						urls: news_url,
+						imgs: news_imgs,
+						num_users: num_users
+					});
+
+				});
+				db.close;
+			})
 		});
 
 		//allows leaderboard to show proper rank numbers
