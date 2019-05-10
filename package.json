@@ -2,8 +2,10 @@
   "name": "class_9",
   "version": "1.0.0",
   "description": "",
+  "main": "project.js",
   "scripts": {
-    "test": "mocha --recursive --exit"
+    "test": "mocha --recursive --exit",
+    "start": "node project.js"
   },
   "author": "Michael J",
   "license": "ISC",
