@@ -336,7 +336,7 @@ app.post('/home', isAuthenticated, (request, response) => {
 			assert.equal(null, err);
 			db.collection('user_accounts').find().sort({
 				"cash": -1
-			}).limit(5).toArray(function (err, result) {
+			}).limit(20).toArray(function (err, result) {
 				if (err) {
 					response.send('Unable to fetch Accounts');
 				}
