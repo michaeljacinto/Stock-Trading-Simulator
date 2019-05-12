@@ -40,6 +40,9 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                         <div class="dropdown-content">
                         <a href="transactions">Transactions</a>
                         <a href="profile">Profile</a>
+                        {{#if admin}}
+                        <a href="admin-success">Admin Panel</a>
+                        {{/if}}
                         </div>
                     </div>
                     <div class="mycontent-left" style="border-right: 1px solid #333;"></div>
