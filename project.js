@@ -15,6 +15,8 @@ var cookieParser = require('cookie-parser');
 var ObjectID = require('mongodb').ObjectID;
 var assert = require('assert');
 const bcrypt = require('bcrypt');
+var moment = require('moment');
+var numeral = require('numeral');
 
 hbs.registerPartials(__dirname + '/views/partials');
 
@@ -403,10 +405,15 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 	var db = utils.getDb();
 	var _id = request.session.passport.user._id;
 	var firstname = request.body.firstname;
+	var user_firstname = request.session.passport.user.firstname;
 	var lastname = request.body.lastname;
+	var user_lastname = request.session.passport.user.lastname;
 	var username = request.body.username;
+	var user_username = request.session.passport.user.username;
 	var email = request.body.email;
-	var message = '';
+	var user_email = request.session.passport.user.email;
+	var message;
+	var check;
 
 
 	if (check_str(firstname) === false) {
@@ -414,38 +421,107 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 	}
 	else if (check_str(lastname) === false) {
 		message = `Last name must have alteast 3 letters.`;
-		response.render('registration.hbs', {title: message});
 	}
 	else if (check_alphanum(username) === false) {
 		message = `Username must have 5-15 characters and may only be alphanumeric.`;
 	}
 	else if (check_email(email) === false) {
-		message = `Must enter a valid email`;
+		message = `Must enter a valid email.`;
 	}
 	else {
-		db.collection('user_accounts').updateOne(
-			{ "_id": ObjectID(_id)},
-			{ $set: { "firstname": firstname, "lastname": lastname,
-			"username": username, "email": email}}
-		);
-		message = 'Your information has been updated. Please log back in to view the new changes.'
+		check = true;
 	}
 
-	response.render('profile.hbs', {
-		title: message,
-		password_msg: '',
-		fname: firstname,
-		lname: lastname,
-		uname: username,
-		email: email
-	})
+	if (check) {
+
+		if ((firstname === user_firstname) && (lastname === user_lastname) && (user_username === username) && (email === user_email)) {
+			message = 'To make changes please update your information.';
+				response.render('profile.hbs', {
+				title: message,
+				password_msg: '',
+				fname: firstname,
+				lname: lastname,
+				uname: username,
+				email: email
+			})
+		}
+
+		else {
+
+			db.collection('user_accounts').findOne({username: username}, function(err, result) {
+
+				if ((result === null) || ((result.username === user_username) && (result.email === user_email)) || (result.email === user_email) ||  (result.username === user_username)) {
+					
+					db.collection('user_accounts').findOne({email: email}, function(err, result1) {
+
+						if ((result1 === null) || ((result1.username === user_username) && (result1.email === user_email)) || (result1.email === user_email) ||  (result1.email === user_email)) {
+							db.collection('user_accounts').updateOne(
+								{ "_id": ObjectID(_id)},
+								{ $set: { "firstname": firstname, "lastname": lastname,
+								"username": username, "email": email}}
+							);
+
+							message = 'Your information has been updated. Please log back in to view the new changes.';
+
+							response.render('profile.hbs', {
+								title: message,
+								password_msg: '',
+								fname: firstname,
+								lname: lastname,
+								uname: username,
+								email: email
+							})
+						}
+						else {
+							message = `The email ${email} is already in the system. Please choose a different email.`;
+							response.render('profile.hbs', {
+								title: message,
+								password_msg: '',
+								fname: firstname,
+								lname: lastname,
+								uname: username,
+								email: email
+							})
+						}
+					});
+				}
+
+				else {
+					message = `The username ${username} is already in the system. Please choose a different username.`;
+					response.render('profile.hbs', {
+						title: message,
+						password_msg: '',
+						fname: firstname,
+						lname: lastname,
+						uname: username,
+						email: email
+					})
+				}
+
+			
+			});
+		}
+
+	}
+
+	else {
+		response.render('profile.hbs', {
+			title: message,
+			password_msg: '',
+			fname: firstname,
+			lname: lastname,
+			uname: username,
+			email: email
+		})
+	}
+
 });
 
 app.post('/profile-password-change', isAuthenticated, (request, response) => {
 
 	var db = utils.getDb();
 	var _id = request.session.passport.user._id;
-	var database_password = request.session.passport.password;
+	var database_password = request.session.passport.user.password;
 	var current_password = request.body.current_password;
 	var password = request.body.password;
 	var confirm_password = request.body.confirm_password;
@@ -455,20 +531,25 @@ app.post('/profile-password-change', isAuthenticated, (request, response) => {
 	var email = request.session.passport.user.email;
 	var message = '';
 
-		bcrypt.compare(current_password, password, function(err, res) {
+		// compares current password to hashed password
+		bcrypt.compare(current_password, database_password, function(err, res) {
 
-			if(res) {
+			console.log(res);
+			console.log(current_password);
+			console.log(database_password);
+
+			if(res === false) {
 				message = 'Your password is incorrect.';
 			}
 
-			else {
+			else if (res === true) {
 
 				if (password === '') {
 					message = `To change password, please enter your current password.`;
 				}
 
 				else if (check_password(password) === false) {
-					message = `Password must be atleast 8 characters with atleast 1 letter & 1 number.`;
+					message = `The new password must be atleast 8 characters with atleast 1 letter & 1 number.`;
 				}
 
 				else if (password !== confirm_password) {
@@ -488,17 +569,29 @@ app.post('/profile-password-change', isAuthenticated, (request, response) => {
 
 					message = 'Your password has been changed.'
 				}
-
-				response.render('profile.hbs', {
-					title: '',
-					password_msg: message,
-					fname: firstname,
-					lname: lastname,
-					uname: username,
-					email: email
-				});
 			}
+
+			response.render('profile.hbs', {
+				title: '',
+				password_msg: message,
+				fname: firstname,
+				lname: lastname,
+				uname: username,
+				email: email
+			});
+			
 		});
+});
+
+app.get('/transactions', isAuthenticated, (request, response) => {
+
+	var transactions = request.session.passport.user.transactions;
+
+	response.render('transactions.hbs', {
+		// title: 'Welcome to the trading page.'
+		transactions: transactions
+	});
+
 });
 
 app.get('/register', (request, response) => {
@@ -527,72 +620,107 @@ app.post('/register', function(request, response) {
 	var attributes = [firstname, lastname, username, email, password, confirm_password];
 	var check;
 
+
+	// argument validations
 	if (check_str(attributes[0]) === false) {
 		message = `First name must have alteast 3 letters.`;
-		response.render('registration.hbs', {title: message});
 	}
 	else if (check_str(attributes[1]) === false) {
 		message = `Last name must have alteast 3 letters.`;
-		response.render('registration.hbs', {title: message});
 	}
 	else if (check_alphanum(attributes[2]) === false) {
 		message = `Username must have 5-15 characters and may only be alphanumeric.`;
-		response.render('registration.hbs', {title: message});
 	}
 	else if (check_email(attributes[3]) === false) {
 		message = `Must enter a valid email`;
-		response.render('registration.hbs', {title: message});
 	}
 	else if (check_password(attributes[4]) === false) {
-		message = `Password must min 8 characters with atleast 1 letter & 1 number.`;
-		response.render('registration.hbs', {title: message});
+		message = `Password must be a minimum 8 characters with atleast 1 letter & 1 number.`;
 	}
 	else if ((attributes[4]) !== attributes[5]) {
 		message = `Passwords do not match. Please try again.`;
-		response.render('registration.hbs', {title: message});
 	}
 	else {
 		check = true;
 	}
 
+	// add to the database 
 	if (check) {
+		
 		db.collection('user_accounts').findOne({username: username}, function(err, result) {
 
 			if (result === null) {
 
-				bcrypt.hash(password, 10, function(err, hash) {
-
-					db.collection('user_accounts').insertOne({
-						firstname: firstname,
-						lastname: lastname,
-						username: username,
-						email: email,
-						password: hash,
-						type: 'standard',
-						cash: [10000],
-						stocks: [],
-						attempts: 0,
-						account_status: 'unlocked'
+				db.collection('user_accounts').findOne({email: email}, function(err, result1) {
 
 
-					}, (err, result) => {
-						if (err) {
-							messsage = `There was an error in creating your account. Please try again.`;
-							response.render('registration.hbs', {title: `There was an error in creating your account. Please try again.`});
-						}
-						message = `You have successfully created an account with the username '${username}' and have been granted $10,000 USD. Head over to the login page.`;
-						response.render('registration.hbs', {title: message});
-					});
+					if (result1 === null) {
+						bcrypt.hash(password, 10, function(err, hash) {
+
+							db.collection('user_accounts').insertOne({
+								firstname: firstname,
+								lastname: lastname,
+								username: username,
+								email: email,
+								password: hash,
+								type: 'standard',
+								cash: [10000],
+								stocks: [],
+								attempts: 0,
+								account_status: 'unlocked',
+								transactions: []
+
+
+							}, (err, result) => {
+
+								message = `You have successfully created an account with the username '${username}' and have been granted $10,000 USD. Head over to the login page.`;
+								response.render('registration.hbs', {
+									title: message,
+									firstname: firstname,
+									lastname: lastname,
+									username: username,
+									email: email
+								});
+							});
+						});
+					}	
+					else {
+						message = `The email '${email}' already exists within the system.`;
+						response.render('registration.hbs', {
+							title: message,
+							firstname: firstname,
+							lastname: lastname,
+							username: username,
+							email: email
+						});
+					}
 				});
 			}
 			else {
 				message = `The username '${username}' already exists within the system.`;
-				response.render('registration.hbs', {title: `The username '${username}' already exists within the system.`});
+				response.render('registration.hbs', {
+					title: message,
+					firstname: firstname,
+					lastname: lastname,
+					username: username,
+					email: email
+				});
 			}
 
 		}
 
-	)};
+	)}
+
+	else {
+		response.render('registration.hbs', {
+			title: message,
+			firstname: firstname,
+			lastname: lastname,
+			username: username,
+			email: email
+		});
+	}
+
 });
 
 function check_str (string_input) {
@@ -722,6 +850,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 	var stock = (request.body.buystockticker).toUpperCase();
 	var stocks = request.session.passport.user.stocks;
 	var cash = request.session.passport.user.cash;
+	var transactions = request.session.passport.user.transactions;
 
 	const buy_stock = async () => {
 
@@ -734,6 +863,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 			var total_cost = Math.round(stock_price*qty*100)/100;
 			var cash_remaining = Math.round((cash - total_cost)*100)/100;
 			var stock_holding = {[stock]:parseInt(qty)};
+			var company_name = stock_info.data.companyName;
 
 			if ((cash_remaining >= 0) && (total_cost !== 0) && (qty > 0)) {
 
@@ -754,11 +884,14 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
 					stocks.push(stock_holding);
 				}
-				console.log('cash_remaining before update:'+cash_remaining);
+
+				var transaction = transaction_log("BUY", stock, company_name, qty, stock_price, total_cost, cash_remaining);
+
+				transactions.unshift(transaction);
 
 				db.collection('user_accounts').updateOne(
 					{ "_id": ObjectID(_id)},
-					{ $set: { "cash": cash, "stocks": stocks}}
+					{ $set: { "cash": cash, "stocks": stocks, "transactions": transactions}}
 				);
 
 				message = `You successfully purchased ${qty} shares of ${stock_name} (${stock}) at $${stock_price}/share for $${total_cost}.`;
@@ -804,6 +937,29 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 	buy_stock();
 });
 
+function transaction_log(action, ticker, company, qty, cost_share, total, balance) {
+
+	var date = moment().format('MMMM Do YYYY, h:mm:ss a');
+
+	// var total = parseFloat(numeral(total).format('(0,0.00)'));
+
+	if (action === "BUY") {
+		total = total * -1;
+	}
+
+	var transaction = { date: date,
+						action_type: action,
+						symbol: ticker,
+						company: company,
+						qty: qty,
+						cost_per_share: cost_share,
+						total: total,
+						balance_after_transaction: balance
+					}
+
+	return transaction;
+}
+
 app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 
 	var _id = request.session.passport.user._id;
@@ -811,6 +967,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 	var qty = parseInt(request.body.sellstockqty);
 	var stock = (request.body.sellstockticker).toUpperCase();
 	var stocks = request.session.passport.user.stocks;
+	var transactions = request.session.passport.user.transactions;
 
 	const sell_stock = async () => {
 
@@ -826,6 +983,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 			var total_sale = Math.round(stock_price*qty*100)/100;
 			var remaining_balance = Math.round((cash[0] + total_sale)*100)/100;
 			var stock_qty = request.session.passport.user.stocks[index][stock];
+			var company_name = stock_info.data.companyName;
 			var stock_remaining = stock_qty - qty;
 
 			if (stock_qty < qty) {
@@ -845,10 +1003,14 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 					cash[0] = remaining_balance;
 				}
 
+				var transaction = transaction_log("SELL", stock, company_name, qty, stock_price, total_sale, remaining_balance);
+
+				transactions.unshift(transaction);
+
 				db.collection('user_accounts').updateOne(
-						{ "_id": ObjectID(_id)},
-						{ $set: { "cash": cash, "stocks": stocks}}
-					);
+					{ "_id": ObjectID(_id)},
+					{ $set: { "cash": cash, "stocks": stocks, "transactions": transactions}}
+				);
 
 				message = `You successfully sold ${qty} shares of ${stock_name} (${stock}) at $${stock_price}/share for $${total_sale}.`
 			}

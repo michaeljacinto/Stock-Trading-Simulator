@@ -69,56 +69,43 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
         <h3 style="padding-bottom: 5px;"><span style="font-weight: lighter;" id="date"></span></h3>
 
 
-            <div class='form-style-8'>
+            <div class='container form-style-8'>
+            
 
-                <form action ="/profile-info-change" method="POST">
-                
+                    <h2>TRANSACTIONS</h2>
 
-                    <!-- Registration Page -->
-                    <h2>ACCOUNT INFORMATION</h2>
+                    <table name="Transactions" id="sideTables">
+                    <tr>
 
-                    <label for="firstname" text-align: left>First Name</label>
-                                <input type="text" name="firstname" id="firstname" value="{{fname}}"/>
-
-                                <label for="firstname">Last Name</label>
-                                <input type="text" name="lastname" id="lastname" value="{{lname}}"/>
-
-                                <label for="firstname">Username</label>
-                                <input type="text" name="username" id="username" value="{{uname}}"/>
-
-                                <label for="firstname">Email</label>
-                                <input type="email" name="email" id="email" value="{{email}}"/>
-                                
-                    <br>
-                    <p>{{title}}</p>
-                    <br>
-
-                    <input type="submit" value="UPDATE ACCOUNT" />
+                    <th>Time of Transaction</th>
+                    <th>Action</th>
+                    <th>Ticker</th>
+                    <th>Company</th>
+                    <th>Quantity</th>
+                    <th>Cost/Share ($)</th>
+                    <th>Total Price ($)</th>
+                    <th>New Balance ($)</th>
+                    </tr>
+                    <p>{{#each transactions}}
+                    <tr>
+                        <td style="">{{this.date}}. </td>
+                        <td style="">{{this.action_type}}</td>
+                        <td style="">{{this.symbol}}</td>
+                        <td style="">{{this.company}}</td>
+                        <td style="">{{this.qty}}</td>
+                        <td style="">{{this.cost_per_share}}</td>
+                        <td style=""><span style="font-weight: bold;"></span><div id="user_cash">{{this.total}}</div></td>
+                        <td style="">{{this.balance_after_transaction}}</td>
+                    </tr>
+                    {{/each}}</p>
+                    </table>
+                    
 
                 <br><br>
 
-                </form>
+        
                 
             </div>
-
-            <!-- Change Password -->
-            <form action="/profile-password-change" method="POST" class="form-inline my-2 my-lg-0">
-                <div class="form-style-8">
-                    <h2>PASSWORD CHANGE</h2>
-                    <input type="password" name="current_password" id="current_password" placeholder="Current Password"/>
-                    <input type="password" name="password" id="password" placeholder="New Password"/>
-                    <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm New Password"/>
-
-                    <br>
-                    <p>{{password_msg}}</p>
-                    <br>
-
-                    <input type="submit" value="CHANGE PASSWORD" />
-
-                    
-
-                </div>
-            </form>
         
         <br>
 
