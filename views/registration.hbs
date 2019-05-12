@@ -44,31 +44,28 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
         <!-- Registration Page -->
         <div class="defcontent">
             <br>
-            <!-- <div class='chfont container form-style-8'> -->
 
                 <div class='container form-style-8'>
 
                 <form action ="/register" method="POST">
                 
-
-                    <!-- Registration Page -->
                     <h2>REGISTRATION</h2>
                     <label for="firstname">First Name</label>
-                    <input type="text" name='firstname' id="firstname" placeholder="Must be a minimum of 3 characters and must only contain letters."/>
+                    <input type="text" name='firstname' id="firstname" value='{{firstname}}' placeholder="Must be a minimum of 3 characters and must only contain letters."/>
 
-                    <label for="firstname">Last Name</label>
-                    <input type="text" name="lastname" id="lastname" placeholder="Must be a minimum of 3 characters and must only contain letters."/>
+                    <label for="lastname">Last Name</label>
+                    <input type="text" name="lastname" id="lastname" value='{{lastname}}' placeholder="Must be a minimum of 3 characters and must only contain letters."/>
 
-                    <label for="firstname">Username</label>
-                    <input type="text" name="username" id="username" placeholder="Must be a minimum of 3 characters and must only contain letters & numbers." />
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" value='{{username}}' placeholder="Must be a minimum of 3 characters and must only contain letters & numbers." />
 
-                    <label for="firstname">Email</label>
-                    <input type="email" name="email" id="email" placeholder="Must be a valid email." />
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" value='{{email}}' placeholder="Must be a valid email." />
 
-                    <label for="firstname">Password</label>
+                    <label for="password">Password</label>
                     <input type="password" name="password" id="password" placeholder="Must be a minimum of 8 characters and contain 1 letter and 1 number." />
 
-                    <label for="firstname">Confirm Password</label>
+                    <label for="confirm">Confirm Password</label>
                     <input type="password" name="confirm_password" id="confirm_password"placeholder="" />
 
                     <br>
@@ -81,7 +78,7 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
 
                 </form>
                 
-            </div>
+                </div>
 
         </div>
             <footer class="chfont page-footer font-small blue">

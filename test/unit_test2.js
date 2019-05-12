@@ -106,6 +106,37 @@ describe('GET /home - 200', function () {
         });
     });
 
+    it("Should return true if valid links are returned after search", function (done) {
+        agent
+        .post('/login')
+        .send({
+            '_method': 'post',
+            'username': 'michaell',
+            'password': 'michaell1'
+        })
+        .then(function (res) {
+        return agent.post('/home')
+        .send({
+            '_method': 'post',
+            'news_search': 'TSLA'
+        })
+            .then(function (res) {
+                var $ = cheerio.load(res.text);
+
+                var display = $('div[id=user_cash]').text();
+                var rankings = display.split(" ");
+
+                // checks that the list is properly ordered
+                for (var i = 0; i < rankings.length - 2; i++) {
+                    assert.isAtLeast(parseFloat(rankings[i]), parseFloat(rankings[i + 1]), 'num 1 must be >= num 2');
+                }
+
+                expect(res).to.have.status(200);
+                done();
+            });
+        });
+    });
+
 });
 
 describe('POST /login - 200', function () {
