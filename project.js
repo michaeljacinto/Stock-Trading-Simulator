@@ -226,6 +226,7 @@ app.post('/login-fail',
 
 app.get('/home', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var news_feed = [];
 	var news_url = [];
 	var news_imgs = [];
@@ -281,7 +282,8 @@ app.get('/home', isAuthenticated, (request, response) => {
 						urls: news_url,
 						imgs: news_imgs,
 						num_users: num_users,
-						query: ''
+						query: '',
+						admin: if_admin(acc_type)
 					});
 
 				});
@@ -301,8 +303,19 @@ app.get('/home', isAuthenticated, (request, response) => {
 
 });
 
+function if_admin (string_input) {
+	// checks if string value is between 3 and 12 characters, uses RegEx to confirm only alphabetical characters
+	if (string_input === 'admin') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 app.post('/home', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var query = request.body.news_search;
 	var news_feed = [];
 	var news_url = [];
@@ -358,7 +371,8 @@ app.post('/home', isAuthenticated, (request, response) => {
 						urls: news_url,
 						imgs: news_imgs,
 						num_users: num_users,
-						query: query
+						query: query,
+						admin: if_admin(acc_type)
 					});
 
 				});
@@ -385,6 +399,7 @@ app.post('/home', isAuthenticated, (request, response) => {
 
 app.get('/profile', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var firstname = request.session.passport.user.firstname;
 	var lastname = request.session.passport.user.lastname;
 	var username = request.session.passport.user.username;
@@ -396,7 +411,8 @@ app.get('/profile', isAuthenticated, (request, response) => {
 		fname: firstname,
 		lname: lastname,
 		uname: username,
-		email: email
+		email: email,
+		admin: if_admin(acc_type)
 	})
 });
 
@@ -412,6 +428,7 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 	var user_username = request.session.passport.user.username;
 	var email = request.body.email;
 	var user_email = request.session.passport.user.email;
+	var acc_type = request.session.passport.user.type;
 	var message;
 	var check;
 
@@ -442,7 +459,8 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 				fname: firstname,
 				lname: lastname,
 				uname: username,
-				email: email
+				email: email,
+				admin: if_admin(acc_type)
 			})
 		}
 
@@ -469,7 +487,8 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 								fname: firstname,
 								lname: lastname,
 								uname: username,
-								email: email
+								email: email,
+								admin: if_admin(acc_type)
 							})
 						}
 						else {
@@ -480,7 +499,8 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 								fname: firstname,
 								lname: lastname,
 								uname: username,
-								email: email
+								email: email,
+								admin: if_admin(acc_type)
 							})
 						}
 					});
@@ -494,7 +514,8 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 						fname: firstname,
 						lname: lastname,
 						uname: username,
-						email: email
+						email: email,
+						admin: if_admin(acc_type)
 					})
 				}
 
@@ -511,7 +532,8 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 			fname: firstname,
 			lname: lastname,
 			uname: username,
-			email: email
+			email: email,
+			admin: if_admin(acc_type)
 		})
 	}
 
@@ -519,6 +541,7 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 
 app.post('/profile-password-change', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var db = utils.getDb();
 	var _id = request.session.passport.user._id;
 	var database_password = request.session.passport.user.password;
@@ -577,7 +600,8 @@ app.post('/profile-password-change', isAuthenticated, (request, response) => {
 				fname: firstname,
 				lname: lastname,
 				uname: username,
-				email: email
+				email: email,
+				admin: if_admin(acc_type)
 			});
 			
 		});
@@ -586,10 +610,12 @@ app.post('/profile-password-change', isAuthenticated, (request, response) => {
 app.get('/transactions', isAuthenticated, (request, response) => {
 
 	var transactions = request.session.passport.user.transactions;
+	var acc_type = request.session.passport.user.type;
 
 	response.render('transactions.hbs', {
 		// title: 'Welcome to the trading page.'
-		transactions: transactions
+		transactions: transactions,
+		admin: if_admin(acc_type)
 	});
 
 });
@@ -786,13 +812,18 @@ app.get('/trading', (request, response) => {
 });
 
 app.get('/trading-success', isAuthenticated, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+
 	response.render('trading-success.hbs', {
-		title: 'Welcome to the trading page.'
+		title: 'Welcome to the trading page.',
+		admin: if_admin(acc_type)
 	});
 });
 
 app.post('/trading-success-search', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var stock = request.body.stocksearch;
 	var cash = request.session.passport.user.cash;
 	var historical_prices = [];
@@ -836,7 +867,8 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 				prices: historical_prices,
 				stock_name: stock_name,
 				head: `Cash balance: $${cash[0]}`,
-				check: check
+				check: check,
+				admin: if_admin(acc_type)
 				})
 	}
 
@@ -845,6 +877,7 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 
 app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var _id = request.session.passport.user._id;
 	var qty = request.body.buystockqty;
 	var stock = (request.body.buystockticker).toUpperCase();
@@ -919,7 +952,8 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
 		response.render('trading-success.hbs', {
 						title: message,
-						head: `Cash balance: $${cash[0]}`
+						head: `Cash balance: $${cash[0]}`,
+						admin: if_admin(acc_type)
 					})
 
 		function check_existence(stock) {
@@ -962,6 +996,7 @@ function transaction_log(action, ticker, company, qty, cost_share, total, balanc
 
 app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var _id = request.session.passport.user._id;
 	var cash = request.session.passport.user.cash;
 	var qty = parseInt(request.body.sellstockqty);
@@ -1030,7 +1065,8 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 		}
 		response.render('trading-success.hbs', {
 			title: message,
-			head: `Cash balance: $${cash[0]}`
+			head: `Cash balance: $${cash[0]}`,
+			admin: if_admin(acc_type)
 		})
 
 		function check_existence(stock) {
@@ -1048,6 +1084,8 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 });
 
 app.post('/trading-success-holdings', isAuthenticated, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
 	var stocks = request.session.passport.user.stocks;
 	var num_stocks = stocks.length;
 	var stock_keys = [];
@@ -1069,7 +1107,8 @@ app.post('/trading-success-holdings', isAuthenticated, (request, response) => {
 
 	response.render('trading-success.hbs', {
 		title: message,
-		head: `Cash: $${cash[0]}`
+		head: `Cash: $${cash[0]}`,
+		admin: if_admin(acc_type)
 	})
 });
 
@@ -1086,12 +1125,19 @@ app.get('/admin-restricted', isAuthenticated, (request, response) => {
 });
 
 app.get('/admin-success', isAdmin, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+
     response.render('admin-success', {
-    	title: 'Welcome to the Admin Page'
+    	title: 'Welcome to the Admin Page',
+    	admin: if_admin(acc_type)
     });
  });
 
 app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
+
+	var acc_type = request.session.passport.user.type;
+
 	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
 		assert.equal(null, err);
 		db.collection('user_accounts').find().toArray(function(err, result) {
@@ -1099,7 +1145,8 @@ app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
 				res.send('Unable to fetch Accounts');
 			}
 			res.render('admin-success-user-accounts-list.hbs', {
-				result: result
+				result: result,
+				admin: if_admin(acc_type)
 			});
 		});
 		db.close;
@@ -1107,6 +1154,9 @@ app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
 });
 
 app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
+
+	var acc_type = request.session.passport.user.type;
+
 	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
 		assert.equal(null, err);
 		db.collection('user_accounts').find().toArray(function(err, result) {
@@ -1114,18 +1164,19 @@ app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
 				res.send('Unable to fetch Accounts');
 			}
 			res.render('admin-success-delete-user-success.hbs', {
-				result: result
+				result: result,
+				admin: if_admin(acc_type)
 			});
 		});
 		db.close;
 	})});
 
 app.post('/admin-success-delete-user-success', function(req, res, next) {
+
+	var acc_type = request.session.passport.user.type;
 	var user_name_to_delete = req.body.user_id;
 	var username = req.session.passport.user.username;
 
-	console.log(user_name_to_delete)
-	console.log(username)
 	if(user_name_to_delete == username){
 		res.render('admin-success-delete-user-success.hbs', {
 			message: "Cannot delete your own account!"
@@ -1149,7 +1200,8 @@ app.post('/admin-success-delete-user-success', function(req, res, next) {
 							console.log(message)
 							// console.log(err);
 							res.render('admin-success-delete-user-success.hbs', {
-								message: message
+								message: message,
+								admin: if_admin(acc_type)
 							});
 						};
 
@@ -1157,7 +1209,8 @@ app.post('/admin-success-delete-user-success', function(req, res, next) {
 							message = 'No user exists with that username';
 							console.log(message)
 							res.render('admin-success-delete-user-success.hbs', {
-								message: message
+								message: message,
+								admin: if_admin(acc_type)
 							});
 						}else {
 							db.collection('user_accounts').deleteOne(query, function(err, obj) {
@@ -1165,7 +1218,8 @@ app.post('/admin-success-delete-user-success', function(req, res, next) {
 								console.log("User Deleted");
 								message ='User is Deleted';
 								res.render('admin-success-delete-user-success.hbs', {
-								message: message
+								message: message,
+								admin: if_admin(acc_type)
 							});
 								db.close();
 							});
@@ -1177,53 +1231,14 @@ app.post('/admin-success-delete-user-success', function(req, res, next) {
 		};
 });
 
-app.get('/admin-success-update-balances', isAdmin, function(req, res, next) {
-	res.render('admin-success-update-balances.hbs', {
-		message: 'Enter the user ID and cash you would like to change to.'
-	});
-});
-
-app.post('/admin-success-update-balances', isAdmin, function(req, res, next) {
-	var user_id = req.body.user_id;
-	var new_balance = req.body.user_balance;
-	var balance_to_list = [new_balance];
-	var message;
-
-	console.log(new_balance);
-
-	if (new_balance > 0) {
-
-		try {
-			db.collection('user_accounts').findOne({_id: user_id}, function(err, result) {
-
-				if (result !== null) {
-
-					db.collection('user_accounts').updateOne(
-						{ "_id": ObjectID(_id)},
-						{ $set: {"cash": balance_to_list}}
-					);
-
-					message = `ID: ${user_id} cash has been changed to ${new_balance}.`
-				}
-			})
-		}
-		catch(err) {
-			message = `User ID doesn't exist.`;
-		}
-	}
-	else {
-		message = `Number must be greater than 0.`;
-	}
-
-	res.render('admin-success-update-balances.hbs', {
-		message: message
-	});
-})
-
 // redirects user to error page if no user is logged in and trying to access a different page
 app.get('*', errorPage, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+
 	response.render('404.hbs', {
-		title: `Sorry the URL does not exist.`
+		title: `Sorry the URL does not exist.`,
+		admin: if_admin(acc_type)
 	})
 });
 
