@@ -210,7 +210,7 @@ app.post('/login',
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
     response.redirect('/home');
-  });
+ });
 
 // log in, redirects if invalid credentials
 app.post('/login-fail',
@@ -237,18 +237,19 @@ app.get('/home', isAuthenticated, (request, response) => {
 	const get_news = async () => {
 
 		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,cnbc.com,yahoo.com&q=stocks&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,yahoo.com&q=stocks&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
 			news_items = news.data.articles;
 
 			for (var i = 0; i <= 5; i++) {
 				news_feed.push(news_items[i].title);
 				news_url.push(news_items[i].url);
 
-				if (news_items[i].url !== null) {
-					news_imgs.push(news_items[i].urlToImage);
-				}
-				else {
+				if (news_items[i].urlToImage === null) {
 					news_imgs.push(open_source_imgs[i]);
+				}
+
+				else {
+					news_imgs.push(news_items[i].urlToImage);
 				}
 
 			}
@@ -277,7 +278,8 @@ app.get('/home', isAuthenticated, (request, response) => {
 						news: news_feed,
 						urls: news_url,
 						imgs: news_imgs,
-						num_users: num_users
+						num_users: num_users,
+						query: ''
 					});
 
 				});
@@ -313,18 +315,18 @@ app.post('/home', isAuthenticated, (request, response) => {
 	const get_news = async () => {
 
 		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,cnbc.com,yahoo.com&q=${query}&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,yahoo.com&q=${query}&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
 			news_items = news.data.articles;
 
 			for (var i = 0; i <= 5; i++) {
 				news_feed.push(news_items[i].title);
 				news_url.push(news_items[i].url);
 
-				if (news_items[i].url !== null) {
-					news_imgs.push(news_items[i].urlToImage);
+				if (news_items[i].urlToImage === null) {
+					news_imgs.push(open_source_imgs[i]);
 				}
 				else {
-					news_imgs.push(open_source_imgs[i]);
+					news_imgs.push(news_items[i].urlToImage);
 				}
 
 			}
@@ -334,23 +336,32 @@ app.post('/home', isAuthenticated, (request, response) => {
 		}
 		mongoose.connect(mongoURL, { useNewUrlParser: true }, function (err, db) {
 			assert.equal(null, err);
-			db.collection('user_accounts').find().sort({
-				"cash": -1
-			}).limit(20).toArray(function (err, result) {
+
+			db.collection('user_accounts').find().toArray(function (err, result_list) {
 				if (err) {
-					response.send('Unable to fetch Accounts');
 				}
 
-				response.render('home.hbs', {
-					title: 'Welcome to the login page.',
-					result: result,
-					news: news_feed,
-					urls: news_url,
-					imgs: news_imgs
-				});
+				var num_users = result_list.length
+				db.collection('user_accounts').find().sort({
+					"cash": -1
+				}).limit(20).toArray(function (err, result) {
+					if (err) {
+						response.send('Unable to fetch Accounts');
+					}
 
-			});
-			db.close;
+					response.render('home.hbs', {
+						title: 'Welcome to the login page.',
+						result: result,
+						news: news_feed,
+						urls: news_url,
+						imgs: news_imgs,
+						num_users: num_users,
+						query: query
+					});
+
+				});
+				db.close;
+			})
 		});
 
 		//allows leaderboard to show proper rank numbers
@@ -368,6 +379,126 @@ app.post('/home', isAuthenticated, (request, response) => {
 		response.redirect('/home');
 	}
 
+});
+
+app.get('/profile', isAuthenticated, (request, response) => {
+
+	var firstname = request.session.passport.user.firstname;
+	var lastname = request.session.passport.user.lastname;
+	var username = request.session.passport.user.username;
+	var email = request.session.passport.user.email;
+
+	response.render('profile.hbs', {
+		title: '',
+		password_msg: '',
+		fname: firstname,
+		lname: lastname,
+		uname: username,
+		email: email
+	})
+});
+
+app.post('/profile-info-change', isAuthenticated, (request, response) => {
+
+	var db = utils.getDb();
+	var _id = request.session.passport.user._id;
+	var firstname = request.body.firstname;
+	var lastname = request.body.lastname;
+	var username = request.body.username;
+	var email = request.body.email;
+	var message = '';
+
+
+	if (check_str(firstname) === false) {
+		message = `First name must have alteast 3 letters.`;
+	}
+	else if (check_str(lastname) === false) {
+		message = `Last name must have alteast 3 letters.`;
+		response.render('registration.hbs', {title: message});
+	}
+	else if (check_alphanum(username) === false) {
+		message = `Username must have 5-15 characters and may only be alphanumeric.`;
+	}
+	else if (check_email(email) === false) {
+		message = `Must enter a valid email`;
+	}
+	else {
+		db.collection('user_accounts').updateOne(
+			{ "_id": ObjectID(_id)},
+			{ $set: { "firstname": firstname, "lastname": lastname,
+			"username": username, "email": email}}
+		);
+		message = 'Your information has been updated. Please log back in to view the new changes.'
+	}
+
+	response.render('profile.hbs', {
+		title: message,
+		password_msg: '',
+		fname: firstname,
+		lname: lastname,
+		uname: username,
+		email: email
+	})
+});
+
+app.post('/profile-password-change', isAuthenticated, (request, response) => {
+
+	var db = utils.getDb();
+	var _id = request.session.passport.user._id;
+	var database_password = request.session.passport.password;
+	var current_password = request.body.current_password;
+	var password = request.body.password;
+	var confirm_password = request.body.confirm_password;
+	var firstname = request.session.passport.user.firstname;
+	var lastname = request.session.passport.user.lastname;
+	var username = request.session.passport.user.username;
+	var email = request.session.passport.user.email;
+	var message = '';
+
+		bcrypt.compare(current_password, password, function(err, res) {
+
+			if(res) {
+				message = 'Your password is incorrect.';
+			}
+
+			else {
+
+				if (password === '') {
+					message = `To change password, please enter your current password.`;
+				}
+
+				else if (check_password(password) === false) {
+					message = `Password must be atleast 8 characters with atleast 1 letter & 1 number.`;
+				}
+
+				else if (password !== confirm_password) {
+					message = 'Passwords do not match.';
+				}
+
+				else {
+
+					bcrypt.hash(password, 10, function(err, hash) {
+
+						db.collection('user_accounts').updateOne(
+							{ "_id": ObjectID(_id)},
+							{ $set: { "password": hash}}
+						);
+
+					})
+
+					message = 'Your password has been changed.'
+				}
+
+				response.render('profile.hbs', {
+					title: '',
+					password_msg: message,
+					fname: firstname,
+					lname: lastname,
+					uname: username,
+					email: email
+				});
+			}
+		});
 });
 
 app.get('/register', (request, response) => {
@@ -389,29 +520,34 @@ app.post('/register', function(request, response) {
 	var lastname = request.body.lastname;
 	var username = request.body.username;
 	var password = request.body.password;
+	var email = request.body.email;
 	var message;
 	var confirm_password = request.body.confirm_password;
 	var db = utils.getDb();
-	var attributes = [firstname, lastname, username, password, confirm_password];
+	var attributes = [firstname, lastname, username, email, password, confirm_password];
 	var check;
 
 	if (check_str(attributes[0]) === false) {
-		message = `First name must be 3-30 characters long and must only contain letters.`;
+		message = `First name must have alteast 3 letters.`;
 		response.render('registration.hbs', {title: message});
 	}
 	else if (check_str(attributes[1]) === false) {
-		message = `Last name must be 3-30 characters long and must only contain letters.`;
+		message = `Last name must have alteast 3 letters.`;
 		response.render('registration.hbs', {title: message});
 	}
 	else if (check_alphanum(attributes[2]) === false) {
 		message = `Username must have 5-15 characters and may only be alphanumeric.`;
 		response.render('registration.hbs', {title: message});
 	}
-	else if (check_password(attributes[3]) === false) {
+	else if (check_email(attributes[3]) === false) {
+		message = `Must enter a valid email`;
+		response.render('registration.hbs', {title: message});
+	}
+	else if (check_password(attributes[4]) === false) {
 		message = `Password must min 8 characters with atleast 1 letter & 1 number.`;
 		response.render('registration.hbs', {title: message});
 	}
-	else if ((attributes[3]) !== attributes[4]) {
+	else if ((attributes[4]) !== attributes[5]) {
 		message = `Passwords do not match. Please try again.`;
 		response.render('registration.hbs', {title: message});
 	}
@@ -430,6 +566,7 @@ app.post('/register', function(request, response) {
 						firstname: firstname,
 						lastname: lastname,
 						username: username,
+						email: email,
 						password: hash,
 						type: 'standard',
 						cash: [10000],
@@ -444,7 +581,6 @@ app.post('/register', function(request, response) {
 							response.render('registration.hbs', {title: `There was an error in creating your account. Please try again.`});
 						}
 						message = `You have successfully created an account with the username '${username}' and have been granted $10,000 USD. Head over to the login page.`;
-						// response.status(200);
 						response.render('registration.hbs', {title: message});
 					});
 				});
@@ -488,7 +624,19 @@ function check_alphanum (string_input) {
 
 function check_password(string_input) {
 	// checks if password is atleast 8 characters long containing 1 letter and 1 number
-	var valid_chars = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;;
+	var valid_chars = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+	if (valid_chars.test(string_input)) {
+		flag = true;
+	} else {
+		flag = false;
+	}
+	return flag;
+}
+
+function check_email(string_input) {
+	// checks if password is atleast 8 characters long containing 1 letter and 1 number
+	var valid_chars = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	if (valid_chars.test(string_input)) {
 		flag = true;
