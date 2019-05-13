@@ -296,6 +296,8 @@ app.post('/recovery', (request, response) => {
 					db.close;
 				});
 
+// allows for success of logging in via correct username and password
+
 app.get('/home', isAuthenticated, (request, response) => {
 
 	var acc_type = request.session.passport.user.type;
