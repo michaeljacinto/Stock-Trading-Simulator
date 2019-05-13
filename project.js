@@ -1208,7 +1208,7 @@ app.get('/admin-success', isAdmin, (request, response) => {
 
 app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
 
-	var acc_type = request.session.passport.user.type;
+	var acc_type = req.session.passport.user.type;
 
 	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
 		assert.equal(null, err);
@@ -1227,7 +1227,7 @@ app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
 
 app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
 
-	var acc_type = request.session.passport.user.type;
+	var acc_type = req.session.passport.user.type;
 
 	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
 		assert.equal(null, err);
@@ -1245,7 +1245,7 @@ app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
 
 app.post('/admin-success-delete-user-success', function(req, res, next) {
 
-	var acc_type = request.session.passport.user.type;
+	var acc_type = req.session.passport.user.type;
 	var user_name_to_delete = req.body.user_id;
 	var username = req.session.passport.user.username;
 
