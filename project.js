@@ -17,6 +17,7 @@ var assert = require('assert');
 const bcrypt = require('bcrypt');
 var moment = require('moment');
 var numeral = require('numeral');
+var nodemailer = require('nodemailer');
 
 hbs.registerPartials(__dirname + '/views/partials');
 
@@ -92,6 +93,14 @@ var account_schema = new mongoose.Schema({
 	}
 });
 
+// nodemailer account details
+var transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+		user: 'recovery.stocktradingsimulator@gmail.com',
+		pass: 'Group#4Teen'
+	}
+});
 
 const user_account = mongoose.model("user_accounts", account_schema);
 
@@ -219,10 +228,73 @@ app.post('/login-fail',
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
     response.redirect('/home');
-  });
+	});
+	
+// password recover email, emails recover password if valid email
+
+app.post('/recovery', (request, response) => {
+
+	var db = utils.getDb();
+
+	input_email = request.body.email;
 
 
-// allows for success of logging in via correct username and password
+	db.collection('user_accounts').find().toArray(function (err, result_list) {
+				if (err) {
+					response.send('Unable to fetch Accounts');
+				}
+
+				var num_users = result_list.length
+
+				for (var i = 0; i < num_users; i++) {
+
+				if (input_email == result_list[i].email) {
+
+		
+					password = Math.random().toString(36).slice(2)
+
+					bcrypt.hash(password, 10, function (err, hash) {
+						
+
+						db.collection('user_accounts').updateOne({
+							"email": input_email
+						}, {
+							$set: {
+								"password": hash
+							}
+						});
+
+					})
+
+					 var mailOptions = {
+					 	from: 'Stock Trading Simulator Support',
+					 	to: input_email,
+					 	subject: 'Password Recovery - Stock Trading Simulator',
+					 	html: 'Below is the recovery info for your account: <br> Username: <strong>' + result_list[i].username + '</strong><br>Password: <strong>' + password + '</strong>'
+					 };
+
+					 transporter.sendMail(mailOptions, function (error, info) {
+					 	if (error) {
+					 		console.log(error);
+					 	} else {
+					 		console.log('Email sent: ' + info.response);
+					 	}
+					 });
+
+					message = 'Your password has been changed.'
+
+
+				}
+
+					
+				}
+
+					response.redirect('/');
+
+					request.session.destroy(function (err) {});
+					});
+					db.close;
+				});
 
 app.get('/home', isAuthenticated, (request, response) => {
 
