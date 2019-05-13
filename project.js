@@ -9,7 +9,6 @@ var mongoose = require('mongoose');
 var fs = require('fs');
 var session = require('express-session');
 const MongoClient = require('mongodb').MongoClient;
-// const check = require('express-validator');
 var utils = require('./utils');
 var cookieParser = require('cookie-parser');
 var ObjectID = require('mongodb').ObjectID;
@@ -68,7 +67,6 @@ passport.deserializeUser(function(user, done) {
 app.use((request, response, next) => {
 	var time = new Date().toString();
 	var log_entry = `${time.slice(4, 21)}: ${response.statusCode} - ${request.method} ${request.url}`;
-	// console.log(log_entry);
 	fs.appendFile('server.log', log_entry + '\n', (error) => {
 		if (error) {
 			console.log('Unable to log message');
@@ -212,7 +210,6 @@ app.get('/logout', function (request, response){
 app.post('/',
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
-  	// console.log(request.body.username);
     response.redirect('/home');
   });
 
@@ -237,7 +234,6 @@ app.post('/recovery', (request, response) => {
 	var db = utils.getDb();
 
 	input_email = request.body.email;
-
 
 	db.collection('user_accounts').find().toArray(function (err, result_list) {
 				if (err) {
