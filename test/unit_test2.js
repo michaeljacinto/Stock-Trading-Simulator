@@ -30,14 +30,62 @@ describe('POST /login - 200', function () {
     });
 });
 
+describe('GET /transactions - 200', function () {
+    it("Should grant access to the transactions page", function (done) {
+        agent
+        .post('/login')
+        .send({
+            '_method': 'post',
+            'username': 'testaccount',
+            'password': 'testaccount1'
+        })
+        .then(function (res) {
+        return agent.get('/transactions')
+            .then(function (res) {
+
+                // checks if there is a 200 status when getting to the transactions page
+                var $ = cheerio.load(res.text);
+                var display = $('title').text();
+                assert.equal(display, "Transactions");
+                expect(res).to.have.status(200);
+                done();
+            });
+        });
+    });
+});
+
+describe('GET /profile - 200', function () {
+    it("Should grant access to Home page", function (done) {
+        agent
+        .post('/login')
+        .send({
+            '_method': 'post',
+            'username': 'testaccount',
+            'password': 'testaccount1'
+        })
+        .then(function (res) {
+        return agent.get('/transactions')
+            .then(function (res) {
+
+                // checks if there is a 200 status when getting to the profile page
+                var $ = cheerio.load(res.text);
+                var display = $('title').text();
+                assert.equal(display, "Transactions");
+                expect(res).to.have.status(200);
+                done();
+            });
+        });
+    });
+});
+
 describe('GET /home - 200', function () {
     it("Should grant access to Home page", function (done) {
         agent
         .post('/login')
         .send({
             '_method': 'post',
-            'username': 'michaell',
-            'password': 'michaell1'
+            'username': 'testaccount',
+            'password': 'testaccount1'
         })
         .then(function (res) {
         return agent.get('/home')
@@ -58,8 +106,8 @@ describe('GET /home - 200', function () {
         .post('/login')
         .send({
             '_method': 'post',
-            'username': 'michaell',
-            'password': 'michaell1'
+            'username': 'testaccount',
+            'password': 'testaccount1'
         })
         .then(function (res) {
         return agent.get('/home')
@@ -84,8 +132,8 @@ describe('GET /home - 200', function () {
         .post('/login')
         .send({
             '_method': 'post',
-            'username': 'michaell',
-            'password': 'michaell1'
+            'username': 'testaccount',
+            'password': 'testaccount1'
         })
         .then(function (res) {
         return agent.get('/home')
@@ -111,8 +159,8 @@ describe('GET /home - 200', function () {
         .post('/login')
         .send({
             '_method': 'post',
-            'username': 'michaell',
-            'password': 'michaell1'
+            'username': 'testaccount',
+            'password': 'testaccount1'
         })
         .then(function (res) {
         return agent.post('/home')
@@ -145,8 +193,8 @@ describe('POST /login - 200', function () {
         .post('/login')
         .send({
             '_method': 'post',
-            'username': 'michaell',
-            'password': 'michaell1'
+            'username': 'testaccount',
+            'password': 'testaccount1'
         })
         .then(function (res) {
         return agent.get('/trading-success')
@@ -157,29 +205,6 @@ describe('POST /login - 200', function () {
                 expect(res).to.have.status(200);
                 done()
             });
-        });
-    });
-});
-
-describe('POST /register - 200', function () {
-    it("Should give error that user already exists", function (done) {
-        agent
-        .post('/register')
-        .send({
-            '_method': 'post',
-            'firstname': 'john',
-            'lastname': 'albert',
-            'username': 'jalbert',
-            'password': 'ilovecats5',
-            'confirm_password': 'ilovecats5'
-        })
-        .then((res) => {
-
-          expect(res).to.have.status(200);
-          var $ = cheerio.load(res.text);
-          var title = $('form > p').text();
-          assert.equal(title, "The username 'jalbert' already exists within the system.");
-            done();
         });
     });
 });
@@ -210,7 +235,7 @@ describe('GET /trading - 200', function () {
             expect(res).to.have.status(200);
             var $ = cheerio.load(res.text);
             var title = $('title').text();
-            assert.equal(title, "Trading")
+            assert.equal(title, "Trade")
             done()
           })
   });
@@ -280,3 +305,4 @@ describe('GET *', function () {
           })
   });
 });
+
