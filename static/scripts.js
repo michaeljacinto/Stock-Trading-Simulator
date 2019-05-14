@@ -55,7 +55,155 @@ if(!window.wbiGlobalScope){
         if(this.animate){
             this.StartAnimationTimer()}};
     this.AnimateLoop=function(){
-        if(this.pauseAnimation==false){var b=this.scroller.position().left;if(b<=this.destLoc){this.pauseAnimation=true;this.UpdateList()}b-=this.moveAmount;this.scroller.css({left:b});if(this.alsoMove!=null){this.alsoMove.scroller.css({left:b})}}};this.getListHeader=function(){if(this.listName=="gainers"){return"Top 10 Gainers"}else{if(this.listName=="losers"){return"Top 10 Losers"}}};this.getTableHeader=function(){var b=b='<span style="margin-right:5px;color:white;font-style:bold;">'+"</span>";return b};this.getTableFooder=function(){var b='<span style="margin-right:5px;color:white;font-style:bold;"><a style="color:white;" target="_blank"></a></span>';return b;var b="";return b};this.getSymbolDiv=function(b){var e=b.n.replace(".","_");e=e.replace("/","_");var d='<span class="WLSymbolItem" id="'+e+'_display"><a class="sym" target="_parent" href="##">';var c="http://widgets.freestockcharts.com/WidgetServer/images/greenup.png";if(b.v1.substr(0,1)=="-"){c="http://widgets.freestockcharts.com/WidgetServer/images/reddown.png"}d+=b.n+' <span style="padding-left:3px;margin-right:3px;color:silver;" class="quoteup" id="'+e+'_quote">'+b.v2+'</span><span style="height:100%;" class="dirup" id="'+e+'_dir"><img alt="" border="0" id="'+e+'_img" src="'+c+'" /></span><span class="quoteup" id="'+e+'_change">'+b.v1+"</span>";d+="</a></span>";return d};this.clearChangeClass=function(){var e=sub_symbols.split(",");for(i=0;i<=e.length-1;i++){var c="#"+e[i]+"_quote";var d="#"+e[i]+"_change";var b="#"+e[i]+"_display";$(b).removeClass("valueChanged")}};this.NewDataCallback=function(d){if((d!=null)){if(d.length>0){this.sub_symbols="";var c="";c=this.getTableHeader();for(i=0;i<=d.length-1;i++){var b=d[i];this.sub_symbols+=b.n;if(i<d.length-1){this.sub_symbols+=","}c+=this.getSymbolDiv(b)}c+=this.getTableFooder();this.scroller.empty();this.scroller.append(c);this.updatingList=false;this.UpdateValues();if(this.animationStarted==false){this.animationStarted=true;this.configureAnimation()}this.setInitialLocation();this.pauseAnimation=false}}this.updatingList=false};this.UpdateList=function(){this.updatingList=true;var c=new Date();var b=c.getHours().toString()+c.getMinutes().toString()+c.getSeconds().toString()+c.getMilliseconds().toString();$.getJSON("http://widgets.freestockcharts.com/WidgetServer/DynamicLists.ashx?name="+this.listName+"&senderID="+this.scollerID+"&take=10&cbust="+b+"&jsoncallback=?",function(e,f){if((e!=null)){var d=window.wbiGlobalScope[e.senderId.toString()];d.NewDataCallback(e.lst)}})};this.newQuotedata=function(b,c){if((b!=null)){if(b.length>0){for(i=0;i<=b.length-1;i++){this.updateSymbolData(b[i].Symbol,b[i].Price,b[i].vol,b[i].percent,b[i].isUp)}}}};this.UpdateValues=function(){if(this.updatingList){return}var c=new Date();var b=c.getHours().toString()+c.getMinutes().toString()+c.getSeconds().toString()+c.getMilliseconds().toString();$.getJSON("http://widgets.freestockcharts.com/Ajaxserver.aspx?service=DATA&senderID="+this.scollerID+"&sym="+this.sub_symbols+"&cbust="+b+"&jsoncallback=?",function(e,f){if((e!=null)){var d=window.wbiGlobalScope[e.sid.toString()];d.newQuotedata(e.quotes)}})};this.updateSymbolData=function(d,f,e,k,c){d=d.replace(".","_");d=d.replace("/","_");var j="#"+d+"_quote";var h="#"+d+"_change";var m="#"+d+"_dir";var n="#"+d+"_img";var l="#"+d+"_vol";var b="#"+d+"_display";var g=$(j).text();$(j).text(f);$(h).text(k);$(b).removeClass("valueChanged");if(c){$(h).removeClass("changedown");$(h).addClass("changeup");$(j).removeClass("changedown");$(m).removeClass("dirdown");$(m).addClass("dirup");$(n).attr("src","http://widgets.freestockcharts.com/WidgetServer/images/greenup.png")}else{$(h).removeClass("changeup");$(h).addClass("changedown");$(j).removeClass("changeup");$(m).removeClass("dirup");$(m).addClass("dirdown");$(n).attr("src","http://widgets.freestockcharts.com/WidgetServer/images/reddown.png")}}};
+        if (this.pauseAnimation == false) {
+            var b = this.scroller.position().left;
+            if (b <= this.destLoc) {
+                this.pauseAnimation = true;
+                this.UpdateList()
+            }
+            b -= this.moveAmount;
+            this.scroller.css({
+                left: b
+            });
+            if (this.alsoMove != null) {
+                this.alsoMove.scroller.css({
+                    left: b
+                })
+            }
+        }
+        };
+        this.getListHeader = function () {
+            if (this.listName == "gainers") {
+                return "Top 10 Gainers"
+            } else {
+                if (this.listName == "losers") {
+                    return "Top 10 Losers"
+                }
+            }
+        };
+        this.getTableHeader = function () {
+            var b = b = '<span style="margin-right:5px;color:white;font-style:bold;">' + "</span>";
+            return b
+        };
+        this.getTableFooder = function () {
+            var b = '<span style="margin-right:5px;color:white;font-style:bold;"><a style="color:white;" target="_blank"></a></span>';
+            return b;
+            var b = "";
+            return b
+        };
+        this.getSymbolDiv = function (b) {
+            var e = b.n.replace(".", "_");
+            e = e.replace("/", "_");
+            var d = '<span class="WLSymbolItem" id="' + e + '_display"><a class="sym" target="_parent" href=/search/' + e +' >';
+            var c = "http://widgets.freestockcharts.com/WidgetServer/images/greenup.png";
+            if (b.v1.substr(0, 1) == "-") {
+                c = "http://widgets.freestockcharts.com/WidgetServer/images/reddown.png"
+            }
+            d += b.n + ' <span style="padding-left:3px;margin-right:3px;color:silver;" class="quoteup" id="' + e + '_quote">' + b.v2 + '</span><span style="height:100%;" class="dirup" id="' + e + '_dir"><img alt="" border="0" id="' + e + '_img" src="' + c + '" /></span><span class="quoteup" id="' + e + '_change">' + b.v1 + "</span>";
+            d += "</a></span>";
+            return d
+        };
+        this.clearChangeClass = function () {
+            var e = sub_symbols.split(",");
+            for (i = 0; i <= e.length - 1; i++) {
+                var c = "#" + e[i] + "_quote";
+                var d = "#" + e[i] + "_change";
+                var b = "#" + e[i] + "_display";
+                $(b).removeClass("valueChanged")
+            }
+        };
+        this.NewDataCallback = function (d) {
+            if ((d != null)) {
+                if (d.length > 0) {
+                    this.sub_symbols = "";
+                    var c = "";
+                    c = this.getTableHeader();
+                    for (i = 0; i <= d.length - 1; i++) {
+                        var b = d[i];
+                        this.sub_symbols += b.n;
+                        if (i < d.length - 1) {
+                            this.sub_symbols += ","
+                        }
+                        c += this.getSymbolDiv(b)
+                    }
+                    c += this.getTableFooder();
+                    this.scroller.empty();
+                    this.scroller.append(c);
+                    this.updatingList = false;
+                    this.UpdateValues();
+                    if (this.animationStarted == false) {
+                        this.animationStarted = true;
+                        this.configureAnimation()
+                    }
+                    this.setInitialLocation();
+                    this.pauseAnimation = false
+                }
+            }
+            this.updatingList = false
+        };
+        this.UpdateList = function () {
+            this.updatingList = true;
+            var c = new Date();
+            var b = c.getHours().toString() + c.getMinutes().toString() + c.getSeconds().toString() + c.getMilliseconds().toString();
+            $.getJSON("http://widgets.freestockcharts.com/WidgetServer/DynamicLists.ashx?name=" + this.listName + "&senderID=" + this.scollerID + "&take=10&cbust=" + b + "&jsoncallback=?", function (e, f) {
+                if ((e != null)) {
+                    var d = window.wbiGlobalScope[e.senderId.toString()];
+                    d.NewDataCallback(e.lst)
+                }
+            })
+        };
+        this.newQuotedata = function (b, c) {
+            if ((b != null)) {
+                if (b.length > 0) {
+                    for (i = 0; i <= b.length - 1; i++) {
+                        this.updateSymbolData(b[i].Symbol, b[i].Price, b[i].vol, b[i].percent, b[i].isUp)
+                    }
+                }
+            }
+        };
+        this.UpdateValues = function () {
+            if (this.updatingList) {
+                return
+            }
+            var c = new Date();
+            var b = c.getHours().toString() + c.getMinutes().toString() + c.getSeconds().toString() + c.getMilliseconds().toString();
+            $.getJSON("http://widgets.freestockcharts.com/Ajaxserver.aspx?service=DATA&senderID=" + this.scollerID + "&sym=" + this.sub_symbols + "&cbust=" + b + "&jsoncallback=?", function (e, f) {
+                if ((e != null)) {
+                    var d = window.wbiGlobalScope[e.sid.toString()];
+                    d.newQuotedata(e.quotes)
+                }
+            })
+        };
+        this.updateSymbolData = function (d, f, e, k, c) {
+            d = d.replace(".", "_");
+            d = d.replace("/", "_");
+            var j = "#" + d + "_quote";
+            var h = "#" + d + "_change";
+            var m = "#" + d + "_dir";
+            var n = "#" + d + "_img";
+            var l = "#" + d + "_vol";
+            var b = "#" + d + "_display";
+            var g = $(j).text();
+            $(j).text(f);
+            $(h).text(k);
+            $(b).removeClass("valueChanged");
+            if (c) {
+                $(h).removeClass("changedown");
+                $(h).addClass("changeup");
+                $(j).removeClass("changedown");
+                $(m).removeClass("dirdown");
+                $(m).addClass("dirup");
+                $(n).attr("src", "http://widgets.freestockcharts.com/WidgetServer/images/greenup.png")
+            } else {
+                $(h).removeClass("changeup");
+                $(h).addClass("changedown");
+                $(j).removeClass("changeup");
+                $(m).removeClass("dirup");
+                $(m).addClass("dirdown");
+                $(n).attr("src", "http://widgets.freestockcharts.com/WidgetServer/images/reddown.png")
+            }
+        }
+        };
 
 
 
