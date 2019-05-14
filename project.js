@@ -238,8 +238,8 @@ app.post('/recovery', (request, response) => {
 
 	input_email = request.body.email;
 
-
 	db.collection('user_accounts').find().toArray(function (err, result_list) {
+
 				if (err) {
 					response.send('Unable to fetch Accounts');
 				}
@@ -289,12 +289,14 @@ app.post('/recovery', (request, response) => {
 					
 				}
 
-					response.redirect('/');
+					response.render('login.hbs', {
+						title: `If the email ${input_email} exists, recovery instructions have been sent.`,
+					});
 
 					request.session.destroy(function (err) {});
 					});
 					db.close;
-				});
+});
 
 // allows for success of logging in via correct username and password
 
@@ -631,18 +633,18 @@ app.post('/profile-password-change', isAuthenticated, (request, response) => {
 		// compares current password to hashed password
 		bcrypt.compare(current_password, database_password, function(err, res) {
 
-			console.log(res);
-			console.log(current_password);
-			console.log(database_password);
+			if (current_password === '') {
+				message = 'To change your password you must enter your current password.';
+			}
 
-			if(res === false) {
-				message = 'Your password is incorrect.';
+			else if(res === false) {
+				message = 'Your current password is incorrect.';
 			}
 
 			else if (res === true) {
 
 				if (password === '') {
-					message = `To change password, please enter your current password.`;
+					message = `To change password, please enter a new password.`;
 				}
 
 				else if (check_password(password) === false) {
