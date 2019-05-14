@@ -238,8 +238,8 @@ app.post('/recovery', (request, response) => {
 
 	input_email = request.body.email;
 
-
 	db.collection('user_accounts').find().toArray(function (err, result_list) {
+
 				if (err) {
 					response.send('Unable to fetch Accounts');
 				}
@@ -289,12 +289,14 @@ app.post('/recovery', (request, response) => {
 					
 				}
 
-					response.redirect('/');
+					response.render('login.hbs', {
+						title: `If the email ${input_email} exists, recovery instructions have been sent.`,
+					});
 
 					request.session.destroy(function (err) {});
 					});
 					db.close;
-				});
+});
 
 // allows for success of logging in via correct username and password
 
@@ -686,18 +688,18 @@ app.post('/profile-password-change', isAuthenticated, (request, response) => {
 		// compares current password to hashed password
 		bcrypt.compare(current_password, database_password, function(err, res) {
 
-			console.log(res);
-			console.log(current_password);
-			console.log(database_password);
+			if (current_password === '') {
+				message = 'To change your password you must enter your current password.';
+			}
 
-			if(res === false) {
-				message = 'Your password is incorrect.';
+			else if(res === false) {
+				message = 'Your current password is incorrect.';
 			}
 
 			else if (res === true) {
 
 				if (password === '') {
-					message = `To change password, please enter your current password.`;
+					message = `To change password, please enter a new password.`;
 				}
 
 				else if (check_password(password) === false) {
@@ -1253,112 +1255,195 @@ app.get('/admin-restricted', isAuthenticated, (request, response) => {
 	})
 });
 
-app.get('/admin-success', isAdmin, (request, response) => {
-
-	var acc_type = request.session.passport.user.type;
-
-    response.render('admin-success', {
-    	title: 'Welcome to the Admin Page',
-    	admin: if_admin(acc_type)
-    });
- });
-
-app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
-
-	var acc_type = req.session.passport.user.type;
-
-	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
-		assert.equal(null, err);
-		db.collection('user_accounts').find().toArray(function(err, result) {
-			if (err) {
-				res.send('Unable to fetch Accounts');
-			}
-			res.render('admin-success-user-accounts-list.hbs', {
-				result: result,
-				admin: if_admin(acc_type)
-			});
-		});
-		db.close;
-	});
-});
-
-app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
-
-	var acc_type = req.session.passport.user.type;
-
-	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
-		assert.equal(null, err);
-		db.collection('user_accounts').find().toArray(function(err, result) {
-			if(err) {
-				res.send('Unable to fetch Accounts');
-			}
-			res.render('admin-success-delete-user-success.hbs', {
-				result: result,
-				admin: if_admin(acc_type)
-			});
-		});
-		db.close;
-	})});
-
-app.post('/admin-success-delete-user-success', function(req, res, next) {
+//The new admin page
+app.post('/admin-success', isAdmin, function(req, res, next) {
 
 	var acc_type = req.session.passport.user.type;
 	var user_name_to_delete = req.body.user_id;
 	var username = req.session.passport.user.username;
+	var db=utils.getDb();
 
-	if(user_name_to_delete == username){
-		res.render('admin-success-delete-user-success.hbs', {
-			message: "Cannot delete your own account!"
-		});
-		return;
-	}else{
-		if(user_name_to_delete == '') {
-			res.render('admin-success-delete-user-success.hbs', {
-				message: "Cannot be empty"
+	db.collection('user_accounts').find().toArray(function (err, result_list) {
+		if (err) {
+			res.send('Unable to fetch accounts.');
+		}
+
+
+		if(user_name_to_delete == username){
+			res.render('admin-success.hbs', {
+				message: "Cannot delete your own account!",
+				result: result_list
 			});
+			return;
 		}else{
-				message = '';
-				mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
-					assert.equal(null, err);
-
-					var query = { username: user_name_to_delete }
-
-					db.collection('user_accounts').find(query).toArray(function(err, result) {
-						if(err) {
-							message = 'Unable to Delete Account';
-							console.log(message)
-							// console.log(err);
-							res.render('admin-success-delete-user-success.hbs', {
-								message: message,
-								admin: if_admin(acc_type)
-							});
-						};
-
-						if(result === undefined || result.length == 0) {
-							message = 'No user exists with that username';
-							console.log(message)
-							res.render('admin-success-delete-user-success.hbs', {
-								message: message,
-								admin: if_admin(acc_type)
-							});
-						}else {
-							db.collection('user_accounts').deleteOne(query, function(err, obj) {
-								if(err) throw err;
-								console.log("User Deleted");
-								message ='User is Deleted';
-								res.render('admin-success-delete-user-success.hbs', {
-								message: message,
-								admin: if_admin(acc_type)
-							});
-								db.close();
-							});
-						};
-					});
+			if(user_name_to_delete == '') {
+				res.render('admin-success.hbs', {
+					message: "Cannot be empty",
+					result: result_list
 				});
+			}else{
+					message = '';
+					mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+						assert.equal(null, err);
 
+						var query = { username: user_name_to_delete }
+
+						db.collection('user_accounts').find(query).toArray(function(err, result) {
+							if(err) {
+								message = 'Unable to Delete Account';
+								console.log(message)
+								// console.log(err);
+								res.render('admin-success.hbs', {
+									message: message,
+									result: result_list,
+									admin: if_admin(acc_type)
+								});
+							};
+
+							if(result === undefined || result.length == 0) {
+								message = 'No user exists with that username';
+								console.log(message)
+								res.render('admin-success.hbs', {
+									message: message,
+									result: result_list,
+									admin: if_admin(acc_type)
+								});
+							}else {
+								db.collection('user_accounts').deleteOne(query, function(err, obj) {
+									if(err) throw err;
+									console.log("User Has Been Succesfully Deleted");
+									message ='User Has Been Succesfully Deleted';
+									res.render('admin-success.hbs', {
+									message: message,
+									result: result_list,
+									admin: if_admin(acc_type)
+								});
+									db.close();
+								});
+							};
+						});
+					});
+
+				};
 			};
-		};
+		});
 });
+
+app.get('/admin-success', isAdmin, function(req, res, next) {
+
+    var acc_type = req.session.passport.user.type;
+
+    mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+        assert.equal(null, err);
+        db.collection('user_accounts').find().toArray(function(err, result) {
+            if (err) {
+                res.send('Unable to fetch Accounts');
+            }
+            res.render('admin-success.hbs', {
+                result: result,
+                admin: if_admin(acc_type)
+            });
+        });
+        db.close;
+    });
+}); 
+
+// app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
+
+// 	var acc_type = req.session.passport.user.type;
+
+// 	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+// 		assert.equal(null, err);
+// 		db.collection('user_accounts').find().toArray(function(err, result) {
+// 			if (err) {
+// 				res.send('Unable to fetch Accounts');
+// 			}
+// 			res.render('admin-success-user-accounts-list.hbs', {
+// 				result: result,
+// 				admin: if_admin(acc_type)
+// 			});
+// 		});
+// 		db.close;
+// 	});
+// });
+
+// app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
+
+// 	var acc_type = req.session.passport.user.type;
+
+// 	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+// 		assert.equal(null, err);
+// 		db.collection('user_accounts').find().toArray(function(err, result) {
+// 			if(err) {
+// 				res.send('Unable to fetch Accounts');
+// 			}
+// 			res.render('admin-success-delete-user-success.hbs', {
+// 				result: result,
+// 				admin: if_admin(acc_type)
+// 			});
+// 		});
+// 		db.close;
+// 	})});
+
+// app.post('/admin-success-delete-user-success', function(req, res, next) {
+
+// 	var acc_type = req.session.passport.user.type;
+// 	var user_name_to_delete = req.body.user_id;
+// 	var username = req.session.passport.user.username;
+
+// 	if(user_name_to_delete == username){
+// 		res.render('admin-success-delete-user-success.hbs', {
+// 			message: "Cannot delete your own account!"
+// 		});
+// 		return;
+// 	}else{
+// 		if(user_name_to_delete == '') {
+// 			res.render('admin-success-delete-user-success.hbs', {
+// 				message: "Cannot be empty"
+// 			});
+// 		}else{
+// 				message = '';
+// 				mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+// 					assert.equal(null, err);
+
+// 					var query = { username: user_name_to_delete }
+
+// 					db.collection('user_accounts').find(query).toArray(function(err, result) {
+// 						if(err) {
+// 							message = 'Unable to Delete Account';
+// 							console.log(message)
+// 							// console.log(err);
+// 							res.render('admin-success-delete-user-success.hbs', {
+// 								message: message,
+// 								admin: if_admin(acc_type)
+// 							});
+// 						};
+
+// 						if(result === undefined || result.length == 0) {
+// 							message = 'No user exists with that username';
+// 							console.log(message)
+// 							res.render('admin-success-delete-user-success.hbs', {
+// 								message: message,
+// 								admin: if_admin(acc_type)
+// 							});
+// 						}else {
+// 							db.collection('user_accounts').deleteOne(query, function(err, obj) {
+// 								if(err) throw err;
+// 								console.log("User Deleted");
+// 								message ='User is Deleted';
+// 								res.render('admin-success-delete-user-success.hbs', {
+// 								message: message,
+// 								admin: if_admin(acc_type)
+// 							});
+// 								db.close();
+// 							});
+// 						};
+// 					});
+// 				});
+
+// 			};
+// 		};
+// });
 
 // redirects user to error page if no user is logged in and trying to access a different page
 app.get('*', errorPage, (request, response) => {

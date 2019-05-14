@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-
+    
 <head>
-    <title>Transactions</title>
+    <title>Registration Page</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 
     <link rel='stylesheet' href='testcss.css'>
@@ -15,13 +14,11 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
     <link href="https://fonts.googleapis.com/css?family=PT+Serif|Playfair+Display" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Old+Standard+TT" rel="stylesheet">
     <link rel="shortcut icon" type="image/x-icon" href="images/icon1.png" />
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 </head>
-
+    
 <body>
-<header>
-    <!--NavBar-->
+<!--NavBar-->
     <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
         <div class="container">
             <!--Logo-->
@@ -56,79 +53,51 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
     </nav>
     <!-- End of Navbar -->
 
-    <!-- Stock Ticker -->
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js" type="text/javascript"></script>
-    <script src="/static/scripts.js" type="text/javascript"></script>
-    <script>
-        var gainTicker = new WBIHorizontalTicker('gainers');
-        gainTicker.start();
 
-    </script>
-</header>
+    <div class="defcontainer">
+        <div class="defheader">
 
-<!-- Page content -->
-<div class="container main" style="background-color: #DDDDDD; height: 80vh; box-shadow: 0 4px 500px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-    <div class="container-fluid" style="padding-top: 0px;">
-        <h3 style="padding-bottom: 5px;"><span style="font-weight: lighter;" id="date"></span></h3>
+        </div>
+       
+        <div class="defcontent">
+            <br>
+            <div class='chfont container'>
 
+                <form action ="/admin-success-user-accounts" method="POST">
+                <p>{{title}}</p>
 
-            <div class='container form-style-8'>
-            
+                    <br>
 
-                    <h2>TRANSACTIONS</h2>
+                    <div class="form-group">
 
-                    <table name="Transactions" id="sideTables">
-                    <tr>
+                        <button type="submit" class="btn btn-secondary">All User Accounts</button>
+                    </div>
+                </form>
+                <br>
+                <form action ="/admin-success-delete-user" method="POST">
+                    <br>
+                    <div class="form-group">
 
-                    <th>Time of Transaction</th>
-                    <th>Action</th>
-                    <th>Ticker</th>
-                    <th>Company</th>
-                    <th>Quantity</th>
-                    <th>Cost/Share ($)</th>
-                    <th>Total Price ($)</th>
-                    <th>New Balance ($)</th>
-                    </tr>
-                    <p>{{#each transactions}}
-                    <tr>
-                        <td style="">{{this.date}}. </td>
-                        <td style="">{{this.action_type}}</td>
-                        <td style="">{{this.symbol}}</td>
-                        <td style="">{{this.company}}</td>
-                        <td style="">{{this.qty}}</td>
-                        <td style="">{{this.cost_per_share}}</td>
-                        <td style=""><span style="font-weight: bold;"></span><div id="user_cash">{{this.total}}</div></td>
-                        <td style="">{{this.balance_after_transaction}}</td>
-                    </tr>
-                    {{/each}}</p>
-                    </table>
-                    
+                        <button type="submit" class="btn btn-secondary">Delete Accounts</button>
+                    </div>
+                </form>
+                    <br>
 
                 <br><br>
-
-        
                 
             </div>
-        
-        <br>
 
-    </div>
-    <br>
-    <br>
-    <br>
-    <hr>
-    </div>
-   <!--  <footer class="chfont page-footer font-small blue">
-        <div class="footer-copyright text-center py-3">© 2019 Copyright:
-        <a href="">Stock Trader</a>  All Rights Reserved
+        </div>
+                <footer class="chfont page-footer font-small blue">
+            <div class="footer-copyright text-center py-3">© 2019 Copyright:
+            <a href="">Stock Trader</a>  All Rights Reserved
 
-    </footer> -->
-</div>
+        </footer>
+    </div> 
 
-
-<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+ <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
-</body>
+    <script type='text/javascript' src='bundle_1.js'></script>
+    </body>
 </html>
