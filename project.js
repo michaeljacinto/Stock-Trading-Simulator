@@ -473,6 +473,61 @@ app.post('/home', isAuthenticated, (request, response) => {
 
 });
 
+app.get('/search/:stockTicker/', isAuthenticated, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+	var stock_ticker = request.params.stockTicker
+	stock = stock_ticker
+
+	var historical_prices = [];
+	var dates = [];
+	var stock_name;
+	var check = false;
+	const get_stock_info = async (stock_ticker) => {
+
+		var message;
+
+		try {
+			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock_ticker}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
+			const stock_historical_info = await axios.get(`https://api.iextrading.com/1.0/stock/${stock_ticker}/chart/1y`);
+
+			stock_name = stock_info.data.companyName;
+			var stock_price = stock_info.data.latestPrice;
+			var historical_data = stock_historical_info.data;
+
+			for (var num = historical_data.length - 1; num >= 33; num -= 5) {
+				hist_date = historical_data[num].date
+				day = hist_date.slice(6, 10)
+				dates.push(day);
+				historical_prices.push(historical_data[num].close);
+			}
+
+			message = `The price of the selected ticker '${stock.toUpperCase()}' which belongs to '${stock_name}' is currently: $${stock_price} USD.`;
+			check = true;
+		}
+		catch (err) {
+			if (stock === '') {
+				message = 'Please enter a stock ticker i.e. TSLA, MSFT';
+			}
+			else {
+				message = `Sorry the stock ticker '${stock}' is invalid.`;
+			}
+		}
+
+		response.render('graph.hbs', {
+			title: message,
+			dates: dates,
+			prices: historical_prices,
+			stock_name: stock_name,
+			check: check,
+			admin: if_admin(acc_type)
+		})
+	}
+
+	get_stock_info(stock);
+
+});
+
 app.get('/profile', isAuthenticated, (request, response) => {
 
 	var acc_type = request.session.passport.user.type;
@@ -1201,7 +1256,7 @@ app.get('/admin-restricted', isAuthenticated, (request, response) => {
 });
 
 //The new admin page
-app.post('/admin-success', function(req, res, next) {
+app.post('/admin-success', isAdmin, function(req, res, next) {
 
 	var acc_type = req.session.passport.user.type;
 	var user_name_to_delete = req.body.user_id;
@@ -1273,15 +1328,25 @@ app.post('/admin-success', function(req, res, next) {
 			};
 		});
 });
-// app.get('/admin-success', isAdmin, (request, response) => {
 
-// 	var acc_type = request.session.passport.user.type;
+app.get('/admin-success', isAdmin, function(req, res, next) {
 
-//     response.render('admin-success', {
-//     	title: 'Welcome to the Admin Page',
-//     	admin: if_admin(acc_type)
-//     });
-//  });
+    var acc_type = req.session.passport.user.type;
+
+    mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+        assert.equal(null, err);
+        db.collection('user_accounts').find().toArray(function(err, result) {
+            if (err) {
+                res.send('Unable to fetch Accounts');
+            }
+            res.render('admin-success.hbs', {
+                result: result,
+                admin: if_admin(acc_type)
+            });
+        });
+        db.close;
+    });
+}); 
 
 // app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
 
