@@ -950,6 +950,7 @@ app.get('/trading-success', isAuthenticated, (request, response) => {
 	var message = '';
 	var stock_list = [];
 	var concat_stocks = '';
+	var equity = 0;
 
 
 	var current_stocks = async () => { 
@@ -970,7 +971,7 @@ app.get('/trading-success', isAuthenticated, (request, response) => {
 
 			for (var i = 0; i < num_stocks; i++) {
 				var current_price = stock_data.data[stock_keys[i]].quote.close;
-				var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: current_price*stocks[i][stock_keys[i][0]] }
+				var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: Math.round((current_price*stocks[i][stock_keys[i][0]] * 100)) / 100 }
 				stock_list.push(stock_obj);
 				qty += stocks[i][stock_keys[i][0]];
 				total += current_price*stocks[i][stock_keys[i][0]]
@@ -987,12 +988,13 @@ app.get('/trading-success', isAuthenticated, (request, response) => {
 			dates: dates,
 			prices: historical_prices,
 			stock_name: stock_name,
-			head: `Cash balance: $${cash[0]}`,
+			head: cash[0],
 			check: check,
 			admin: if_admin(acc_type),
 			stock_list: stock_list,
 			qty: qty,
-			total: Math.round(total * 100) / 100
+			total: Math.round(total * 100) / 100,
+			equity: Math.round((total+cash[0]) * 100) / 100
 		})
 
 	}
@@ -1017,6 +1019,7 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 	var stock_list = [];
 	var concat_stocks = '';
 	var num_stocks = stocks.length;
+	var equity = 0;
 
 	const get_stock_info = async (stock_ticker) => {
 
@@ -1065,7 +1068,7 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 
 			for (var i = 0; i < num_stocks; i++) {
 				var current_price = stock_data.data[stock_keys[i]].quote.close;
-				var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: current_price*stocks[i][stock_keys[i][0]] }
+				var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: Math.round((current_price*stocks[i][stock_keys[i][0]] * 100)) / 100 }
 				stock_list.push(stock_obj);
 				qty += stocks[i][stock_keys[i][0]];
 				total += current_price*stocks[i][stock_keys[i][0]]
@@ -1082,12 +1085,13 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 			dates: dates,
 			prices: historical_prices,
 			stock_name: stock_name,
-			head: `Cash balance: $${cash[0]}`,
+			head: cash[0],
 			check: check,
 			admin: if_admin(acc_type),
 			stock_list: stock_list,
 			qty: qty,
-			total: Math.round(total * 100) / 100
+			total: Math.round(total * 100) / 100,
+			equity: Math.round((total+cash[0]) * 100) / 100
 		})
 
 	}
@@ -1112,6 +1116,13 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 	var stock_qty = [];
 	var message = '';
 	var stock_list = [];
+	var equity = 0;
+	var dates = [];
+	var historical_prices = [];
+	var concat_stocks = '';
+	var total = 0;
+	var qty_ = 0;
+	var stock_name = '';
 
 	const buy_stock = async () => {
 
@@ -1119,7 +1130,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
 		try {
 			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
-			var stock_name = stock_info.data.companyName;
+			stock_name = stock_info.data.companyName;
 			var stock_price = stock_info.data.latestPrice;
 			var total_cost = Math.round(stock_price*qty*100)/100;
 			var cash_remaining = Math.round((cash - total_cost)*100)/100;
@@ -1189,11 +1200,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
 		var current_stocks = async () => { 
 
-			var concat_stocks = '';
-			var total = 0;
-			var qty = 0;
-
-			for (var i = 0; i < num_stocks; i++) {
+			for (var i = 0; i < stocks.length; i++) {
 				concat_stocks += Object.keys(stocks[i]).toString() + ',';
 				stock_keys.push(Object.keys(stocks[i]));
 			}
@@ -1203,11 +1210,11 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 				users_stocks = users_stocks.replace(" ", "");
 				var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
 
-				for (var i = 0; i < num_stocks; i++) {
+				for (var i = 0; i < stocks.length; i++) {
 					var current_price = stock_data.data[stock_keys[i]].quote.close;
-					var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: current_price*stocks[i][stock_keys[i][0]] }
+					var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: Math.round((current_price*stocks[i][stock_keys[i][0]] * 100)) / 100 }
 					stock_list.push(stock_obj);
-					qty += stocks[i][stock_keys[i][0]];
+					qty_ += stocks[i][stock_keys[i][0]];
 					total += current_price*stocks[i][stock_keys[i][0]]
 				}
 
@@ -1219,18 +1226,20 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
 			response.render('trading-success.hbs', {
 				title: message,
-				// dates: dates,
-				// prices: historical_prices,
+				dates: dates,
+				prices: historical_prices,
 				stock_name: stock_name,
-				head: `Cash balance: $${cash[0]}`,
+				head: cash[0],
 				check: check,
 				admin: if_admin(acc_type),
 				stock_list: stock_list,
-				qty: qty,
-				total: Math.round(total * 100) / 100
+				qty: qty_,
+				total: Math.round(total * 100) / 100,
+				equity: Math.round((total+cash[0]) * 100) / 100
 			})
 
 		}
+
 		current_stocks();
 	}
 
@@ -1269,23 +1278,27 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 	var stock = (request.body.stockticker).toUpperCase();
 	var stocks = request.session.passport.user.stocks;
 	var transactions = request.session.passport.user.transactions;
-	var num_stocks = stocks.length;
 	var check = false;
 	var stock_keys = [];
 	var stock_qty = [];
 	var message = '';
 	var stock_list = [];
+	var dates = [];
+	var historical_prices = [];
+	var concat_stocks = '';
+	var total = 0;
+	var qty_ = 0;
+	var stock_name = '';
 
 	const sell_stock = async () => {
 
 
 		var index = check_existence(stock);
-		var message;
 
 		try {
 			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
 
-			var stock_name = stock_info.data.companyName;
+			stock_name = stock_info.data.companyName;
 			var stock_price = stock_info.data.latestPrice;
 			var total_sale = Math.round(stock_price*qty*100)/100;
 			var remaining_balance = Math.round((cash[0] + total_sale)*100)/100;
@@ -1297,6 +1310,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 				message = `You are trying to sell ${qty} shares of ${stock} when you only have ${stock_qty} shares.`;
 			}
 			else if ((stock_qty >= qty) && (total_sale > 0)) {
+
 				var db = utils.getDb();
 
 				if (stock_remaining > 0) {
@@ -1337,11 +1351,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 
 		var current_stocks = async () => { 
 
-			var concat_stocks = '';
-			var total = 0;
-			var qty = 0;
-
-			for (var i = 0; i < num_stocks; i++) {
+			for (var i = 0; i < stocks.length; i++) {
 				concat_stocks += Object.keys(stocks[i]).toString() + ',';
 				stock_keys.push(Object.keys(stocks[i]));
 			}
@@ -1351,11 +1361,11 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 				users_stocks = users_stocks.replace(" ", "");
 				var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
 
-				for (var i = 0; i < num_stocks; i++) {
+				for (var i = 0; i < stocks.length; i++) {
 					var current_price = stock_data.data[stock_keys[i]].quote.close;
-					var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: current_price*stocks[i][stock_keys[i][0]] }
+					var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: Math.round((current_price*stocks[i][stock_keys[i][0]] * 100)) / 100 }
 					stock_list.push(stock_obj);
-					qty += stocks[i][stock_keys[i][0]];
+					qty_ += stocks[i][stock_keys[i][0]];
 					total += current_price*stocks[i][stock_keys[i][0]]
 				}
 
@@ -1367,20 +1377,22 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 
 			response.render('trading-success.hbs', {
 				title: message,
-				// dates: dates,
-				// prices: historical_prices,
+				dates: dates,
+				prices: historical_prices,
 				stock_name: stock_name,
-				head: `Cash balance: $${cash[0]}`,
+				head: cash[0],
 				check: check,
 				admin: if_admin(acc_type),
 				stock_list: stock_list,
-				qty: qty,
-				total: Math.round(total * 100) / 100
+				qty: qty_,
+				total: Math.round(total * 100) / 100,
+				equity: Math.round((total+cash[0]) * 100) / 100
 			})
 
 		}
 
 		current_stocks();
+
 		function check_existence(stock) {
 			var index = -1;
 
@@ -1391,9 +1403,11 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 			}
 			return index;
 		}
+
 	}
 
 	sell_stock();
+	
 
 });
 
