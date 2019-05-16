@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Home Page</title>
+    <title>Account</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -36,17 +36,12 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                     <li class="nav-item active"><a class="nav-link hvr-underline-from-center" href="home">HOME<span class="sr-only">(current)</span></a></li>
                     <li class="nav-item active"><a class="nav-link hvr-underline-from-center" href="trading-success">TRADE</a></li>
                     <div class="dropdown">
-                        
+                        <!-- <button class="dropbtn"> -->
                         <li class="nav-item active"><a class="nav-link hvr-underline-from-center dropbtn">ACCOUNT</a></li>
-                        
-
-                        <!-- Drop Down menu for Accounts Page -->
+                        <!-- </button> -->
                         <div class="dropdown-content">
-                        <a href="transactions">Transactions</a>
-                        <a href="profile">Profile</a>
-                        {{#if admin}}
-                        <a href="admin-success">Admin Panel</a>
-                        {{/if}}
+                        <a href="#">Transactions</a>
+                        <a href="#">Profile</a>
                         </div>
                     </div>
                     <div class="mycontent-left" style="border-right: 1px solid #333;"></div>
@@ -64,8 +59,8 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
     <script>
         var gainTicker = new WBIHorizontalTicker('gainers');
         gainTicker.start();
-    </script>
 
+    </script>
 </header>
 
 <!-- Side navigation -->
@@ -93,8 +88,10 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
     </div>
 </div>
 
+
+
 <!-- Page content -->
-<div class="container main" style="background-color: #DDDDDD; box-shadow: 0 4px 500px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+<div class="container main" style="background-color: #DDDDDD; height: 80vh; box-shadow: 0 4px 500px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
     <div class="container-fluid" style="padding-top: 50px;">
         <h3 style="padding-bottom: 5px;">NEWS <span style="font-weight: lighter;" id="date"></span></h3>
         <div class="container">
@@ -177,6 +174,12 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                     {{/each}}
                 ];
 
+                // document.getElementById("header1").innerHTML=(news[0].slice(0,70))+'..';
+                // document.getElementById("header2").innerHTML=(news[1].slice(0,60))+'..';
+                // document.getElementById("header3").innerHTML=(news[2].slice(0,60))+'..';
+                // document.getElementById("header4").innerHTML=(news[3].slice(0,60))+'..';
+                // document.getElementById("header5").innerHTML=(news[4].slice(0,60))+'..';
+
                 document.getElementById("header1").innerHTML=(news[0]);
                 document.getElementById("header2").innerHTML=(news[1]);
                 document.getElementById("header3").innerHTML=(news[2]);
@@ -188,6 +191,14 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                 document.getElementById("img3").src=images[2];
                 document.getElementById("img4").src=images[3];
                 document.getElementById("img5").src=images[4];
+
+                // document.getElementById("nurl1").href = nurl[0];
+                // document.getElementById("nurl2").href = nurl[1];
+                // document.getElementById("nurl3").href = nurl[2];
+                // document.getElementById("nurl4").href = nurl[3];
+                // document.getElementById("nurl5").href = nurl[4];
+
+
 
                 var today = new Date();
                 var dd = today.getDate();

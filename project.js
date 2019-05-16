@@ -9,12 +9,14 @@ var mongoose = require('mongoose');
 var fs = require('fs');
 var session = require('express-session');
 const MongoClient = require('mongodb').MongoClient;
-// const check = require('express-validator');
 var utils = require('./utils');
 var cookieParser = require('cookie-parser');
 var ObjectID = require('mongodb').ObjectID;
 var assert = require('assert');
 const bcrypt = require('bcrypt');
+var moment = require('moment');
+var numeral = require('numeral');
+var nodemailer = require('nodemailer');
 
 hbs.registerPartials(__dirname + '/views/partials');
 
@@ -65,7 +67,6 @@ passport.deserializeUser(function(user, done) {
 app.use((request, response, next) => {
 	var time = new Date().toString();
 	var log_entry = `${time.slice(4, 21)}: ${response.statusCode} - ${request.method} ${request.url}`;
-	// console.log(log_entry);
 	fs.appendFile('server.log', log_entry + '\n', (error) => {
 		if (error) {
 			console.log('Unable to log message');
@@ -90,6 +91,14 @@ var account_schema = new mongoose.Schema({
 	}
 });
 
+// nodemailer account details
+var transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+		user: 'recovery.stocktradingsimulator@gmail.com',
+		pass: 'Group#4Teen'
+	}
+});
 
 const user_account = mongoose.model("user_accounts", account_schema);
 
@@ -174,7 +183,7 @@ passport.use(new LocalStrategy(
 	  	}
 
 	  	else {
-	  		login_message = 'Your account is locked. Please contact the admin at admin@bcit.ca';
+	  		login_message = 'Your account is locked. Please contact the admin at recovery.stocktradingsimulator@gmail.com';
 	  		return done(null, false);
 	  	}
     });
@@ -201,7 +210,6 @@ app.get('/logout', function (request, response){
 app.post('/',
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
-  	// console.log(request.body.username);
     response.redirect('/home');
   });
 
@@ -210,7 +218,7 @@ app.post('/login',
   passport.authenticate('local', { failureRedirect: '/login-fail' }),
   function(request, response) {
     response.redirect('/home');
-  });
+ });
 
 // log in, redirects if invalid credentials
 app.post('/login-fail',
@@ -224,6 +232,7 @@ app.post('/login-fail',
 
 app.get('/home', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var news_feed = [];
 	var news_url = [];
 	var news_imgs = [];
@@ -237,18 +246,19 @@ app.get('/home', isAuthenticated, (request, response) => {
 	const get_news = async () => {
 
 		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,cnbc.com,yahoo.com&q=stocks&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,yahoo.com&q=stocks&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
 			news_items = news.data.articles;
 
 			for (var i = 0; i <= 5; i++) {
 				news_feed.push(news_items[i].title);
 				news_url.push(news_items[i].url);
 
-				if (news_items[i].url !== null) {
-					news_imgs.push(news_items[i].urlToImage);
-				}
-				else {
+				if (news_items[i].urlToImage === null) {
 					news_imgs.push(open_source_imgs[i]);
+				}
+
+				else {
+					news_imgs.push(news_items[i].urlToImage);
 				}
 
 			}
@@ -277,7 +287,9 @@ app.get('/home', isAuthenticated, (request, response) => {
 						news: news_feed,
 						urls: news_url,
 						imgs: news_imgs,
-						num_users: num_users
+						num_users: num_users,
+						query: '',
+						admin: if_admin(acc_type)
 					});
 
 				});
@@ -297,8 +309,75 @@ app.get('/home', isAuthenticated, (request, response) => {
 
 });
 
+function if_admin (string_input) {
+	// checks if string value is between 3 and 12 characters, uses RegEx to confirm only alphabetical characters
+	if (string_input === 'admin') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+app.get('/search/:stockTicker/', isAuthenticated, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+	var stock_ticker = request.params.stockTicker
+	stock = stock_ticker
+
+	var historical_prices = [];
+	var dates = [];
+	var stock_name;
+	var check = false;
+
+	const get_stock_info = async (stock_ticker) => {
+
+		var message;
+
+		try {
+			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock_ticker}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
+			const stock_historical_info = await axios.get(`https://api.iextrading.com/1.0/stock/${stock_ticker}/chart/1y`);
+
+			stock_name = stock_info.data.companyName;
+			var stock_price = stock_info.data.latestPrice;
+			var historical_data = stock_historical_info.data;
+
+			for (var num = historical_data.length - 1; num >= 33; num -= 5) {
+				hist_date = historical_data[num].date
+				day = hist_date.slice(6, 10)
+				dates.push(day);
+				historical_prices.push(historical_data[num].close);
+			}
+
+			message = `The price of the selected ticker '${stock.toUpperCase()}' which belongs to '${stock_name}' is currently: $${stock_price} USD.`;
+			check = true;
+		}
+		catch (err) {
+			if (stock === '') {
+				message = 'Please enter a stock ticker i.e. TSLA, MSFT';
+			}
+			else {
+				message = `Sorry the stock ticker '${stock}' is invalid.`;
+			}
+		}
+
+		response.render('graph.hbs', {
+			title: message,
+			dates: dates,
+			prices: historical_prices,
+			stock_name: stock_name,
+			check: check,
+			admin: if_admin(acc_type)
+		})
+	}
+
+	get_stock_info(stock);
+
+});
+
 app.post('/home', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var query = request.body.news_search;
 	var news_feed = [];
 	var news_url = [];
@@ -313,18 +392,18 @@ app.post('/home', isAuthenticated, (request, response) => {
 	const get_news = async () => {
 
 		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,cnbc.com,yahoo.com&q=${query}&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,yahoo.com&q=${query}&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
 			news_items = news.data.articles;
 
 			for (var i = 0; i <= 5; i++) {
 				news_feed.push(news_items[i].title);
 				news_url.push(news_items[i].url);
 
-				if (news_items[i].url !== null) {
-					news_imgs.push(news_items[i].urlToImage);
+				if (news_items[i].urlToImage === null) {
+					news_imgs.push(open_source_imgs[i]);
 				}
 				else {
-					news_imgs.push(open_source_imgs[i]);
+					news_imgs.push(news_items[i].urlToImage);
 				}
 
 			}
@@ -334,23 +413,33 @@ app.post('/home', isAuthenticated, (request, response) => {
 		}
 		mongoose.connect(mongoURL, { useNewUrlParser: true }, function (err, db) {
 			assert.equal(null, err);
-			db.collection('user_accounts').find().sort({
-				"cash": -1
-			}).limit(20).toArray(function (err, result) {
+
+			db.collection('user_accounts').find().toArray(function (err, result_list) {
 				if (err) {
-					response.send('Unable to fetch Accounts');
 				}
 
-				response.render('home.hbs', {
-					title: 'Welcome to the login page.',
-					result: result,
-					news: news_feed,
-					urls: news_url,
-					imgs: news_imgs
-				});
+				var num_users = result_list.length
+				db.collection('user_accounts').find().sort({
+					"cash": -1
+				}).limit(20).toArray(function (err, result) {
+					if (err) {
+						response.send('Unable to fetch Accounts');
+					}
 
-			});
-			db.close;
+					response.render('home.hbs', {
+						title: 'Welcome to the login page.',
+						result: result,
+						news: news_feed,
+						urls: news_url,
+						imgs: news_imgs,
+						num_users: num_users,
+						query: query,
+						admin: if_admin(acc_type)
+					});
+
+				});
+				db.close;
+			})
 		});
 
 		//allows leaderboard to show proper rank numbers
@@ -367,6 +456,290 @@ app.post('/home', isAuthenticated, (request, response) => {
 	else {
 		response.redirect('/home');
 	}
+
+});
+
+app.post('/recovery', (request, response) => {
+
+	var db = utils.getDb();
+
+	input_email = request.body.email;
+
+	db.collection('user_accounts').find().toArray(function (err, result_list) {
+
+				if (err) {
+					response.send('Unable to fetch Accounts');
+				}
+
+				var num_users = result_list.length
+
+				for (var i = 0; i < num_users; i++) {
+
+				if (input_email == result_list[i].email) {
+
+		
+					password = Math.random().toString(36).slice(2)
+
+					bcrypt.hash(password, 10, function (err, hash) {
+						
+
+						db.collection('user_accounts').updateOne({
+							"email": input_email
+						}, {
+							$set: {
+								"password": hash
+							}
+						});
+
+					})
+
+					 var mailOptions = {
+					 	from: 'Stock Trading Simulator Support',
+					 	to: input_email,
+					 	subject: 'Password Recovery - Stock Trading Simulator',
+					 	html: 'Below is the recovery info for your account: <br> Username: <strong>' + result_list[i].username + '</strong><br>Password: <strong>' + password + '</strong>'
+					 };
+
+					 transporter.sendMail(mailOptions, function (error, info) {
+					 	if (error) {
+					 		// console.log(error);
+					 	} else {
+					 		// console.log('Email sent: ' + info.response);
+					 	}
+					 });
+
+					message = 'Your password has been changed.'
+
+
+				}
+
+					
+				}
+
+					response.render('login.hbs', {
+						title: `If the email ${input_email} exists, recovery instructions have been sent.`,
+					});
+
+					request.session.destroy(function (err) {});
+					});
+					db.close;
+});
+
+app.get('/profile', isAuthenticated, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+	var firstname = request.session.passport.user.firstname;
+	var lastname = request.session.passport.user.lastname;
+	var username = request.session.passport.user.username;
+	var email = request.session.passport.user.email;
+
+	response.render('profile.hbs', {
+		title: '',
+		password_msg: '',
+		fname: firstname,
+		lname: lastname,
+		uname: username,
+		email: email,
+		admin: if_admin(acc_type)
+	})
+});
+
+app.post('/profile-info-change', isAuthenticated, (request, response) => {
+
+	var db = utils.getDb();
+	var _id = request.session.passport.user._id;
+	var firstname = request.body.firstname;
+	var user_firstname = request.session.passport.user.firstname;
+	var lastname = request.body.lastname;
+	var user_lastname = request.session.passport.user.lastname;
+	var username = request.body.username;
+	var user_username = request.session.passport.user.username;
+	var email = request.body.email;
+	var user_email = request.session.passport.user.email;
+	var acc_type = request.session.passport.user.type;
+	var message;
+	var check;
+
+
+	if (check_str(firstname) === false) {
+		message = `First name must have alteast 3 letters.`;
+	}
+	else if (check_str(lastname) === false) {
+		message = `Last name must have alteast 3 letters.`;
+	}
+	else if (check_alphanum(username) === false) {
+		message = `Username must have 5-15 characters and may only be alphanumeric.`;
+	}
+	else if (check_email(email) === false) {
+		message = `Must enter a valid email.`;
+	}
+	else {
+		check = true;
+	}
+
+	if (check) {
+
+		if ((firstname === user_firstname) && (lastname === user_lastname) && (user_username === username) && (email === user_email)) {
+			message = 'To make changes please update your information.';
+				response.render('profile.hbs', {
+				title: message,
+				password_msg: '',
+				fname: firstname,
+				lname: lastname,
+				uname: username,
+				email: email,
+				admin: if_admin(acc_type)
+			})
+		}
+
+		else {
+
+			db.collection('user_accounts').findOne({username: username}, function(err, result) {
+
+				if ((result === null) || ((result.username === user_username) && (result.email === user_email)) || (result.email === user_email) ||  (result.username === user_username)) {
+					
+					db.collection('user_accounts').findOne({email: email}, function(err, result1) {
+
+						if ((result1 === null) || ((result1.username === user_username) && (result1.email === user_email)) || (result1.email === user_email) ||  (result1.email === user_email)) {
+							db.collection('user_accounts').updateOne(
+								{ "_id": ObjectID(_id)},
+								{ $set: { "firstname": firstname, "lastname": lastname,
+								"username": username, "email": email}}
+							);
+
+							message = 'Your information has been updated. Please log back in to view the new changes.';
+
+							response.render('profile.hbs', {
+								title: message,
+								password_msg: '',
+								fname: firstname,
+								lname: lastname,
+								uname: username,
+								email: email,
+								admin: if_admin(acc_type)
+							})
+						}
+						else {
+							message = `The email ${email} is already in the system. Please choose a different email.`;
+							response.render('profile.hbs', {
+								title: message,
+								password_msg: '',
+								fname: firstname,
+								lname: lastname,
+								uname: username,
+								email: email,
+								admin: if_admin(acc_type)
+							})
+						}
+					});
+				}
+
+				else {
+					message = `The username ${username} is already in the system. Please choose a different username.`;
+					response.render('profile.hbs', {
+						title: message,
+						password_msg: '',
+						fname: firstname,
+						lname: lastname,
+						uname: username,
+						email: email,
+						admin: if_admin(acc_type)
+					})
+				}
+
+			
+			});
+		}
+
+	}
+
+	else {
+		response.render('profile.hbs', {
+			title: message,
+			password_msg: '',
+			fname: firstname,
+			lname: lastname,
+			uname: username,
+			email: email,
+			admin: if_admin(acc_type)
+		})
+	}
+
+});
+
+app.post('/profile-password-change', isAuthenticated, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+	var db = utils.getDb();
+	var _id = request.session.passport.user._id;
+	var database_password = request.session.passport.user.password;
+	var current_password = request.body.current_password;
+	var password = request.body.password;
+	var confirm_password = request.body.confirm_password;
+	var firstname = request.session.passport.user.firstname;
+	var lastname = request.session.passport.user.lastname;
+	var username = request.session.passport.user.username;
+	var email = request.session.passport.user.email;
+	var message = '';
+
+		// compares current password to hashed password
+		bcrypt.compare(current_password, database_password, function(err, res) {
+
+			if(res === false) {
+				message = 'Your password is incorrect.';
+			}
+
+			else if (res === true) {
+
+				if (password === '') {
+					message = `To change password, please enter your current password.`;
+				}
+
+				else if (check_password(password) === false) {
+					message = `The new password must be atleast 8 characters with atleast 1 letter & 1 number.`;
+				}
+
+				else if (password !== confirm_password) {
+					message = 'Passwords do not match.';
+				}
+
+				else {
+
+					bcrypt.hash(password, 10, function(err, hash) {
+
+						db.collection('user_accounts').updateOne(
+							{ "_id": ObjectID(_id)},
+							{ $set: { "password": hash}}
+						);
+
+					})
+
+					message = 'Your password has been changed.'
+				}
+			}
+
+			response.render('profile.hbs', {
+				title: '',
+				password_msg: message,
+				fname: firstname,
+				lname: lastname,
+				uname: username,
+				email: email,
+				admin: if_admin(acc_type)
+			});
+			
+		});
+});
+
+app.get('/transactions', isAuthenticated, (request, response) => {
+
+	var transactions = request.session.passport.user.transactions;
+	var acc_type = request.session.passport.user.type;
+
+	response.render('transactions.hbs', {
+		transactions: transactions,
+		admin: if_admin(acc_type)
+	});
 
 });
 
@@ -389,74 +762,114 @@ app.post('/register', function(request, response) {
 	var lastname = request.body.lastname;
 	var username = request.body.username;
 	var password = request.body.password;
+	var email = request.body.email;
 	var message;
 	var confirm_password = request.body.confirm_password;
 	var db = utils.getDb();
-	var attributes = [firstname, lastname, username, password, confirm_password];
+	var attributes = [firstname, lastname, username, email, password, confirm_password];
 	var check;
 
+
+	// argument validations
 	if (check_str(attributes[0]) === false) {
-		message = `First name must be 3-30 characters long and must only contain letters.`;
-		response.render('registration.hbs', {title: message});
+		message = `First name must have alteast 3 letters.`;
 	}
 	else if (check_str(attributes[1]) === false) {
-		message = `Last name must be 3-30 characters long and must only contain letters.`;
-		response.render('registration.hbs', {title: message});
+		message = `Last name must have alteast 3 letters.`;
 	}
 	else if (check_alphanum(attributes[2]) === false) {
 		message = `Username must have 5-15 characters and may only be alphanumeric.`;
-		response.render('registration.hbs', {title: message});
 	}
-	else if (check_password(attributes[3]) === false) {
-		message = `Password must min 8 characters with atleast 1 letter & 1 number.`;
-		response.render('registration.hbs', {title: message});
+	else if (check_email(attributes[3]) === false) {
+		message = `Must enter a valid email`;
 	}
-	else if ((attributes[3]) !== attributes[4]) {
+	else if (check_password(attributes[4]) === false) {
+		message = `Password must be a minimum 8 characters with atleast 1 letter & 1 number.`;
+	}
+	else if ((attributes[4]) !== attributes[5]) {
 		message = `Passwords do not match. Please try again.`;
-		response.render('registration.hbs', {title: message});
 	}
 	else {
 		check = true;
 	}
 
+	// add to the database 
 	if (check) {
+		
 		db.collection('user_accounts').findOne({username: username}, function(err, result) {
 
 			if (result === null) {
 
-				bcrypt.hash(password, 10, function(err, hash) {
-
-					db.collection('user_accounts').insertOne({
-						firstname: firstname,
-						lastname: lastname,
-						username: username,
-						password: hash,
-						type: 'standard',
-						cash: [10000],
-						stocks: [],
-						attempts: 0,
-						account_status: 'unlocked'
+				db.collection('user_accounts').findOne({email: email}, function(err, result1) {
 
 
-					}, (err, result) => {
-						if (err) {
-							messsage = `There was an error in creating your account. Please try again.`;
-							response.render('registration.hbs', {title: `There was an error in creating your account. Please try again.`});
-						}
-						message = `You have successfully created an account with the username '${username}' and have been granted $10,000 USD. Head over to the login page.`;
-						// response.status(200);
-						response.render('registration.hbs', {title: message});
-					});
+					if (result1 === null) {
+						bcrypt.hash(password, 10, function(err, hash) {
+
+							db.collection('user_accounts').insertOne({
+								firstname: firstname,
+								lastname: lastname,
+								username: username,
+								email: email,
+								password: hash,
+								type: 'standard',
+								cash: [10000],
+								stocks: [],
+								attempts: 0,
+								account_status: 'unlocked',
+								transactions: []
+
+
+							}, (err, result) => {
+
+								message = `You have successfully created an account with the username '${username}' and have been granted $10,000 USD. Head over to the login page.`;
+								response.render('registration.hbs', {
+									title: message,
+									firstname: firstname,
+									lastname: lastname,
+									username: username,
+									email: email
+								});
+							});
+						});
+					}	
+					else {
+						message = `The email '${email}' already exists within the system.`;
+						response.render('registration.hbs', {
+							title: message,
+							firstname: firstname,
+							lastname: lastname,
+							username: username,
+							email: email
+						});
+					}
 				});
 			}
 			else {
 				message = `The username '${username}' already exists within the system.`;
-				response.render('registration.hbs', {title: `The username '${username}' already exists within the system.`});
+				response.render('registration.hbs', {
+					title: message,
+					firstname: firstname,
+					lastname: lastname,
+					username: username,
+					email: email
+				});
 			}
 
 		}
 
-	)};
+	)}
+
+	else {
+		response.render('registration.hbs', {
+			title: message,
+			firstname: firstname,
+			lastname: lastname,
+			username: username,
+			email: email
+		});
+	}
+
 });
 
 function check_str (string_input) {
@@ -488,7 +901,19 @@ function check_alphanum (string_input) {
 
 function check_password(string_input) {
 	// checks if password is atleast 8 characters long containing 1 letter and 1 number
-	var valid_chars = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;;
+	var valid_chars = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+	if (valid_chars.test(string_input)) {
+		flag = true;
+	} else {
+		flag = false;
+	}
+	return flag;
+}
+
+function check_email(string_input) {
+	// checks if password is atleast 8 characters long containing 1 letter and 1 number
+	var valid_chars = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	if (valid_chars.test(string_input)) {
 		flag = true;
@@ -510,22 +935,90 @@ app.get('/trading', (request, response) => {
 });
 
 app.get('/trading-success', isAuthenticated, (request, response) => {
-	response.render('trading-success.hbs', {
-		title: 'Welcome to the trading page.'
-	});
-});
 
-app.post('/trading-success-search', isAuthenticated, (request, response) => {
-
+	var acc_type = request.session.passport.user.type;
 	var stock = request.body.stocksearch;
 	var cash = request.session.passport.user.cash;
+	var stocks = request.session.passport.user.stocks;
+	var num_stocks = stocks.length;
 	var historical_prices = [];
 	var dates = [];
 	var stock_name;
 	var check = false;
-	const get_stock_info = async (stock_ticker) => {
+	var stock_keys = [];
+	var stock_qty = [];
+	var message = '';
+	var stock_list = [];
+	var concat_stocks = '';
 
-		var message;
+
+	var current_stocks = async () => { 
+
+		var concat_stocks = '';
+		var total = 0;
+		var qty = 0;
+
+		for (var i = 0; i < num_stocks; i++) {
+			concat_stocks += Object.keys(stocks[i]).toString() + ',';
+			stock_keys.push(Object.keys(stocks[i]));
+		}
+
+		try {
+			var users_stocks = concat_stocks.replace(/,\s*$/, "");
+			users_stocks = users_stocks.replace(" ", "");
+			var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
+
+			for (var i = 0; i < num_stocks; i++) {
+				var current_price = stock_data.data[stock_keys[i]].quote.close;
+				var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: current_price*stocks[i][stock_keys[i][0]] }
+				stock_list.push(stock_obj);
+				qty += stocks[i][stock_keys[i][0]];
+				total += current_price*stocks[i][stock_keys[i][0]]
+			}
+
+		}
+
+		catch(err) {
+			console.log(err);
+		}
+
+		response.render('trading-success.hbs', {
+			title: message,
+			dates: dates,
+			prices: historical_prices,
+			stock_name: stock_name,
+			head: `Cash balance: $${cash[0]}`,
+			check: check,
+			admin: if_admin(acc_type),
+			stock_list: stock_list,
+			qty: qty,
+			total: Math.round(total * 100) / 100
+		})
+
+	}
+
+	current_stocks();
+
+});
+
+app.post('/trading-success-search', isAuthenticated, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+	var stock = request.body.stocksearch;
+	var cash = request.session.passport.user.cash;
+	var stocks = request.session.passport.user.stocks;
+	var historical_prices = [];
+	var dates = [];
+	var stock_name;
+	var check = false;
+	var stock_keys = [];
+	var stock_qty = [];
+	var message = '';
+	var stock_list = [];
+	var concat_stocks = '';
+	var num_stocks = stocks.length;
+
+	const get_stock_info = async (stock_ticker) => {
 
 		try {
 			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock_ticker}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
@@ -553,27 +1046,72 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 				message = `Sorry the stock ticker '${stock}' is invalid.`;
 			}
 		}
+	}
+
+	var current_stocks = async () => { 
+
+		var total = 0;
+		var qty = 0;
+
+		for (var i = 0; i < num_stocks; i++) {
+			concat_stocks += Object.keys(stocks[i]).toString() + ',';
+			stock_keys.push(Object.keys(stocks[i]));
+		}
+
+		try {
+			var users_stocks = concat_stocks.replace(/,\s*$/, "");
+			users_stocks = users_stocks.replace(" ", "");
+			var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
+
+			for (var i = 0; i < num_stocks; i++) {
+				var current_price = stock_data.data[stock_keys[i]].quote.close;
+				var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: current_price*stocks[i][stock_keys[i][0]] }
+				stock_list.push(stock_obj);
+				qty += stocks[i][stock_keys[i][0]];
+				total += current_price*stocks[i][stock_keys[i][0]]
+			}
+
+		}
+
+		catch(err) {
+			console.log(err);
+		}
 
 		response.render('trading-success.hbs', {
-				title: message,
-				dates: dates,
-				prices: historical_prices,
-				stock_name: stock_name,
-				head: `Cash balance: $${cash[0]}`,
-				check: check
-				})
+			title: message,
+			dates: dates,
+			prices: historical_prices,
+			stock_name: stock_name,
+			head: `Cash balance: $${cash[0]}`,
+			check: check,
+			admin: if_admin(acc_type),
+			stock_list: stock_list,
+			qty: qty,
+			total: Math.round(total * 100) / 100
+		})
+
 	}
+
+	current_stocks();
 
 	get_stock_info(stock);
 });
 
 app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var _id = request.session.passport.user._id;
-	var qty = request.body.buystockqty;
-	var stock = (request.body.buystockticker).toUpperCase();
+	var qty = request.body.stockqty;
+	var stock = (request.body.stockticker).toUpperCase();
 	var stocks = request.session.passport.user.stocks;
 	var cash = request.session.passport.user.cash;
+	var transactions = request.session.passport.user.transactions;
+	var num_stocks = stocks.length;
+	var check = false;
+	var stock_keys = [];
+	var stock_qty = [];
+	var message = '';
+	var stock_list = [];
 
 	const buy_stock = async () => {
 
@@ -586,6 +1124,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 			var total_cost = Math.round(stock_price*qty*100)/100;
 			var cash_remaining = Math.round((cash - total_cost)*100)/100;
 			var stock_holding = {[stock]:parseInt(qty)};
+			var company_name = stock_info.data.companyName;
 
 			if ((cash_remaining >= 0) && (total_cost !== 0) && (qty > 0)) {
 
@@ -601,16 +1140,16 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 				else {
 					cash[0] = cash_remaining;
 
-					console.log("cash_remaining after else, after cash=cash_remain:"+cash_remaining);
-
-
 					stocks.push(stock_holding);
 				}
-				console.log('cash_remaining before update:'+cash_remaining);
+
+				var transaction = transaction_log("BUY", stock, company_name, qty, stock_price, total_cost, cash_remaining);
+
+				transactions.unshift(transaction);
 
 				db.collection('user_accounts').updateOne(
 					{ "_id": ObjectID(_id)},
-					{ $set: { "cash": cash, "stocks": stocks}}
+					{ $set: { "cash": cash, "stocks": stocks, "transactions": transactions}}
 				);
 
 				message = `You successfully purchased ${qty} shares of ${stock_name} (${stock}) at $${stock_price}/share for $${total_cost}.`;
@@ -632,14 +1171,9 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 				message = `Sorry, you must input a stock to buy.`;
 			}
 			else {
-				message = `Sorry the stock ticker '${request.body.buystockticker}' is invalid.`;
+				message = `Sorry the stock ticker '${request.body.stockticker}' is invalid.`;
 			}
 		}
-
-		response.render('trading-success.hbs', {
-						title: message,
-						head: `Cash balance: $${cash[0]}`
-					})
 
 		function check_existence(stock) {
 			var index = -1;
@@ -651,18 +1185,96 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 			}
 
 			return index;
+		}	
+
+		var current_stocks = async () => { 
+
+			var concat_stocks = '';
+			var total = 0;
+			var qty = 0;
+
+			for (var i = 0; i < num_stocks; i++) {
+				concat_stocks += Object.keys(stocks[i]).toString() + ',';
+				stock_keys.push(Object.keys(stocks[i]));
+			}
+
+			try {
+				var users_stocks = concat_stocks.replace(/,\s*$/, "");
+				users_stocks = users_stocks.replace(" ", "");
+				var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
+
+				for (var i = 0; i < num_stocks; i++) {
+					var current_price = stock_data.data[stock_keys[i]].quote.close;
+					var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: current_price*stocks[i][stock_keys[i][0]] }
+					stock_list.push(stock_obj);
+					qty += stocks[i][stock_keys[i][0]];
+					total += current_price*stocks[i][stock_keys[i][0]]
+				}
+
+			}
+
+			catch(err) {
+				console.log(err);
+			}
+
+			response.render('trading-success.hbs', {
+				title: message,
+				// dates: dates,
+				// prices: historical_prices,
+				stock_name: stock_name,
+				head: `Cash balance: $${cash[0]}`,
+				check: check,
+				admin: if_admin(acc_type),
+				stock_list: stock_list,
+				qty: qty,
+				total: Math.round(total * 100) / 100
+			})
+
 		}
+		current_stocks();
 	}
+
 	buy_stock();
+
+	
 });
+
+function transaction_log(action, ticker, company, qty, cost_share, total, balance) {
+
+	var date = moment().format('MMMM Do YYYY, h:mm:ss a');
+
+	if (action === "BUY") {
+		total = total * -1;
+	}
+
+	var transaction = { date: date,
+						action_type: action,
+						symbol: ticker,
+						company: company,
+						qty: qty,
+						cost_per_share: cost_share,
+						total: total,
+						balance_after_transaction: balance
+					}
+
+	return transaction;
+}
 
 app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 
+	var acc_type = request.session.passport.user.type;
 	var _id = request.session.passport.user._id;
 	var cash = request.session.passport.user.cash;
-	var qty = parseInt(request.body.sellstockqty);
-	var stock = (request.body.sellstockticker).toUpperCase();
+	var qty = parseInt(request.body.stockqty);
+	var stock = (request.body.stockticker).toUpperCase();
 	var stocks = request.session.passport.user.stocks;
+	var transactions = request.session.passport.user.transactions;
+	var num_stocks = stocks.length;
+	var check = false;
+	var stock_keys = [];
+	var stock_qty = [];
+	var message = '';
+	var stock_list = [];
 
 	const sell_stock = async () => {
 
@@ -678,6 +1290,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 			var total_sale = Math.round(stock_price*qty*100)/100;
 			var remaining_balance = Math.round((cash[0] + total_sale)*100)/100;
 			var stock_qty = request.session.passport.user.stocks[index][stock];
+			var company_name = stock_info.data.companyName;
 			var stock_remaining = stock_qty - qty;
 
 			if (stock_qty < qty) {
@@ -685,7 +1298,6 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 			}
 			else if ((stock_qty >= qty) && (total_sale > 0)) {
 				var db = utils.getDb();
-				console.log(stocks);
 
 				if (stock_remaining > 0) {
 					var stock_holding = {[stock]:parseInt(stock_remaining)};
@@ -697,10 +1309,14 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 					cash[0] = remaining_balance;
 				}
 
+				var transaction = transaction_log("SELL", stock, company_name, qty, stock_price, total_sale, remaining_balance);
+
+				transactions.unshift(transaction);
+
 				db.collection('user_accounts').updateOne(
-						{ "_id": ObjectID(_id)},
-						{ $set: { "cash": cash, "stocks": stocks}}
-					);
+					{ "_id": ObjectID(_id)},
+					{ $set: { "cash": cash, "stocks": stocks, "transactions": transactions}}
+				);
 
 				message = `You successfully sold ${qty} shares of ${stock_name} (${stock}) at $${stock_price}/share for $${total_sale}.`
 			}
@@ -718,11 +1334,53 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 				message = `You do not own any shares with the ticker '${stock}'.`;
 			}
 		}
-		response.render('trading-success.hbs', {
-			title: message,
-			head: `Cash balance: $${cash[0]}`
-		})
 
+		var current_stocks = async () => { 
+
+			var concat_stocks = '';
+			var total = 0;
+			var qty = 0;
+
+			for (var i = 0; i < num_stocks; i++) {
+				concat_stocks += Object.keys(stocks[i]).toString() + ',';
+				stock_keys.push(Object.keys(stocks[i]));
+			}
+
+			try {
+				var users_stocks = concat_stocks.replace(/,\s*$/, "");
+				users_stocks = users_stocks.replace(" ", "");
+				var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
+
+				for (var i = 0; i < num_stocks; i++) {
+					var current_price = stock_data.data[stock_keys[i]].quote.close;
+					var stock_obj = { stock: stock_keys[i], qty: stocks[i][stock_keys[i][0]], price: current_price, total: current_price*stocks[i][stock_keys[i][0]] }
+					stock_list.push(stock_obj);
+					qty += stocks[i][stock_keys[i][0]];
+					total += current_price*stocks[i][stock_keys[i][0]]
+				}
+
+			}
+
+			catch(err) {
+				console.log(err);
+			}
+
+			response.render('trading-success.hbs', {
+				title: message,
+				// dates: dates,
+				// prices: historical_prices,
+				stock_name: stock_name,
+				head: `Cash balance: $${cash[0]}`,
+				check: check,
+				admin: if_admin(acc_type),
+				stock_list: stock_list,
+				qty: qty,
+				total: Math.round(total * 100) / 100
+			})
+
+		}
+
+		current_stocks();
 		function check_existence(stock) {
 			var index = -1;
 
@@ -734,186 +1392,263 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 			return index;
 		}
 	}
+
 	sell_stock();
+
 });
 
-app.post('/trading-success-holdings', isAuthenticated, (request, response) => {
-	var stocks = request.session.passport.user.stocks;
-	var num_stocks = stocks.length;
-	var stock_keys = [];
-	var message = 'Shares: \n';
-	var cash = request.session.passport.user.cash;
+app.get('/admin-success', isAdmin, function(req, res, next) {
 
-	if (num_stocks === 0) {
-		message = 'You currently do not have any stocks.';
-	}
-	else {
-		var i;
-		for (i = 0; i < num_stocks; i++) {
-			stock_keys.push(Object.keys(stocks[i]));
-			var key_value = stocks[i][stock_keys[i][0]];
-			message += stock_keys[i][0] + ': ' + key_value + ' shares.' + '\n';
-			console.log(message);
-		}
-	}
+    var acc_type = req.session.passport.user.type;
 
-	response.render('trading-success.hbs', {
-		title: message,
-		head: `Cash: $${cash[0]}`
-	})
-});
-
-app.get('/admin', (request, response) => {
-	response.render('admin-restricted-not-logged-in.hbs', {
-		title: 'You are not authorized to view this page. Please log in with an administrator account.'
-	})
-});
-
-app.get('/admin-restricted', isAuthenticated, (request, response) => {
-	response.render('admin-restricted.hbs', {
-		title: 'You are not authorized to view this page. Go back to the Trading page.'
-	})
-});
-
-app.get('/admin-success', isAdmin, (request, response) => {
-    response.render('admin-success', {
-    	title: 'Welcome to the Admin Page'
+    mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+        assert.equal(null, err);
+        db.collection('user_accounts').find().toArray(function(err, result) {
+            if (err) {
+                res.send('Unable to fetch Accounts');
+            }
+            res.render('admin-success.hbs', {
+                result: result,
+                admin: if_admin(acc_type)
+            });
+        });
+        db.close;
     });
- });
+}); 
 
-app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
-	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
-		assert.equal(null, err);
-		db.collection('user_accounts').find().toArray(function(err, result) {
-			if (err) {
-				res.send('Unable to fetch Accounts');
-			}
-			res.render('admin-success-user-accounts-list.hbs', {
-				result: result
-			});
-		});
-		db.close;
-	});
-});
+app.post('/admin-success', isAdmin, function(req, res, next) {
 
-app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
-	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
-		assert.equal(null, err);
-		db.collection('user_accounts').find().toArray(function(err, result) {
-			if(err) {
-				res.send('Unable to fetch Accounts');
-			}
-			res.render('admin-success-delete-user-success.hbs', {
-				result: result
-			});
-		});
-		db.close;
-	})});
-
-app.post('/admin-success-delete-user-success', function(req, res, next) {
+	var acc_type = req.session.passport.user.type;
 	var user_name_to_delete = req.body.user_id;
 	var username = req.session.passport.user.username;
+	var db=utils.getDb();
+	var message = '';
 
-	console.log(user_name_to_delete)
-	console.log(username)
-	if(user_name_to_delete == username){
-		res.render('admin-success-delete-user-success.hbs', {
-			message: "Cannot delete your own account!"
-		});
-		return;
-	}else{
-		if(user_name_to_delete == '') {
-			res.render('admin-success-delete-user-success.hbs', {
-				message: "Cannot be empty"
+	db.collection('user_accounts').find().toArray(function (err, result_list) {
+		if (err) {
+			res.send('Unable to fetch accounts.');
+		}
+
+
+		if(user_name_to_delete == username){
+			res.render('admin-success.hbs', {
+				message: "Cannot delete your own account!",
+				result: result_list,
+				username: user_name_to_delete
 			});
+			return;
 		}else{
-				message = '';
-				mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
-					assert.equal(null, err);
-
-					var query = { username: user_name_to_delete }
-
-					db.collection('user_accounts').find(query).toArray(function(err, result) {
-						if(err) {
-							message = 'Unable to Delete Account';
-							console.log(message)
-							// console.log(err);
-							res.render('admin-success-delete-user-success.hbs', {
-								message: message
-							});
-						};
-
-						if(result === undefined || result.length == 0) {
-							message = 'No user exists with that username';
-							console.log(message)
-							res.render('admin-success-delete-user-success.hbs', {
-								message: message
-							});
-						}else {
-							db.collection('user_accounts').deleteOne(query, function(err, obj) {
-								if(err) throw err;
-								console.log("User Deleted");
-								message ='User is Deleted';
-								res.render('admin-success-delete-user-success.hbs', {
-								message: message
-							});
-								db.close();
-							});
-						};
-					});
+			if(user_name_to_delete == '') {
+				res.render('admin-success.hbs', {
+					message: "Cannot be empty",
+					result: result_list,
+					username: user_name_to_delete
 				});
+			}else{
+					message = '';
+					mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+						assert.equal(null, err);
 
+						var query = { username: user_name_to_delete }
+
+						db.collection('user_accounts').find(query).toArray(function(err, result) {
+							if(err) {
+								message = 'Unable to Delete Account';
+								// console.log(err);
+								res.render('admin-success.hbs', {
+									message: message,
+									result: result_list,
+									admin: if_admin(acc_type),
+									username: user_name_to_delete
+								});
+							};
+
+							if(result === undefined || result.length == 0) {
+								message = `No user exists with the username: ${user_name_to_delete}`;
+								console.log(message)
+								res.render('admin-success.hbs', {
+									message: message,
+									result: result_list,
+									admin: if_admin(acc_type),
+									username: user_name_to_delete
+								});
+							}else {
+								db.collection('user_accounts').deleteOne(query, function(err, obj) {
+									if(err) throw err;
+									message = `User with username: ${user_name_to_delete} has been deleted. Refresh to view changes.`
+									res.render('admin-success.hbs', {
+									message: message,
+									result: result_list,
+									admin: if_admin(acc_type),
+									username: user_name_to_delete
+								});
+									db.close();
+								});
+							};
+						});
+					});
+
+				};
 			};
-		};
+		});
 });
 
-app.get('/admin-success-update-balances', isAdmin, function(req, res, next) {
-	res.render('admin-success-update-balances.hbs', {
-		message: 'Enter the user ID and cash you would like to change to.'
-	});
-});
+// app.post('/trading-success-holdings', isAuthenticated, (request, response) => {
 
-app.post('/admin-success-update-balances', isAdmin, function(req, res, next) {
-	var user_id = req.body.user_id;
-	var new_balance = req.body.user_balance;
-	var balance_to_list = [new_balance];
-	var message;
+// 	var acc_type = request.session.passport.user.type;
+// 	var stocks = request.session.passport.user.stocks;
+// 	var num_stocks = stocks.length;
+// 	var stock_keys = [];
+// 	var message = 'Shares: \n';
+// 	var cash = request.session.passport.user.cash;
 
-	console.log(new_balance);
+// 	if (num_stocks === 0) {
+// 		message = 'You currently do not have any stocks.';
+// 	}
+// 	else {
+// 		var i;
+// 		for (i = 0; i < num_stocks; i++) {
+// 			stock_keys.push(Object.keys(stocks[i]));
+// 			var key_value = stocks[i][stock_keys[i][0]];
+// 			message += stock_keys[i][0] + ': ' + key_value + ' shares.' + '\n';
+// 			console.log(message);
+// 		}
+// 	}
 
-	if (new_balance > 0) {
+// 	response.render('trading-success.hbs', {
+// 		title: message,
+// 		head: `Cash: $${cash[0]}`,
+// 		admin: if_admin(acc_type)
+// 	})
+// });
 
-		try {
-			db.collection('user_accounts').findOne({_id: user_id}, function(err, result) {
+// app.get('/admin', (request, response) => {
+// 	response.render('admin-restricted-not-logged-in.hbs', {
+// 		title: 'You are not authorized to view this page. Please log in with an administrator account.'
+// 	})
+// });
 
-				if (result !== null) {
+// app.get('/admin-restricted', isAuthenticated, (request, response) => {
+// 	response.render('admin-restricted.hbs', {
+// 		title: 'You are not authorized to view this page. Go back to the Trading page.'
+// 	})
+// });
 
-					db.collection('user_accounts').updateOne(
-						{ "_id": ObjectID(_id)},
-						{ $set: {"cash": balance_to_list}}
-					);
+// app.get('/admin-success', isAdmin, (request, response) => {
 
-					message = `ID: ${user_id} cash has been changed to ${new_balance}.`
-				}
-			})
-		}
-		catch(err) {
-			message = `User ID doesn't exist.`;
-		}
-	}
-	else {
-		message = `Number must be greater than 0.`;
-	}
+// 	var acc_type = request.session.passport.user.type;
 
-	res.render('admin-success-update-balances.hbs', {
-		message: message
-	});
-})
+//     response.render('admin-success', {
+//     	title: 'Welcome to the Admin Page',
+//     	admin: if_admin(acc_type)
+//     });
+//  });
+
+// app.post('/admin-success-user-accounts', isAdmin, function(req, res, next) {
+
+// 	var acc_type = request.session.passport.user.type;
+
+// 	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+// 		assert.equal(null, err);
+// 		db.collection('user_accounts').find().toArray(function(err, result) {
+// 			if (err) {
+// 				res.send('Unable to fetch Accounts');
+// 			}
+// 			res.render('admin-success-user-accounts-list.hbs', {
+// 				result: result,
+// 				admin: if_admin(acc_type)
+// 			});
+// 		});
+// 		db.close;
+// 	});
+// });
+
+// app.post('/admin-success-delete-user', isAdmin, function(req, res, next) {
+
+// 	var acc_type = request.session.passport.user.type;
+
+// 	mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+// 		assert.equal(null, err);
+// 		db.collection('user_accounts').find().toArray(function(err, result) {
+// 			if(err) {
+// 				res.send('Unable to fetch Accounts');
+// 			}
+// 			res.render('admin-success-delete-user-success.hbs', {
+// 				result: result,
+// 				admin: if_admin(acc_type)
+// 			});
+// 		});
+// 		db.close;
+// 	})});
+
+// app.post('/admin-success-delete-user-success', function(req, res, next) {
+
+// 	var acc_type = request.session.passport.user.type;
+// 	var user_name_to_delete = req.body.user_id;
+// 	var username = req.session.passport.user.username;
+
+// 	if(user_name_to_delete == username){
+// 		res.render('admin-success-delete-user-success.hbs', {
+// 			message: "Cannot delete your own account!"
+// 		});
+// 		return;
+// 	}else{
+// 		if(user_name_to_delete == '') {
+// 			res.render('admin-success-delete-user-success.hbs', {
+// 				message: "Cannot be empty"
+// 			});
+// 		}else{
+// 				message = '';
+// 				mongoose.connect(mongoURL, { useNewUrlParser: true }, function(err, db) {
+// 					assert.equal(null, err);
+
+// 					var query = { username: user_name_to_delete }
+
+// 					db.collection('user_accounts').find(query).toArray(function(err, result) {
+// 						if(err) {
+// 							message = 'Unable to Delete Account';
+// 							console.log(message)
+// 							// console.log(err);
+// 							res.render('admin-success-delete-user-success.hbs', {
+// 								message: message,
+// 								admin: if_admin(acc_type)
+// 							});
+// 						};
+
+// 						if(result === undefined || result.length == 0) {
+// 							message = 'No user exists with that username';
+// 							console.log(message)
+// 							res.render('admin-success-delete-user-success.hbs', {
+// 								message: message,
+// 								admin: if_admin(acc_type)
+// 							});
+// 						}else {
+// 							db.collection('user_accounts').deleteOne(query, function(err, obj) {
+// 								if(err) throw err;
+// 								console.log("User Deleted");
+// 								message ='User is Deleted';
+// 								res.render('admin-success-delete-user-success.hbs', {
+// 								message: message,
+// 								admin: if_admin(acc_type)
+// 							});
+// 								db.close();
+// 							});
+// 						};
+// 					});
+// 				});
+
+// 			};
+// 		};
+// });
 
 // redirects user to error page if no user is logged in and trying to access a different page
 app.get('*', errorPage, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+
 	response.render('404.hbs', {
-		title: `Sorry the URL does not exist.`
+		title: `Sorry the URL does not exist.`,
+		admin: if_admin(acc_type)
 	})
 });
 
@@ -945,7 +1680,6 @@ function isAdmin(request, response, next) {
 
 // listen to a port
 app.listen(port, () => {
-	// console.log('Server is up on port ' + port);
 	utils.init();
 });
 
