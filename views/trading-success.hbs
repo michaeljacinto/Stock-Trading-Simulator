@@ -68,7 +68,7 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
 
     <!--Main Content-->
     <div class="container main trade" style="background-color: #DDDDDD; box-shadow: 0 4px 500px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-        <p class="font-weight-bold">{{head}}</p>
+        <p class="font-weight-bold"></p>
         <div class="container-fluid">
             <br>
             {{#if check}}
@@ -236,7 +236,7 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                             <table class="table-fill" style="max-height: 350px;">
                                 <thead>
                                 <tr>
-                                    <th class="text-left">Stock ID</th>
+                                    <th class="text-left">Ticker</th>
                                     <th class="text-left">Qty</th>
                                     <th class="text-left">Current Price</th>
                                     <th class="text-left">Total ($)</th>
@@ -250,12 +250,24 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                                     <td class="text-left">{{this.total}}</td>
                                 </tr>
                                 {{/each}}</tbody>
-
+                                <tr>
                                     <th class="text-left">Total Holdings:</th>
                                     <th class="text-left">{{qty}}</th>
                                     <th class="text-left"></th>
                                     <th class="text-left">{{total}}</th>
-
+                                </tr>
+                                <tr>
+                                    <th class="text-left">Cash:</th>
+                                    <th class="text-left"></th>
+                                    <th class="text-left"></th>
+                                    <th class="text-left">{{head}}</th>
+                                </tr>
+                                 <tr>
+                                    <th class="text-left">Equity:</th>
+                                    <th class="text-left"></th>
+                                    <th class="text-left"></th>
+                                    <th class="text-left">{{equity}}</th>
+                                </tr>
                             </table>
 
                             <br>
