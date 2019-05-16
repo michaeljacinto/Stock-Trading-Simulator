@@ -224,3 +224,9 @@ function openRightMenu() {
 function closeRightMenu() {
     document.getElementById("rightMenu").style.display = "none";
 }
+
+/* Modal */
+$("#submit-button").submit(function(e){
+    $('#exampleModal').modal('show');
+    return false;
+});

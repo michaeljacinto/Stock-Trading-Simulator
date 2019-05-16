@@ -55,7 +55,7 @@ describe('GET /transactions - 200', function () {
 });
 
 describe('GET /profile - 200', function () {
-    it("Should grant access to Home page", function (done) {
+    it("Should grant access to profile page", function (done) {
         agent
         .post('/login')
         .send({
@@ -64,13 +64,57 @@ describe('GET /profile - 200', function () {
             'password': 'testaccount1'
         })
         .then(function (res) {
-        return agent.get('/transactions')
+        return agent.get('/profile')
             .then(function (res) {
 
                 // checks if there is a 200 status when getting to the profile page
                 var $ = cheerio.load(res.text);
                 var display = $('title').text();
-                assert.equal(display, "Transactions");
+                assert.equal(display, "Profile");
+                expect(res).to.have.status(200);
+                done();
+            });
+        });
+    });
+    it("Should pass if username matches form value", function (done) {
+        agent
+        .post('/login')
+        .send({
+            '_method': 'post',
+            'username': 'testaccount',
+            'password': 'testaccount1'
+        })
+        .then(function (res) {
+        return agent.get('/profile')
+            .then(function (res) {
+
+                // checks if username matches form value
+                var $ = cheerio.load(res.text);
+
+                var display = $('input[id=username]').attr('value');
+                assert.equal(display, "testaccount");
+                expect(res).to.have.status(200);
+                done();
+            });
+        });
+    });
+    it("Should pass if username matches form value", function (done) {
+        agent
+        .post('/login')
+        .send({
+            '_method': 'post',
+            'username': 'testaccount',
+            'password': 'testaccount1'
+        })
+        .then(function (res) {
+        return agent.get('/profile')
+            .then(function (res) {
+
+                // checks if username matches form value
+                var $ = cheerio.load(res.text);
+
+                var display = $('input[id=firstname]').attr('value');
+                assert.equal(display, "testeraccount");
                 expect(res).to.have.status(200);
                 done();
             });
@@ -188,7 +232,7 @@ describe('GET /home - 200', function () {
 });
 
 describe('POST /login - 200', function () {
-    it("Should successfully log in", function (done) {
+    it("Should successfully log in and access the trading page", function (done) {
         agent
         .post('/login')
         .send({
@@ -220,22 +264,6 @@ describe('GET /register - 200', function () {
             var $ = cheerio.load(res.text);
             var title = $('title').text();
             assert.equal(title, "Registration Page")
-            done()
-          })
-  });
-});
-
-describe('GET /trading - 200', function () {
-  it("should return webpage with title of 'Trading' ", function (done) {
-      request(app)
-          .get('/trading')
-          .set('Accept', 'application/json')
-          .expect('Content-Type', "text/html; charset=utf-8")
-          .end(function(err, res) {
-            expect(res).to.have.status(200);
-            var $ = cheerio.load(res.text);
-            var title = $('title').text();
-            assert.equal(title, "Trade")
             done()
           })
   });
