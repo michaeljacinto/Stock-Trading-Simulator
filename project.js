@@ -477,11 +477,11 @@ app.post('/recovery', (request, response) => {
 
 				if (input_email == result_list[i].email) {
 
-		
+
 					password = Math.random().toString(36).slice(2)
 
 					bcrypt.hash(password, 10, function (err, hash) {
-						
+
 
 						db.collection('user_accounts').updateOne({
 							"email": input_email
@@ -513,7 +513,7 @@ app.post('/recovery', (request, response) => {
 
 				}
 
-					
+
 				}
 
 					response.render('login.hbs', {
@@ -597,7 +597,7 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 			db.collection('user_accounts').findOne({username: username}, function(err, result) {
 
 				if ((result === null) || ((result.username === user_username) && (result.email === user_email)) || (result.email === user_email) ||  (result.username === user_username)) {
-					
+
 					db.collection('user_accounts').findOne({email: email}, function(err, result1) {
 
 						if ((result1 === null) || ((result1.username === user_username) && (result1.email === user_email)) || (result1.email === user_email) ||  (result1.email === user_email)) {
@@ -647,7 +647,7 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 					})
 				}
 
-			
+
 			});
 		}
 
@@ -727,7 +727,7 @@ app.post('/profile-password-change', isAuthenticated, (request, response) => {
 				email: email,
 				admin: if_admin(acc_type)
 			});
-			
+
 		});
 });
 
@@ -793,9 +793,9 @@ app.post('/register', function(request, response) {
 		check = true;
 	}
 
-	// add to the database 
+	// add to the database
 	if (check) {
-		
+
 		db.collection('user_accounts').findOne({username: username}, function(err, result) {
 
 			if (result === null) {
@@ -832,7 +832,7 @@ app.post('/register', function(request, response) {
 								});
 							});
 						});
-					}	
+					}
 					else {
 						message = `The email '${email}' already exists within the system.`;
 						response.render('registration.hbs', {
@@ -953,7 +953,7 @@ app.get('/trading-success', isAuthenticated, (request, response) => {
 	var equity = 0;
 
 
-	var current_stocks = async () => { 
+	var current_stocks = async () => {
 
 		var concat_stocks = '';
 		var total = 0;
@@ -1020,6 +1020,8 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 	var concat_stocks = '';
 	var num_stocks = stocks.length;
 	var equity = 0;
+	var total = 0;
+	var qty = 0;
 
 	const get_stock_info = async (stock_ticker) => {
 
@@ -1049,12 +1051,6 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 				message = `Sorry the stock ticker '${stock}' is invalid.`;
 			}
 		}
-	}
-
-	var current_stocks = async () => { 
-
-		var total = 0;
-		var qty = 0;
 
 		for (var i = 0; i < num_stocks; i++) {
 			concat_stocks += Object.keys(stocks[i]).toString() + ',';
@@ -1093,10 +1089,7 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 			total: Math.round(total * 100) / 100,
 			equity: Math.round((total+cash[0]) * 100) / 100
 		})
-
 	}
-
-	current_stocks();
 
 	get_stock_info(stock);
 });
@@ -1196,9 +1189,9 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 			}
 
 			return index;
-		}	
+		}
 
-		var current_stocks = async () => { 
+		var current_stocks = async () => {
 
 			for (var i = 0; i < stocks.length; i++) {
 				concat_stocks += Object.keys(stocks[i]).toString() + ',';
@@ -1245,7 +1238,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 
 	buy_stock();
 
-	
+
 });
 
 function transaction_log(action, ticker, company, qty, cost_share, total, balance) {
@@ -1268,6 +1261,16 @@ function transaction_log(action, ticker, company, qty, cost_share, total, balanc
 
 	return transaction;
 }
+
+app.get('/trading-success', isAuthenticated, (request, response) => {
+
+	var acc_type = request.session.passport.user.type;
+
+	response.render('trading-success.hbs', {
+		title: 'Welcome to the trading page.',
+		admin: if_admin(acc_type)
+	});
+});
 
 app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 
@@ -1349,7 +1352,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 			}
 		}
 
-		var current_stocks = async () => { 
+		var current_stocks = async () => {
 
 			for (var i = 0; i < stocks.length; i++) {
 				concat_stocks += Object.keys(stocks[i]).toString() + ',';
@@ -1407,7 +1410,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 	}
 
 	sell_stock();
-	
+
 
 });
 
@@ -1428,7 +1431,7 @@ app.get('/admin-success', isAdmin, function(req, res, next) {
         });
         db.close;
     });
-}); 
+});
 
 app.post('/admin-success', isAdmin, function(req, res, next) {
 
