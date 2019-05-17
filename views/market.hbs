@@ -1,0 +1,185 @@
+ <!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <title>Trading Page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel='stylesheet' href='testcss.css'>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/<head>
+bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=PT+Serif|Playfair+Display" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Old+Standard+TT" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="images/icon1.png" /> 
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+</head>
+    
+<body>
+
+      <!--NavBar-->
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+        <div class="container">
+            <!--Logo-->
+            <a class="navbar-brand" href="home"><img src="/static/logo.png" alt="logo"></a>
+
+            <!--Burger Button-->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+
+            <!--Main Navbar list-->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active"><a class="nav-link hvr-underline-from-center" href="markets">MARKETS<span class="sr-only">(current)</span></a></li>
+                   <li class="nav-item active"><a class="nav-link hvr-underline-from-center" href="login">LOGIN</a></li>
+                    <li class="nav-item active"><a class="nav-link hvr-underline-from-center" href="register">REGISTRATION</a></li>
+                                    <!--Logout-->
+                    <a class="navbar-brand logout" style="padding: 2px 0px 0px 10px;" href="login"><img src="" alt=""></a>
+                </ul>
+            </div>
+        </div>
+    </nav>
+ 
+      <div class="defcontainer">
+        <div class="defheader">
+
+        </div>
+        
+        <div class="defcontent">
+            <br>
+            <div class='chfont container'>
+                
+                <p class="font-italic">Please note all prices are in USD.</p>
+                <p class="font-weight-bold">{{title}}</p>
+                <p class="font-weight-bold">{{head}}</p>
+                {{#if check}}
+                    <div style="width: 60%;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-trendline@0.0.3/chartjs-plugin-trendline.js"></script>
+                    <script>
+                        var ctx = document.getElementById('myChart').getContext('2d');
+
+                        //data parse
+                        var data_price = [{{#each prices}}
+                            {{this}},
+                        {{/each}}];
+                        // console.log(data_price);
+
+
+                        var data_date = [
+                            {{#each dates}}
+                                '{{this}}',
+                            {{/each}}
+                        ];
+                        // console.log(data_date);
+
+                        var chart = new Chart(ctx, {
+                            // The type of chart we want to create
+                            type: 'line',
+
+                            // The data for our dataset
+                            data: {
+                                labels: [
+                                    data_date[14], data_date[13], data_date[12],
+                                    data_date[11], data_date[10], data_date[9],
+                                    data_date[8], data_date[7], data_date[6],
+                                    data_date[5], data_date[4], data_date[3],
+                                    data_date[2],data_date[1], data_date[0]
+                                ],
+                                datasets: [{
+                                    lineTension: 0,
+                                    fill: 'start',
+                                    label: '{{stock_name}}',
+                                    backgroundColor: 'rgb(221, 236, 255, 0.3)',
+                                    borderColor: 'rgb(0, 104, 145)',
+                                    data: [
+                                        data_price[14], data_price[13], data_price[12],
+                                        data_price[11], data_price[10], data_price[9],
+                                        data_price[8], data_price[7], data_price[6],
+                                        data_price[5], data_price[4], data_price[3],
+                                        data_price[2], data_price[1], data_price[0]
+                                    ],
+                                    pointRadius: 10,
+                                    hoverRadius: 12,
+                                    hitRadius: 5,
+                                }]
+                            },
+
+                            // Configuration options go here
+                            options: {
+                                trendlineLinear: {
+                                    style: "rgba(255,105,180)",
+                                    lineStyle: "solid",
+                                    width: 3,
+                                },
+                                responsive: true,
+                                animation: {
+                                    duration: 2000,
+                                },
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        fontSize: 18,
+                                        boxWidth: 18,
+                                        usePointStyle: true,
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: '14-week Historic Prices for {{stock_name}}'
+                                },
+                                scales: {
+                                    xAxes: [{
+                                        ticks: {
+                                            fontSize: 15,
+                                            fontColor: 'grey'
+                                        }
+                                    }],
+                                    yAxes: [{
+                                        ticks: {
+                                            fontSize: 15,
+                                            fontColor: 'grey'
+                                        },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: "Price (USD)"
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    </script>
+                    {{/if}}
+                    <br>
+
+                  <div class="form-group btn-group">
+                <form action="/markets" method="POST">
+                    <label for="stocksearch">Stock Search Price</label>
+                    <input type="text" class="form-control" name='stocksearch' id="stocksearch" placeholder="Stock Ticker e.g. TSLA"> <input type="submit" class="btn btn-primary" value="Search">
+                    <p>&nbsp;</p>
+                </form>
+                
+                </div>
+
+                  <p>&nbsp;</p>
+
+        </div>
+        <footer class="chfont page-footer font-small blue">
+            <div class="footer-copyright text-center py-3">© 2019 Copyright:
+            <a href="">Stock Trader</a>  All Rights Reserved
+
+        </footer>
+    </div> 
+
+
+ <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    </body>
+</html> 
