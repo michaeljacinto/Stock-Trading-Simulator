@@ -553,7 +553,7 @@ html {
     -webkit-border-radius: 7px;
     -moz-border-radius: 7px;
     border-radius: 7px;
-    min-height: 350px;
+    min-height: 375px;
 
 }
 
@@ -689,4 +689,25 @@ td.text-center {
 
 td.text-right {
     text-align: right;
+}
+
+.cashbal {
+    background-color: black;
+    max-width: 15%;
+    text-align: right;
+    float: right;
+    padding: 15px;
+    padding-top: 20px;
+    color: white;
+    border-bottom-right-radius: 30px;
+    position: absolute;
+    position: fixed;
+}
+
+.wbiscroller {
+    position: fixed;
+}
+
+.navbar {
+    margin-bottom: 0;
 }
