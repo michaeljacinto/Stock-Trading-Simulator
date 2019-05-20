@@ -97,7 +97,7 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
 <div class="container main" style="background-color: #DDDDDD; box-shadow: 0 4px 500px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
     <div class="container-fluid" style="padding-top: 50px;">
         <h3 style="padding-bottom: 5px;">NEWS <span style="font-weight: lighter;" id="date"></span></h3>
-        <div class="container">
+        <!-- <div class="container">
                 <form action="/home" method="POST" class="form-inline my-2 my-lg-0">
                             <input value="{{query}}" type="text" class="form-control mr-sm-2" name='news_search' id="news_search" placeholder="Search news">
                             <p>&nbsp;</p>
@@ -107,7 +107,7 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                         <h3 class="w3-right" style="font-weight: lighter;">Rankings</h3>
                 </div>
             </form>
-        </div>
+        </div> -->
         <br>
         <!-- Row 1 -->
         <div class="row">
@@ -204,6 +204,27 @@ bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOng
                 document.getElementById("date").innerHTML='('+today+')';
             </script>
         </div>
+        <br>
+        <br>
+        <form action="/home" method="POST" class="form-inline my-2 my-lg-0">
+                            <input value="{{query}}" type="text" class="form-control mr-sm-2" name='news_search' id="news_search" placeholder="Search news">
+                            <p>&nbsp;</p>
+                            <input type="submit" class="btn btn-primary bg-dark" value="Search">
+                    <div style="margin-left: auto;">
+                        <button class="w3-button lb-btn w3-xlarge w3-right" onclick="openRightMenu()" type="button">&#9776;</button>
+                        <h3 class="w3-right" style="font-weight: lighter;">Rankings</h3>
+                </div>
+            </form>
+        {{message}}
+        <br>
+        {{#each title_url}}
+        <br>
+        <a href='{{this.url}}' target="_blank"><font color="blue">{{incremented @index}}. {{this.title}}</font></a>
+        <br>
+        <a href='{{this.url}}' target="_blank">{{this.url}}</p>
+        <p>{{this.desc}}</p>
+        {{/each}}
+
     </div>
     <br>
     <br>

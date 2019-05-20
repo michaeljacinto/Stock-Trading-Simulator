@@ -64,16 +64,16 @@ passport.deserializeUser(function(user, done) {
         done(null, user);
     });
 
-app.use((request, response, next) => {
-	var time = new Date().toString();
-	var log_entry = `${time.slice(4, 21)}: ${response.statusCode} - ${request.method} ${request.url}`;
-	fs.appendFile('server.log', log_entry + '\n', (error) => {
-		if (error) {
-			console.log('Unable to log message');
-		}
-	});
-	next();
-});
+// app.use((request, response, next) => {
+// 	var time = new Date().toString();
+// 	var log_entry = `${time.slice(4, 21)}: ${response.statusCode} - ${request.method} ${request.url}`;
+// 	fs.appendFile('server.log', log_entry + '\n', (error) => {
+// 		if (error) {
+// 			console.log('Unable to log message');
+// 		}
+// 	});
+// 	next();
+// });
 
 // account schema used to check with MongoDB
 var account_schema = new mongoose.Schema({
@@ -190,6 +190,7 @@ passport.use(new LocalStrategy(
   });
   }
 ));
+
 // if login credentials are invalid displays error message
 app.get('/login-fail', (request, response) => {
 	request.session.destroy(function(err) {
@@ -246,7 +247,7 @@ app.get('/home', isAuthenticated, (request, response) => {
 	const get_news = async () => {
 
 		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,yahoo.com&q=stocks&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,yahoo.com&q=stocks&sortBy=publishedAt&sortBy=popularity&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
 			news_items = news.data.articles;
 
 			for (var i = 0; i <= 5; i++) {
@@ -309,8 +310,8 @@ app.get('/home', isAuthenticated, (request, response) => {
 
 });
 
+// checks if logged in user is an admin
 function if_admin (string_input) {
-	// checks if string value is between 3 and 12 characters, uses RegEx to confirm only alphabetical characters
 	if (string_input === 'admin') {
 		return true;
 	}
@@ -319,6 +320,7 @@ function if_admin (string_input) {
 	}
 }
 
+// opens up new tab when a stock in the marquee bar is clicked
 app.get('/search/:stockTicker/', isAuthenticated, (request, response) => {
 
 	var acc_type = request.session.passport.user.type;
@@ -375,6 +377,7 @@ app.get('/search/:stockTicker/', isAuthenticated, (request, response) => {
 
 });
 
+// used for search results
 app.post('/home', isAuthenticated, (request, response) => {
 
 	var acc_type = request.session.passport.user.type;
@@ -382,6 +385,11 @@ app.post('/home', isAuthenticated, (request, response) => {
 	var news_feed = [];
 	var news_url = [];
 	var news_imgs = [];
+	var title_url = [];
+	var news_length = 0;
+	var message = '';
+	var stock_query = query + ' stock';
+
 	var open_source_imgs = ['https://cdn.pixabay.com/photo/2016/11/23/14/37/blur-1853262_1280.jpg',
 							'https://cdn.pixabay.com/photo/2016/11/27/21/42/stock-1863880_960_720.jpg',
 							'https://cdn.pixabay.com/photo/2016/10/10/22/38/business-1730089_960_720.jpg',
@@ -392,12 +400,15 @@ app.post('/home', isAuthenticated, (request, response) => {
 	const get_news = async () => {
 
 		try {
-			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,yahoo.com&q=${query}&sortBy=publishedAt&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news_stocks = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=yahoo.com&q=${stock_query}&sortBy=publishedAt&sortBy=popularity&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
+			const news = await axios.get(`https://newsapi.org/v2/everything?language=en&domains=wsj.com,nytimes.com,yahoo.com&q=stocks&sortBy=publishedAt&sortBy=popularity&apiKey=9049059c45424a3c8dd8b9891f2a5d7c`);
 			news_items = news.data.articles;
+			news_items_stock = news_stocks.data.articles;
 
 			for (var i = 0; i <= 5; i++) {
 				news_feed.push(news_items[i].title);
 				news_url.push(news_items[i].url);
+				
 
 				if (news_items[i].urlToImage === null) {
 					news_imgs.push(open_source_imgs[i]);
@@ -407,6 +418,15 @@ app.post('/home', isAuthenticated, (request, response) => {
 				}
 
 			}
+
+			for (var j = 0; j <= 5; j++) {
+				if (news_items_stock[j] !== undefined) {
+					var obj = { title: news_items_stock[j].title, url: news_items_stock[j].url, desc: news_items_stock[j].description };
+					title_url.push(obj);
+					news_length += 1;
+				}
+			}
+
 		}
 		catch(err) {
 
@@ -426,6 +446,16 @@ app.post('/home', isAuthenticated, (request, response) => {
 						response.send('Unable to fetch Accounts');
 					}
 
+					if (news_length >= 6) {
+						message = `Here are the top search results for '${query}'.`
+					}
+					else if (news_length === 0) {
+						message = `Sorry we could not find anything on '${query}'`
+					}
+					else {
+						message = `Here are the top ${news_length} search results for '${query}'.`
+					}
+
 					response.render('home.hbs', {
 						title: 'Welcome to the login page.',
 						result: result,
@@ -434,7 +464,9 @@ app.post('/home', isAuthenticated, (request, response) => {
 						imgs: news_imgs,
 						num_users: num_users,
 						query: query,
-						admin: if_admin(acc_type)
+						title_url: title_url,
+						admin: if_admin(acc_type),
+						message: message
 					});
 
 				});
@@ -459,6 +491,7 @@ app.post('/home', isAuthenticated, (request, response) => {
 
 });
 
+// account recovery on login page
 app.post('/recovery', (request, response) => {
 
 	var db = utils.getDb();
@@ -525,6 +558,7 @@ app.post('/recovery', (request, response) => {
 					db.close;
 });
 
+// populates profile page with logged in user's credentials
 app.get('/profile', isAuthenticated, (request, response) => {
 
 	var acc_type = request.session.passport.user.type;
@@ -544,6 +578,7 @@ app.get('/profile', isAuthenticated, (request, response) => {
 	})
 });
 
+// changes logged in user's credentials
 app.post('/profile-info-change', isAuthenticated, (request, response) => {
 
 	var db = utils.getDb();
@@ -667,6 +702,7 @@ app.post('/profile-info-change', isAuthenticated, (request, response) => {
 
 });
 
+// changes the password of logged in users
 app.post('/profile-password-change', isAuthenticated, (request, response) => {
 
 	var acc_type = request.session.passport.user.type;
@@ -980,7 +1016,7 @@ app.get('/trading-success', isAuthenticated, (request, response) => {
 		}
 
 		catch(err) {
-			console.log(err);
+			// console.log(err);
 		}
 
 		response.render('trading-success.hbs', {
