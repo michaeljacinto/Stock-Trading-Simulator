@@ -337,7 +337,7 @@ app.get('/search/:stockTicker/', isAuthenticated, (request, response) => {
 		var message;
 
 		try {
-			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock_ticker}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
+			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock_ticker}/quote?token=pk_17d06d20e16c430f8eb6911913e67c8d`);
 			const stock_historical_info = await axios.get(`https://api.iextrading.com/1.0/stock/${stock_ticker}/chart/1y`);
 
 			stock_name = stock_info.data.companyName;
@@ -1003,7 +1003,7 @@ app.get('/trading-success', isAuthenticated, (request, response) => {
 		try {
 			var users_stocks = concat_stocks.replace(/,\s*$/, "");
 			users_stocks = users_stocks.replace(" ", "");
-			var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
+			var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=pk_17d06d20e16c430f8eb6911913e67c8d`);
 
 			for (var i = 0; i < num_stocks; i++) {
 				var current_price = stock_data.data[stock_keys[i]].quote.close;
@@ -1062,7 +1062,7 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 	const get_stock_info = async (stock_ticker) => {
 
 		try {
-			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock_ticker}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
+			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock_ticker}/quote?token=pk_17d06d20e16c430f8eb6911913e67c8d`);
 			const stock_historical_info = await axios.get(`https://api.iextrading.com/1.0/stock/${stock_ticker}/chart/1y`);
 
 			stock_name = stock_info.data.companyName;
@@ -1096,7 +1096,7 @@ app.post('/trading-success-search', isAuthenticated, (request, response) => {
 		try {
 			var users_stocks = concat_stocks.replace(/,\s*$/, "");
 			users_stocks = users_stocks.replace(" ", "");
-			var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
+			var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=pk_17d06d20e16c430f8eb6911913e67c8d`);
 
 			for (var i = 0; i < num_stocks; i++) {
 				var current_price = stock_data.data[stock_keys[i]].quote.close;
@@ -1158,7 +1158,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 		var index = check_existence(stock);
 
 		try {
-			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
+			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock}/quote?token=pk_17d06d20e16c430f8eb6911913e67c8d`);
 			stock_name = stock_info.data.companyName;
 			var stock_price = stock_info.data.latestPrice;
 			var total_cost = Math.round(stock_price*qty*100)/100;
@@ -1237,7 +1237,7 @@ app.post('/trading-success-buy', isAuthenticated, (request, response) => {
 			try {
 				var users_stocks = concat_stocks.replace(/,\s*$/, "");
 				users_stocks = users_stocks.replace(" ", "");
-				var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
+				var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=pk_17d06d20e16c430f8eb6911913e67c8d`);
 
 				for (var i = 0; i < stocks.length; i++) {
 					var current_price = stock_data.data[stock_keys[i]].quote.close;
@@ -1335,7 +1335,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 		var index = check_existence(stock);
 
 		try {
-			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock}/quote?token=sk_291eaf03571b4f0489b0198ac1af487d`);
+			const stock_info = await axios.get(`https://cloud.iexapis.com/beta/stock/${stock}/quote?token=pk_17d06d20e16c430f8eb6911913e67c8d`);
 
 			stock_name = stock_info.data.companyName;
 			var stock_price = stock_info.data.latestPrice;
@@ -1398,7 +1398,7 @@ app.post('/trading-success-sell', isAuthenticated, (request, response) => {
 			try {
 				var users_stocks = concat_stocks.replace(/,\s*$/, "");
 				users_stocks = users_stocks.replace(" ", "");
-				var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=sk_291eaf03571b4f0489b0198ac1af487d`);
+				var stock_data = await axios.get(`https://cloud.iexapis.com/stable/stock/market/batch?symbols=${users_stocks}&types=quote,news,chart&range=1m&last=5&token=pk_17d06d20e16c430f8eb6911913e67c8d`);
 
 				for (var i = 0; i < stocks.length; i++) {
 					var current_price = stock_data.data[stock_keys[i]].quote.close;
