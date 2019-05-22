@@ -98,7 +98,7 @@ describe('GET /profile - 200', function () {
             });
         });
     });
-    it("Should pass if username matches form value", function (done) {
+    it("Should pass if firstname matches form value", function (done) {
         agent
         .post('/login')
         .send({
