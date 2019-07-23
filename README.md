@@ -1,6 +1,6 @@
 # Stock Trading Simulator
 
-A stock trading application designed to replicate the use of a real stock trading platform. Suited for beginners, risk averse individuals, or experimentalists.
+A stock trading application designed to replicate the use of a real stock trading platform. Suited for beginners, risk averse individuals, or experimentalists. https://stocktradingsimulator.herokuapp.com/
 
 ## Description 
 
