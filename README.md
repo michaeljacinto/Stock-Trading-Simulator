@@ -1,4 +1,4 @@
-# Stock Trading Simulator
+# [Stock Trading Simulator](https://stocktradingsimulator.herokuapp.com/)
 
 A stock trading application designed to replicate the use of a real stock trading platform. Suited for beginners, risk averse individuals, or experimentalists. https://stocktradingsimulator.herokuapp.com/
 
@@ -18,8 +18,9 @@ This application was built on an existing team project with basic features for t
 The project was continued and upgraded from April 23, 2019 to May 24, 2019 for the class Agile Development Project (ACIT 2911). New features that were implemented on top of the original were:
  1. Cloud Implementation
     - Implemented cloud technologies in order to have decentralized access 
- 2. Password Hashing
-    - Storage of hashed versions of sensitive information onto the database
+ 2. Password Security
+    - Password hashing
+    - Account locks after numerous attempts
  3. Stock History Graph
     - Last 14 week prices for any stock is shown along with a best fit line
  4. News Feed
@@ -28,8 +29,9 @@ The project was continued and upgraded from April 23, 2019 to May 24, 2019 for t
  5. Stock Leaderboard
     - Shows the top users with the most cash
     - Allows for competition among our users
- 6. Account Recovery
-    - A recovery password will be sent to users that sign up with a valid email
+ 6. Account Functions
+    - Password recovery - Users can recover their passwords via their registered email
+    - Users can change their username, password, email and name
  7. Redesigned UI
  
  ## Technologies Used 
